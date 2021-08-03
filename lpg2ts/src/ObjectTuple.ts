@@ -1,3 +1,5 @@
+import { java as Java } from "./jre";
+
 export class ObjectTuple {
     public array: any[];
     public top: number;
@@ -17,7 +19,7 @@ export class ObjectTuple {
     public nextIndex(): number {
         var i: number = this.top++;
         if (i >= this.array.length) {
-            java.lang.System.arraycopy(this.array, 0, this.array = new Array<any>(i * 2), 0, i);
+            Java.lang.System.arraycopy(this.array, 0, this.array = new Array<any>(i * 2), 0, i);
         }
         return i;
     }

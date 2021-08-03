@@ -1,5 +1,6 @@
 import { IToken } from "./IToken";
 import { IAstVisitor } from "./IAstVisitor";
+import { java as Java } from "./jre";
 
 export interface IAst {
     getNextAst(): IAst;
@@ -8,7 +9,7 @@ export interface IAst {
     getRightIToken(): IToken;
     getPrecedingAdjuncts(): IToken[];
     getFollowingAdjuncts(): IToken[];
-    getChildren(): java.util.ArrayList<IAst>;
-    getAllChildren(): java.util.ArrayList<IAst>;
+    getChildren(): Java.util.ArrayList<IAst>;
+    getAllChildren(): Java.util.ArrayList<IAst>;
     accept(v: IAstVisitor): void;
 };

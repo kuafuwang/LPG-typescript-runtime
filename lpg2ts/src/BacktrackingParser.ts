@@ -12,6 +12,7 @@ import { ConfigurationStack } from "./ConfigurationStack";
 import { ConfigurationElement } from "./ConfigurationElement";
 import { IPrsStream, instanceOfIPrsStream } from "./IPrsStream";
 import { BadParseException } from "./BadParseException";
+import { java as Java } from "./jre";
 
 export class BacktrackingParser extends Stacks {
     private monitor: Monitor;
@@ -129,9 +130,9 @@ export class BacktrackingParser extends Stacks {
         } else {
             if (this.actionStack.length < this.stateStack.length) {
                 var old_length: number = this.actionStack.length;
-                java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_length);
-                java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(this.stateStack.length), 0, old_length);
-                java.lang.System.arraycopy(this.parseStack, 0, this.parseStack = new Array<any>(this.stateStack.length), 0, old_length);
+                Java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_length);
+                Java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(this.stateStack.length), 0, old_length);
+                Java.lang.System.arraycopy(this.parseStack, 0, this.parseStack = new Array<any>(this.stateStack.length), 0, old_length);
             }
         }
         return;
@@ -196,7 +197,7 @@ export class BacktrackingParser extends Stacks {
         this.tokens = new IntTuple(this.tokStream.getStreamLength());
         this.tokens.add(this.tokStream.getPrevious(this.tokStream.peek()));
         var start_token_index: number = this.tokStream.peek(), repair_token: number = this.getMarkerToken(marker_kind, start_token_index), start_action_index: number = this.action.size(), temp_stack: Int32Array = new Int32Array(this.stateStackTop + 1);
-        java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
+        Java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
         var initial_error_token: number = this.backtrackParseInternal(this.action, repair_token);
         for (var error_token: number = initial_error_token, count: number = 0; error_token != 0; error_token = this.backtrackParseInternal(this.action, repair_token), count++) {
             if (count == max_error_count) {
@@ -205,7 +206,7 @@ export class BacktrackingParser extends Stacks {
             this.action.reset(start_action_index);
             this.tokStream.reset(start_token_index);
             this.stateStackTop = temp_stack.length - 1;
-            java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
+            Java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
             this.reallocateOtherStacks(start_token_index);
             this.backtrackParseUpToError(repair_token, error_token);
             for (this.stateStackTop = this.findRecoveryStateIndex(this.stateStackTop); this.stateStackTop >= 0; this.stateStackTop = this.findRecoveryStateIndex(this.stateStackTop - 1)) {
@@ -219,7 +220,7 @@ export class BacktrackingParser extends Stacks {
                 throw new BadParseException(initial_error_token);
             }
             temp_stack = new Int32Array(this.stateStackTop + 1);
-            java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
+            Java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
             start_action_index = this.action.size();
             start_token_index = this.tokStream.peek();
         }
@@ -282,7 +283,7 @@ export class BacktrackingParser extends Stacks {
     }
     public backtrackParse(stack: Int32Array, stack_top: number, action: IntSegmentedTuple, initial_token: number): number {
         this.stateStackTop = stack_top;
-        java.lang.System.arraycopy(stack, 0, this.stateStack, 0, this.stateStackTop + 1);
+        Java.lang.System.arraycopy(stack, 0, this.stateStack, 0, this.stateStackTop + 1);
         return this.backtrackParseInternal(action, initial_token);
     }
     private backtrackParseInternal(action: IntSegmentedTuple, initial_token: number): number {
@@ -539,25 +540,25 @@ export class BacktrackingParser extends Stacks {
     }
     private errorRepair(stream: IPrsStream, recovery_token: number, error_token: number): number {
         var temp_stack: Int32Array = new Int32Array(this.stateStackTop + 1);
-        java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
+        Java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
         for (; stream.getKind(recovery_token) != this.EOFT_SYMBOL; recovery_token = stream.getNext(recovery_token)) {
             stream.reset(recovery_token);
             if (this.repairable(error_token)) {
                 break;
             }
             this.stateStackTop = temp_stack.length - 1;
-            java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
+            Java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
         }
         if (stream.getKind(recovery_token) == this.EOFT_SYMBOL) {
             stream.reset(recovery_token);
             if (!this.repairable(error_token)) {
                 this.stateStackTop = temp_stack.length - 1;
-                java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
+                Java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
                 return 0;
             }
         }
         this.stateStackTop = temp_stack.length - 1;
-        java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
+        Java.lang.System.arraycopy(temp_stack, 0, this.stateStack, 0, temp_stack.length);
         stream.reset(recovery_token);
         this.tokens.reset(this.locationStack[this.stateStackTop] - 1);
         this.action.reset(this.actionStack[this.stateStackTop]);

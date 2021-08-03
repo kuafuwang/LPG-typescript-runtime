@@ -11,13 +11,14 @@ import { IMessageHandler } from "./IMessageHandler";
 import { NullTerminalSymbolsException } from "./NullTerminalSymbolsException";
 import { UndefinedEofSymbolException } from "./UndefinedEofSymbolException";
 import { UnimplementedTerminalsException } from "./UnimplementedTerminalsException";
+import { java as Java } from "./jre";
 
 export class PrsStream implements IPrsStream {
     m3C89586D99F2567D21410F29B1B2606574892Aa7: number;
     private iLexStream: ILexStream;
     private kindMap: Int32Array = null;
-    private tokens: java.util.ArrayList<IToken> = new java.util.ArrayList<IToken>();
-    private adjuncts: java.util.ArrayList<IToken> = new java.util.ArrayList<IToken>();
+    private tokens: Java.util.ArrayList<IToken> = new Java.util.ArrayList<IToken>();
+    private adjuncts: Java.util.ArrayList<IToken> = new Java.util.ArrayList<IToken>();
     private index: number = 0;
     private len: number = 0;
  
@@ -43,10 +44,10 @@ export class PrsStream implements IPrsStream {
         if (ordered_parser_symbols == null) {
             throw new NullTerminalSymbolsException();
         }
-        var unimplemented_symbols: java.util.ArrayList<number> = new java.util.ArrayList<number>();
+        var unimplemented_symbols: Java.util.ArrayList<number> = new Java.util.ArrayList<number>();
         if (ordered_lexer_symbols != ordered_parser_symbols) {
             this.kindMap = new Int32Array(ordered_lexer_symbols.length);
-            var terminal_map: java.util.HashMap<string, number> = new java.util.HashMap < string, number>();
+            var terminal_map: Java.util.HashMap<string, number> = new Java.util.HashMap < string, number>();
             for (var i: number = 0; i < ordered_lexer_symbols.length; i++) {
                 terminal_map.put(ordered_lexer_symbols[i], (i));
             }
@@ -70,9 +71,9 @@ export class PrsStream implements IPrsStream {
         return (this.kindMap == null ? kind : this.kindMap[kind]);
     }
     public resetTokenStream(): void {
-        this.tokens = new java.util.ArrayList<IToken>();
+        this.tokens = new Java.util.ArrayList<IToken>();
         this.index = 0;
-        this.adjuncts = new java.util.ArrayList<IToken>();
+        this.adjuncts = new Java.util.ArrayList<IToken>();
     }
     public setLexStream(lexStream: ILexStream): void {
         this.iLexStream = lexStream;
@@ -240,7 +241,7 @@ export class PrsStream implements IPrsStream {
     public getIToken(i: number): IToken {
         return <IToken>this.tokens.get(i);
     }
-    public getTokens(): java.util.ArrayList<IToken> {
+    public getTokens(): Java.util.ArrayList<IToken> {
         return this.tokens;
     }
     public getStreamIndex(): number {
@@ -300,7 +301,7 @@ export class PrsStream implements IPrsStream {
     public getPrecedingAdjuncts(i: number): IToken[] {
         return this.getAdjunctsFromIndex(this.getPrevious(i));
     }
-    public getAdjuncts(): java.util.ArrayList<IToken> {
+    public getAdjuncts(): Java.util.ArrayList<IToken> {
         return this.adjuncts;
     }
     public getToken2(): number {

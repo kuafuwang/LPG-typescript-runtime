@@ -3,6 +3,7 @@ import { ParseTable } from "./ParseTable";
 import { RuleAction } from "./RuleAction";
 import { IntTuple } from "./IntTuple";
 import { Monitor } from "./Monitor";
+import { java as Java } from "./jre";
 
 export class LexParser {
     private taking_actions: boolean = false;
@@ -54,9 +55,9 @@ export class LexParser {
             this.locationStack = new Int32Array(this.stackLength);
             this.tempStack = new Int32Array(this.stackLength);
         } else {
-            java.lang.System.arraycopy(this.stack, 0, this.stack = new Int32Array(this.stackLength), 0, old_stack_length);
-            java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(this.stackLength), 0, old_stack_length);
-            java.lang.System.arraycopy(this.tempStack, 0, this.tempStack = new Int32Array(this.stackLength), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.stack, 0, this.stack = new Int32Array(this.stackLength), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(this.stackLength), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.tempStack, 0, this.tempStack = new Int32Array(this.stackLength), 0, old_stack_length);
         }
         return;
     }

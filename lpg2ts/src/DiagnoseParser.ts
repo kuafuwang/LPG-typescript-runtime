@@ -5,7 +5,10 @@ import { Monitor } from "./Monitor";
 import { ParseTable } from "./ParseTable";
 import { TokenStream } from "./TokenStream";
 import { ParseErrorCodes } from "./ParseErrorCodes"
-; export class RepairCandidate {
+;
+import { java as Java } from "./jre";
+
+export class RepairCandidate {
     public symbol: number;
     public location: number;
 }
@@ -211,13 +214,13 @@ export class DiagnoseParser   {
             this.scopeIndex = new Int32Array(stack_length);
             this.scopePosition = new Int32Array(stack_length);
         } else {
-            java.lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.tempStack, 0, this.tempStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.prevStack, 0, this.prevStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.nextStack, 0, this.nextStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.scopeIndex, 0, this.scopeIndex = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.scopePosition, 0, this.scopePosition = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.tempStack, 0, this.tempStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.prevStack, 0, this.prevStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.nextStack, 0, this.nextStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.scopeIndex, 0, this.scopeIndex = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.scopePosition, 0, this.scopePosition = new Int32Array(stack_length), 0, old_stack_length);
         }
         return;
     }
@@ -274,7 +277,7 @@ export class DiagnoseParser   {
         this.stateStackTop = 0;
         this.stateStack[this.stateStackTop] = this.START_STATE;
         this.tempStackTop = this.stateStackTop;
-        java.lang.System.arraycopy(this.tempStack, 0, this.stateStack, 0, this.tempStackTop + 1);
+        Java.lang.System.arraycopy(this.tempStack, 0, this.stateStack, 0, this.tempStackTop + 1);
         this.tokStream.reset();
         if (marker_kind == 0) {
             current_token = this.tokStream.getToken();
@@ -292,7 +295,7 @@ export class DiagnoseParser   {
             this.nextStackTop = -1;
             var pos: number = this.stateStackTop;
             this.tempStackTop = this.stateStackTop - 1;
-            java.lang.System.arraycopy(this.stateStack, 0, this.tempStack, 0, this.stateStackTop + 1);
+            Java.lang.System.arraycopy(this.stateStack, 0, this.tempStack, 0, this.stateStackTop + 1);
             var action_index: number = 0;
             act = action.get(action_index++);
             while (act <= this.NUM_RULES) {
@@ -399,12 +402,12 @@ export class DiagnoseParser   {
                 }
                 var next_token: number = this.tokStream.peek();
                 this.tempStackTop = this.stateStackTop;
-                java.lang.System.arraycopy(this.stateStack, 0, this.tempStack, 0, this.stateStackTop + 1);
+                Java.lang.System.arraycopy(this.stateStack, 0, this.tempStack, 0, this.stateStackTop + 1);
                 error_token = this.parseForError(current_kind);
                 if (error_token != 0) {
                     this.tokStream.reset(next_token);
                     this.tempStackTop = this.stateStackTop;
-                    java.lang.System.arraycopy(this.stateStack, 0, this.tempStack, 0, this.stateStackTop + 1);
+                    Java.lang.System.arraycopy(this.stateStack, 0, this.tempStack, 0, this.stateStackTop + 1);
                     this.parseUpToError(action, current_kind, error_token);
                     this.tokStream.reset(next_token);
                 } else {
@@ -752,11 +755,11 @@ export class DiagnoseParser   {
         }
         if (repair.bufferPosition == 1) {
             this.stateStackTop = this.prevStackTop;
-            java.lang.System.arraycopy(this.prevStack, 0, this.stateStack, 0, this.stateStackTop + 1);
+            Java.lang.System.arraycopy(this.prevStack, 0, this.stateStack, 0, this.stateStackTop + 1);
         } else {
             if (this.nextStackTop >= 0 && repair.bufferPosition >= 3) {
                 this.stateStackTop = this.nextStackTop;
-                java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
+                Java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
                 this.locationStack[this.stateStackTop] = this.buffer[3];
             }
         }
@@ -1106,7 +1109,7 @@ export class DiagnoseParser   {
         }
         var old_state_pool_top: number = this.statePoolTop++;
         if (this.statePoolTop >= this.statePool.length) {
-            java.lang.System.arraycopy(this.statePool, 0, this.statePool = new Array<StateInfo>(this.statePoolTop * 2), 0, this.statePoolTop);
+            Java.lang.System.arraycopy(this.statePool, 0, this.statePool = new Array<StateInfo>(this.statePoolTop * 2), 0, this.statePoolTop);
         }
         this.statePool[old_state_pool_top] = new StateInfo(stack[stack_top], this.stateSeen[stack_top]);
         this.stateSeen[stack_top] = old_state_pool_top;
@@ -1261,7 +1264,7 @@ export class DiagnoseParser   {
         }
         if (repair.recoveryOnNextStack) {
             this.stateStackTop = this.nextStackTop;
-            java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
+            Java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
             this.buffer[2] = error_token;
             this.buffer[1] = this.tokStream.getPrevious(this.buffer[2]);
             this.buffer[0] = this.tokStream.getPrevious(this.buffer[1]);

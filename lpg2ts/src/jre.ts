@@ -1,10 +1,8 @@
-module java {
-    export module lang {
+export namespace java {
+    export namespace lang {
         export class System {
-            static gc() {
-            }
-
-            static arraycopy(src: any[]| Float64Array | Int32Array, srcPos: number, dest: any[]| Float64Array | Int32Array, destPos: number, numElements: number): void {
+           
+           public  static arraycopy(src: any[]| Float64Array | Int32Array, srcPos: number, dest: any[]| Float64Array | Int32Array, destPos: number, numElements: number): void {
                 if ((dest instanceof Float64Array || dest instanceof Int32Array)
                     && (src instanceof Float64Array || src instanceof Int32Array)) {
                     if (numElements == src.length) {
@@ -19,7 +17,17 @@ module java {
                 }
             }
         }
-
+        export namespace System{
+            export class out {
+               public print(message?: any, ...optionalParams: any[]): void {
+                   console.log(message,optionalParams);
+               }
+                public println(message?: any, ...optionalParams: any[]): void {
+                    console.log(message, optionalParams);
+                    console.log("\n");
+               }
+            }
+        };
         export class StringBuilder {
             private _buffer: string = "";
             public length = 0;
@@ -742,7 +750,7 @@ function arrayInstanceOf(arr: any, arg: Function): boolean {
     if (!(arr instanceof Array)) {
         return false;
     } else {
-        if (arr.length == 0) {
+        if (arr.length === 0) {
             return true;
         } else {
             return (arr[0] instanceof arg);

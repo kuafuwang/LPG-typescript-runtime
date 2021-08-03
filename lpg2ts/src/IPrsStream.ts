@@ -3,6 +3,7 @@ import { TokenStream } from "./TokenStream";
 import { IMessageHandler } from "./IMessageHandler";
 import { IToken} from "./IToken";
 import { ILexStream } from "./ILexStream";
+import { java as Java } from "./jre";
 
 export interface IPrsStream extends TokenStream {
     getMessageHandler(): IMessageHandler;
@@ -28,8 +29,8 @@ export interface IPrsStream extends TokenStream {
     addToken(token: IToken): void;
     addAdjunct(adjunct: IToken): void;
     orderedExportedSymbols(): string[];
-    getTokens(): java.util.ArrayList<IToken>;
-    getAdjuncts(): java.util.ArrayList<IToken>;
+    getTokens(): Java.util.ArrayList<IToken>;
+    getAdjuncts(): Java.util.ArrayList<IToken>;
     getFollowingAdjuncts(i: number): IToken[];
     getPrecedingAdjuncts(i: number): IToken[];
     getIToken(i: number): IToken;

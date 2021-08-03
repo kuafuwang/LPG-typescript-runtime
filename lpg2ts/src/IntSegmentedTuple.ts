@@ -1,3 +1,4 @@
+import { java as Java } from "./jre";
 
 export class IntSegmentedTuple {
     private top: number;
@@ -9,7 +10,7 @@ export class IntSegmentedTuple {
         var k: number = this._size >> this.log_blksize;
         if (k == this.base_size) {
             this.base_size *= 2;
-            java.lang.System.arraycopy(this.base, 0, this.base = new Array<Int32Array>(this.base_size), 0, k);
+            Java.lang.System.arraycopy(this.base, 0, this.base = new Array<Int32Array>(this.base_size), 0, k);
         }
         this.base[k] = new Int32Array(1 << this.log_blksize);
         this._size += (1 << this.log_blksize);

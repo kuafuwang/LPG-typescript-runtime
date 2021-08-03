@@ -1,3 +1,4 @@
+import { java as Java } from "./jre";
 
 export class Stacks {
     public   readonly  STACK_INCREMENT: number = 1024;
@@ -21,9 +22,9 @@ export class Stacks {
             this.locationStack = new Int32Array(stack_length);
             this.parseStack = new Array<any>(stack_length);
         } else {
-            java.lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(stack_length), 0, old_stack_length);
-            java.lang.System.arraycopy(this.parseStack, 0, this.parseStack = new Array<any>(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.parseStack, 0, this.parseStack = new Array<any>(stack_length), 0, old_stack_length);
         }
         return;
     }
@@ -32,7 +33,7 @@ export class Stacks {
         if (this.stateStack == null) {
             this.stateStack = new Int32Array(stack_length);
         } else {
-            java.lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);
         }
         return;
     }

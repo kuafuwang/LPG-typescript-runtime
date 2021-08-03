@@ -9,6 +9,7 @@ import { ParseErrorCodes } from "./ParseErrorCodes";
 import { ConfigurationStack } from "./ConfigurationStack";
 import { ConfigurationElement } from "./ConfigurationElement";
 import { BadParseException } from "./BadParseException";
+import { java as Java } from "./jre";
 
 export class RecoveryParser extends DiagnoseParser   {
     private parser: BacktrackingParser;
@@ -29,7 +30,7 @@ export class RecoveryParser extends DiagnoseParser   {
             this.actionStack = new Int32Array(this.stateStack.length);
         } else {
             var old_stack_length: number = this.actionStack.length;
-            java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_stack_length);
+            Java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_stack_length);
         }
         return;
     }
@@ -247,7 +248,7 @@ export class RecoveryParser extends DiagnoseParser   {
                 }
             }
             this.stateStackTop = this.nextStackTop;
-            java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
+            Java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
         }
         return;
     }

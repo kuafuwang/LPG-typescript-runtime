@@ -1,3 +1,5 @@
+import { java as Java } from "./jre";
+
 export class IntTuple {
     private array: Int32Array;
     private top: number;
@@ -17,7 +19,7 @@ export class IntTuple {
     public nextIndex(): number {
         var i: number = this.top++;
         if (i >= this.array.length) {
-            java.lang.System.arraycopy(this.array, 0, this.array = new Int32Array(i * 2), 0, i);
+            Java.lang.System.arraycopy(this.array, 0, this.array = new Int32Array(i * 2), 0, i);
         }
         return i;
     }
