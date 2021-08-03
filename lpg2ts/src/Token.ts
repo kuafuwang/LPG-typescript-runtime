@@ -4,7 +4,7 @@ import { IToken } from "./IToken";
 
 export class Token extends AbstractToken {
   
-    constructor(startOffset: number, endOffset: number, kind: number, iPrsStream: IPrsStream=null) {
+    constructor(startOffset: number, endOffset: number, kind: number, iPrsStream?: IPrsStream) {
         super(iPrsStream, startOffset, endOffset, kind);
     }
     public getFollowingAdjuncts(): IToken[] {

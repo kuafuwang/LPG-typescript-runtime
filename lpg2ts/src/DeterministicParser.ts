@@ -4,6 +4,7 @@ import { IntTuple } from "./IntTuple";
 import { TokenStream } from "./TokenStream";
 import { ParseTable } from "./ParseTable";
 import { RuleAction } from "./RuleAction";
+import { BadParseException } from "./BadParseException";
 
 export class DeterministicParser extends Stacks {
     private taking_actions: boolean = false;
@@ -27,11 +28,14 @@ export class DeterministicParser extends Stacks {
         act = this.prs.lookAhead(act - this.LA_STATE_OFFSET, this.tokStream.getKind(token));
         return (act > this.LA_STATE_OFFSET ? this.lookahead(act, this.tokStream.getNext(token)) : act);
     }
-    private tAction(act: number, sym: number): number {
+    private tAction1(act: number, sym: number): number {
         act = this.prs.tAction(act, sym);
         return (act > this.LA_STATE_OFFSET ? this.lookahead(act, this.tokStream.peek()) : act);
     }
-    private tAction(act: number, sym: Int32Array, index: number): number {
+    private tAction(act: number, sym: Int32Array | number, index?: number): number {
+        if (typeof sym == "number") {
+            return this.tAction1(act, sym);
+        }
         act = this.prs.tAction(act, sym[index]);
         while (act > this.LA_STATE_OFFSET) {
             index = ((index + 1) % sym.length);
@@ -53,25 +57,31 @@ export class DeterministicParser extends Stacks {
         }
         throw new Error();
     }
-    public getFirstToken(): number {
+    public getFirstToken1(): number {
         if (this.taking_actions) {
             return this.getToken(1);
         }
         throw new Error();
     }
-    public getFirstToken(i: number): number {
+    public getFirstToken(i?: number): number {
+        if (!i) {
+            return this.getFirstToken1();
+        }
         if (this.taking_actions) {
             return this.getToken(i);
         }
         throw new Error();
     }
-    public getLastToken(): number {
+    public getLastToken1(): number {
         if (this.taking_actions) {
             return this.lastToken;
         }
         throw new Error();
     }
-    public getLastToken(i: number): number {
+    public getLastToken(i?: number): number {
+        if (!i) {
+            return this.getLastToken1();
+        }
         if (this.taking_actions) {
             return (i >= this.prs.rhs(this.currentAction) ? this.lastToken : this.tokStream.getPrevious(this.getToken(i + 1)));
         }
@@ -80,23 +90,25 @@ export class DeterministicParser extends Stacks {
     public setMonitor(monitor: Monitor): void {
         this.monitor = monitor;
     }
-    public reset(): void {
+    public reset1(): void {
         this.taking_actions = false;
         this.markerKind = 0;
         if (this.action != null) {
             this.action.reset();
         }
     }
-    public reset(monitor: Monitor, tokStream: TokenStream): void {
+    public reset2(tokStream: TokenStream,monitor?: Monitor): void {
         this.monitor = monitor;
         this.tokStream = <TokenStream>tokStream;
         this.reset();
     }
-    public reset(tokStream: TokenStream): void {
-        this.reset(null, tokStream);
-    }
-    public reset(monitor: Monitor, tokStream: TokenStream, prs: ParseTable, ra: RuleAction): void {
-        this.reset(monitor, tokStream);
+   
+    public reset(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor): void {
+        if (!tokStream) {
+            this.reset1();
+            return;
+        }
+        this.reset2(tokStream, monitor);
         this.prs = prs;
         this.ra = ra;
         this.START_STATE = prs.getStartState();
@@ -114,20 +126,13 @@ export class DeterministicParser extends Stacks {
             throw new Error();
         }
     }
-    public reset(tokStream: TokenStream, prs: ParseTable, ra: RuleAction): void {
-        this.reset(null, tokStream, prs, ra);
+   
+    constructor(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor) {
+        super();
+        this.reset(tokStream, prs, ra, monitor);
     }
-    constructor() { }
-    constructor(tokStream: TokenStream, prs: ParseTable, ra: RuleAction) {
-        this.reset(null, tokStream, prs, ra);
-    }
-    constructor(monitor: Monitor, tokStream: TokenStream, prs: ParseTable, ra: RuleAction) {
-        this.reset(monitor, tokStream, prs, ra);
-    }
-    public parse(): any {
-        return this.parseEntry(0);
-    }
-    public parseEntry(marker_kind: number): any {
+
+    public parseEntry(marker_kind: number=0): any {
         this.taking_actions = true;
         this.tokStream.reset();
         this.lastToken = this.tokStream.getPrevious(this.tokStream.peek());
@@ -144,7 +149,7 @@ export class DeterministicParser extends Stacks {
         this.currentAction = this.START_STATE;
         this.taking_actions = false;
         if (this.currentAction == this.ERROR_ACTION) {
-            throw new Error(curtok);
+            throw new BadParseException(curtok);
         }
         return this.parseStack[marker_kind == 0 ? 0 : 1];
     }
@@ -275,7 +280,7 @@ export class DeterministicParser extends Stacks {
             if ($ex$ instanceof Error) {
                 var e: Error = <Error>$ex$;
                 this.taking_actions = false;
-                throw new Error(curtok);
+                throw new BadParseException(curtok);
             } else {
                 throw $ex$;
             }

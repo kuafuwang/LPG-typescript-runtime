@@ -1,50 +1,55 @@
-export module DiagnoseParser {
-    ; export class RepairCandidate {
-        public symbol: number;
-        public location: number;
-    }
+import { ConfigurationElement } from "./ConfigurationElement";
+import { ConfigurationStack } from "./ConfigurationStack";
+import { IntTuple } from "./IntTuple";
+import { Monitor } from "./Monitor";
+import { ParseTable } from "./ParseTable";
+import { TokenStream } from "./TokenStream";
+import { ParseErrorCodes } from "./ParseErrorCodes"
+; export class RepairCandidate {
+    public symbol: number;
+    public location: number;
+}
 
-    ; export class PrimaryRepairInfo {
-        public distance: number;
-        public misspellIndex: number;
-        public code: number;
-        public bufferPosition: number;
-        public symbol: number;
-        constructor() { }
-        constructor(clone: DiagnoseParser.PrimaryRepairInfo) {
+; export class PrimaryRepairInfo {
+    public distance: number;
+    public misspellIndex: number;
+    public code: number;
+    public bufferPosition: number;
+    public symbol: number;
+
+    constructor(clone: PrimaryRepairInfo = null) {
+        if (clone)
             this.copy(clone);
-        }
-        public copy(clone: DiagnoseParser.PrimaryRepairInfo): void {
-            this.distance = clone.distance;
-            this.misspellIndex = clone.misspellIndex;
-            this.code = clone.code;
-            this.bufferPosition = clone.bufferPosition;
-            this.symbol = clone.symbol;
-            return;
-        }
     }
-
-    ; export class SecondaryRepairInfo {
-        public code: number;
-        public distance: number;
-        public bufferPosition: number;
-        public stackPosition: number;
-        public numDeletions: number;
-        public symbol: number;
-        public recoveryOnNextStack: boolean;
-    }
-
-    ; export class StateInfo {
-        public state: number;
-        public next: number;
-        constructor(state: number, next: number) {
-            this.state = state;
-            this.next = next;
-        }
+    public copy(clone: PrimaryRepairInfo): void {
+        this.distance = clone.distance;
+        this.misspellIndex = clone.misspellIndex;
+        this.code = clone.code;
+        this.bufferPosition = clone.bufferPosition;
+        this.symbol = clone.symbol;
+        return;
     }
 }
-;
-export class DiagnoseParser implements ParseErrorCodes {
+
+; export class SecondaryRepairInfo {
+    public code: number;
+    public distance: number;
+    public bufferPosition: number;
+    public stackPosition: number;
+    public numDeletions: number;
+    public symbol: number;
+    public recoveryOnNextStack: boolean;
+}
+
+; export class StateInfo {
+    public state: number;
+    public next: number;
+    constructor(state: number, next: number) {
+        this.state = state;
+        this.next = next;
+    }
+}
+export class DiagnoseParser   {
     public monitor: Monitor = null;
     public tokStream: TokenStream;
     public prs: ParseTable;
@@ -85,20 +90,12 @@ export class DiagnoseParser implements ParseErrorCodes {
     private static NIL: number = -1;
     private stateSeen: Int32Array;
     private statePoolTop: number;
-    private statePool: DiagnoseParser.StateInfo[];
+    private statePool: StateInfo[];
     public setMonitor(monitor: Monitor): void {
         this.monitor = monitor;
     }
-    constructor(tokStream: TokenStream, prs: ParseTable) {
-        this.this(null, tokStream, prs);
-    }
-    constructor(monitor: Monitor, tokStream: TokenStream, prs: ParseTable) {
-        this.this(monitor, tokStream, prs, 0, 0);
-    }
-    constructor(tokStream: TokenStream, prs: ParseTable, maxErrors: number, maxTime: number) {
-        this.this(null, tokStream, prs, maxErrors, maxTime);
-    }
-    constructor(monitor: Monitor, tokStream: TokenStream, prs: ParseTable, maxErrors: number, maxTime: number) {
+   
+    constructor(tokStream: TokenStream, prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor) {
         this.monitor = monitor;
         this.maxErrors = maxErrors;
         this.maxTime = maxTime;
@@ -224,13 +221,19 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return;
     }
-    public diagnose(): void {
-        this.diagnoseEntry(0, 0);
-    }
-    public diagnose(error_token: number): void {
+   
+    public diagnose(error_token: number=0): void {
         this.diagnoseEntry(0, error_token);
     }
-    public diagnoseEntry(marker_kind: number): void {
+
+    public diagnoseEntry(marker_kind: number, error_token ?: number): void {
+        if (error_token) {
+            this.diagnoseEntry2(marker_kind, error_token);
+        } else {
+            this.diagnoseEntry1(marker_kind);
+        }
+    }
+    public diagnoseEntry1(marker_kind: number): void {
         this.reallocateStacks();
         this.tempStackTop = 0;
         this.tempStack[this.tempStackTop] = this.START_STATE;
@@ -249,7 +252,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return;
     }
-    public diagnoseEntry(marker_kind: number, error_token: number): void {
+    public diagnoseEntry2(marker_kind: number, error_token: number): void {
         var action: IntTuple = new IntTuple(1 << 18);
         var startTime: number = Date.now();
         var errorCount: number = 0;
@@ -370,7 +373,7 @@ export class DiagnoseParser implements ParseErrorCodes {
                         break;
                     }
                 }
-                var candidate: DiagnoseParser.RepairCandidate = this.errorRecovery(current_token);
+                var candidate: RepairCandidate = this.errorRecovery(current_token);
                 if (this.monitor != null && this.monitor.isCancelled()) {
                     return;
                 }
@@ -656,9 +659,9 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return (act == this.ACCEPT_ACTION ? DiagnoseParser.MAX_DISTANCE : buffer_index);
     }
-    public errorRecovery(error_token: number): DiagnoseParser.RepairCandidate {
+    public errorRecovery(error_token: number): RepairCandidate {
         var prevtok: number = this.tokStream.getPrevious(error_token);
-        var candidate: DiagnoseParser.RepairCandidate = this.primaryPhase(error_token);
+        var candidate: RepairCandidate = this.primaryPhase(error_token);
         if (candidate.symbol != 0) {
             return candidate;
         }
@@ -674,7 +677,7 @@ export class DiagnoseParser implements ParseErrorCodes {
                 }
             }
         }
-        var scope_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo();
+        var scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo();
         scope_repair.bufferPosition = DiagnoseParser.BUFF_UBOUND;
         for (var top: number = this.stateStackTop; top >= 0; top--) {
             this.scopeTrial(scope_repair, this.stateStack, top);
@@ -697,7 +700,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         candidate.location = this.buffer[DiagnoseParser.BUFF_UBOUND];
         return candidate;
     }
-    public primaryPhase(error_token: number): DiagnoseParser.RepairCandidate {
+    public primaryPhase(error_token: number): RepairCandidate {
         var i: number = (this.nextStackTop >= 0 ? 3 : 2);
         this.buffer[i] = error_token;
         for (var j: number = i; j > 0; j--) {
@@ -706,26 +709,26 @@ export class DiagnoseParser implements ParseErrorCodes {
         for (var k: number = i + 1; k < DiagnoseParser.BUFF_SIZE; k++) {
             this.buffer[k] = this.tokStream.getNext(this.buffer[k - 1]);
         }
-        var repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo();
+        var repair: PrimaryRepairInfo = new PrimaryRepairInfo();
         if (this.nextStackTop >= 0) {
             repair.bufferPosition = 3;
             this.checkPrimaryDistance(repair, this.nextStack, this.nextStackTop);
         }
-        var base_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo(repair);
+        var base_repair: PrimaryRepairInfo = new PrimaryRepairInfo(repair);
         base_repair.bufferPosition = 2;
         this.checkPrimaryDistance(base_repair, this.stateStack, this.stateStackTop);
         if (base_repair.distance > repair.distance || base_repair.misspellIndex > repair.misspellIndex) {
             repair = base_repair;
         }
         if (this.prevStackTop >= 0) {
-            var prev_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo(repair);
+            var prev_repair: PrimaryRepairInfo = new PrimaryRepairInfo(repair);
             prev_repair.bufferPosition = 1;
             this.checkPrimaryDistance(prev_repair, this.prevStack, this.prevStackTop);
             if (prev_repair.distance > repair.distance || prev_repair.misspellIndex > repair.misspellIndex) {
                 repair = prev_repair;
             }
         }
-        var candidate: DiagnoseParser.RepairCandidate = new DiagnoseParser.RepairCandidate();
+        var candidate: RepairCandidate = new RepairCandidate();
         if (this.nextStackTop >= 0) {
             if (this.secondaryCheck(this.nextStack, this.nextStackTop, 3, repair.distance)) {
                 return candidate;
@@ -764,15 +767,15 @@ export class DiagnoseParser implements ParseErrorCodes {
         for (var k: number = this.asi(state); this.asr(k) != 0; k++) {
             var i: number = this.terminalIndex(this.asr(k));
             if (str.length == this.name(i).length) {
-                if (str.toLowerCase().equals(this.name(i).toLowerCase())) {
+                if (str.toLowerCase()===(this.name(i).toLowerCase())) {
                     return this.asr(k);
                 }
             }
         }
         return 0;
     }
-    public checkPrimaryDistance(repair: DiagnoseParser.PrimaryRepairInfo, stck: Int32Array, stack_top: number): void {
-        var scope_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo(repair);
+    public checkPrimaryDistance(repair: PrimaryRepairInfo, stck: Int32Array, stack_top: number): void {
+        var scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo(repair);
         this.scopeTrial(scope_repair, stck, stack_top);
         if (scope_repair.distance > repair.distance) {
             repair.copy(scope_repair);
@@ -883,7 +886,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return;
     }
-    public primaryDiagnosis(repair: DiagnoseParser.PrimaryRepairInfo): DiagnoseParser.RepairCandidate {
+    public primaryDiagnosis(repair: PrimaryRepairInfo): RepairCandidate {
         var prevtok: number = this.buffer[repair.bufferPosition - 1], current_token: number = this.buffer[repair.bufferPosition];
         switch (repair.code) {
             case ParseErrorCodes.INSERTION_CODE:
@@ -922,7 +925,7 @@ export class DiagnoseParser implements ParseErrorCodes {
             default:
                 this.emitError(repair.code, this.terminalIndex(this.ERROR_SYMBOL), current_token, current_token);
         }
-        var candidate: DiagnoseParser.RepairCandidate = new DiagnoseParser.RepairCandidate();
+        var candidate: RepairCandidate = new RepairCandidate();
         switch (repair.code) {
             case ParseErrorCodes.INSERTION_CODE:
             case ParseErrorCodes.BEFORE_CODE:
@@ -1079,7 +1082,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return (count * 10 / ((n < s1.length ? s1.length : n) + num_errors));
     }
-    public scopeTrial(repair: DiagnoseParser.PrimaryRepairInfo, stack: Int32Array, stack_top: number): void {
+    public scopeTrial(repair: PrimaryRepairInfo, stack: Int32Array, stack_top: number): void {
         if (this.stateSeen == null || this.stateSeen.length < this.stateStack.length) {
             this.stateSeen = new Int32Array(this.stateStack.length);
         }
@@ -1088,14 +1091,14 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         this.statePoolTop = 0;
         if (this.statePool == null || this.statePool.length < this.stateStack.length) {
-            this.statePool = new Array<DiagnoseParser.StateInfo>(this.stateStack.length);
+            this.statePool = new Array<StateInfo>(this.stateStack.length);
         }
         this.scopeTrialCheck(repair, stack, stack_top, 0);
         repair.code = ParseErrorCodes.SCOPE_CODE;
         repair.misspellIndex = 10;
         return;
     }
-    public scopeTrialCheck(repair: DiagnoseParser.PrimaryRepairInfo, stack: Int32Array, stack_top: number, indx: number): void {
+    public scopeTrialCheck(repair: PrimaryRepairInfo, stack: Int32Array, stack_top: number, indx: number): void {
         for (var i: number = this.stateSeen[stack_top]; i != DiagnoseParser.NIL; i = this.statePool[i].next) {
             if (this.statePool[i].state == stack[stack_top]) {
                 return;
@@ -1103,9 +1106,9 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         var old_state_pool_top: number = this.statePoolTop++;
         if (this.statePoolTop >= this.statePool.length) {
-            java.lang.System.arraycopy(this.statePool, 0, this.statePool = new Array<DiagnoseParser.StateInfo>(this.statePoolTop * 2), 0, this.statePoolTop);
+            java.lang.System.arraycopy(this.statePool, 0, this.statePool = new Array<StateInfo>(this.statePoolTop * 2), 0, this.statePoolTop);
         }
-        this.statePool[old_state_pool_top] = new DiagnoseParser.StateInfo(stack[stack_top], this.stateSeen[stack_top]);
+        this.statePool[old_state_pool_top] = new StateInfo(stack[stack_top], this.stateSeen[stack_top]);
         this.stateSeen[stack_top] = old_state_pool_top;
         var action: IntTuple = new IntTuple(1 << 3);
         for (var i: number = 0; i < this.SCOPE_SIZE; i++) {
@@ -1195,14 +1198,14 @@ export class DiagnoseParser implements ParseErrorCodes {
                 return true;
             }
         }
-        var scope_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo();
+        var scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo();
         scope_repair.bufferPosition = buffer_position + 1;
         scope_repair.distance = distance;
         this.scopeTrial(scope_repair, stack, stack_top);
         return ((scope_repair.distance - buffer_position) > DiagnoseParser.MIN_DISTANCE && scope_repair.distance > distance);
     }
-    public secondaryPhase(error_token: number): DiagnoseParser.RepairCandidate {
-        var repair: DiagnoseParser.SecondaryRepairInfo = new DiagnoseParser.SecondaryRepairInfo(), misplaced_repair: DiagnoseParser.SecondaryRepairInfo = new DiagnoseParser.SecondaryRepairInfo();
+    public secondaryPhase(error_token: number): RepairCandidate {
+        var repair: SecondaryRepairInfo = new SecondaryRepairInfo(), misplaced_repair: SecondaryRepairInfo = new SecondaryRepairInfo();
         var next_last_index: number = 0;
         if (this.nextStackTop >= 0) {
             var save_location: number;
@@ -1270,7 +1273,7 @@ export class DiagnoseParser implements ParseErrorCodes {
             last_index = next_last_index;
         }
         if (repair.code == ParseErrorCodes.SECONDARY_CODE || repair.code == ParseErrorCodes.DELETION_CODE) {
-            var scope_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo();
+            var scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo();
             for (scope_repair.bufferPosition = 2; scope_repair.bufferPosition <= repair.bufferPosition && repair.code != ParseErrorCodes.SCOPE_CODE; scope_repair.bufferPosition++) {
                 this.scopeTrial(scope_repair, this.stateStack, this.stateStackTop);
                 var j: number = (scope_repair.distance == DiagnoseParser.MAX_DISTANCE ? last_index : scope_repair.distance), k: number = scope_repair.bufferPosition - 1;
@@ -1283,7 +1286,7 @@ export class DiagnoseParser implements ParseErrorCodes {
                 }
             }
         }
-        var candidate: DiagnoseParser.RepairCandidate = new DiagnoseParser.RepairCandidate();
+        var candidate: RepairCandidate = new RepairCandidate();
         if (repair.code == 0) {
             return candidate;
         }
@@ -1307,7 +1310,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return candidate;
     }
-    public misplacementRecovery(repair: DiagnoseParser.SecondaryRepairInfo, stack: Int32Array, stack_top: number, last_index: number, stack_flag: boolean): void {
+    public misplacementRecovery(repair: SecondaryRepairInfo, stack: Int32Array, stack_top: number, last_index: number, stack_flag: boolean): void {
         var previous_loc: number = this.buffer[2], stack_deletions: number = 0;
         for (var top: number = stack_top - 1; top >= 0; top--) {
             if (this.locationStack[top] < previous_loc) {
@@ -1324,7 +1327,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return;
     }
-    public secondaryRecovery(repair: DiagnoseParser.SecondaryRepairInfo, stack: Int32Array, stack_top: number, last_index: number, stack_flag: boolean): void {
+    public secondaryRecovery(repair: SecondaryRepairInfo, stack: Int32Array, stack_top: number, last_index: number, stack_flag: boolean): void {
         var previous_loc: number = this.buffer[2], stack_deletions: number = 0;
         for (var top: number = stack_top; top >= 0 && repair.numDeletions >= stack_deletions; top--) {
             if (this.locationStack[top] < previous_loc) {
@@ -1365,7 +1368,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return;
     }
-    public secondaryDiagnosis(repair: DiagnoseParser.SecondaryRepairInfo): void {
+    public secondaryDiagnosis(repair: SecondaryRepairInfo): void {
         switch (repair.code) {
             case ParseErrorCodes.SCOPE_CODE:
                 if (repair.stackPosition < this.stateStackTop) {
@@ -1384,9 +1387,12 @@ export class DiagnoseParser implements ParseErrorCodes {
         }
         return;
     }
-    public emitError(msg_code: number, name_index: number, left_token: number, right_token: number, scope_name_index: number): void {
+
+ 
+
+    public emitError(msg_code: number, name_index: number, left_token: number, right_token: number, scope_name_index: number=0): void {
         var left_token_loc: number = (left_token > right_token ? right_token : left_token), right_token_loc: number = right_token;
-        var token_name: string = (name_index >= 0 && !this.name(name_index).equalsIgnoreCase("ERROR") ? "\"" + this.name(name_index) + "\"" : "");
+        var token_name: string = (name_index >= 0 && !(this.name(name_index).toUpperCase() === "ERROR") ? "\"" + this.name(name_index) + "\"" : "");
         if (msg_code == ParseErrorCodes.INVALID_CODE) {
             msg_code = token_name.length == 0 ? ParseErrorCodes.INVALID_CODE : ParseErrorCodes.INVALID_TOKEN_CODE;
         }
@@ -1408,10 +1414,7 @@ export class DiagnoseParser implements ParseErrorCodes {
         this.tokStream.reportError(msg_code, left_token, right_token, token_name);
         return;
     }
-    // @ts-ignore
-    public emitError(msgCode: number, nameIndex: number, leftToken: number, rightToken: number): void {
-        this.emitError(msgCode, nameIndex, leftToken, rightToken, 0);
-    }
+
     private lookahead(act: number, token: number): number {
         act = this.prs.lookAhead(act - this.LA_STATE_OFFSET, this.tokStream.getKind(token));
         return (act > this.LA_STATE_OFFSET ? this.lookahead(act, this.tokStream.getNext(token)) : act);

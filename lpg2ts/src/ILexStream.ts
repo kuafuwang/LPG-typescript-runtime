@@ -18,8 +18,13 @@ export interface ILexStream extends TokenStream {
     setMessageHandler(errMsg: IMessageHandler): void;
     getMessageHandler(): IMessageHandler;
     getLocation(left_loc: number, right_loc: number): Int32Array;
-    reportLexicalError(left: number, right: number): void;
-    reportLexicalError(errorCode: number, left_loc: number, right_loc: number, error_left_loc: number, error_right_loc: number, errorInfo: string[]): void;
+  
+    reportLexicalError(left_loc: number, right_loc: number, errorCode?: number, error_left_loc?: number, error_right_loc?: number, errorInfo?:  string[]): void;
     toString(startOffset: number, endOffset: number): string;
+    m77Ac341Feebeb7C0A7Ff8F9C6540531500693Bac: number;
 }
 ;
+;
+export function instanceOfILexStream(object: any): object is ILexStream {
+    return 'm77Ac341Feebeb7C0A7Ff8F9C6540531500693Bac' in object;
+}

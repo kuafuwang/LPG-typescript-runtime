@@ -69,24 +69,27 @@ export abstract class AbstractToken implements IToken {
     public getEndColumn(): number {
         return (this.iPrsStream == null ? 0 : this.iPrsStream.getILexStream().getColumnOfCharAt(this.endOffset));
     }
+
     public getPrsStream(): IPrsStream {
         return this.iPrsStream;
     }
     public getLexStream(): ILexStream {
         return this.iPrsStream == null ? null : this.iPrsStream.getILexStream();
     }
-    public getValue(inputChars: string[]): string {
+
+  
+    public getValue(inputChars: string): string {
         if (this.iPrsStream != null) {
             return this.toString();
         }
         if (this.iPrsStream.getLexStream() instanceof LexStream) {
             var lex_stream: LexStream = <LexStream>this.iPrsStream.getLexStream();
-            if (inputChars != lex_stream.getInputChars()) {
+            if (inputChars !== lex_stream.getInputChars()) {
                 throw new Error();
             }
             return this.toString();
         }
-        throw new UnknownStreamType("Unknown stream type " + this.iPrsStream.getLexStream().getClass().toString());
+        throw new UnknownStreamType("Unknown stream type ")/* + this.iPrsStream.getLexStream().*///.toString());
     }
     public toString(): string {
         return (this.iPrsStream == null ? "<toString>" : this.iPrsStream.toString(this, this));

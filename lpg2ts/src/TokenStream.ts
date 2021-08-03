@@ -18,8 +18,8 @@ export interface TokenStream {
     getStreamLength(): number;
     getFirstRealToken(i: number): number;
     getLastRealToken(i: number): number;
-    reportError(errorCode: number, leftToken: number, rightToken: number, errorInfo: string): void;
-    reportError(errorCode: number, leftToken: number, errorToken: number, rightToken: number, errorInfo: string): void;
-    reportError(errorCode: number, leftToken: number, rightToken: number, errorInfo: string[]): void;
-    reportError(errorCode: number, leftToken: number, errorToken: number, rightToken: number, errorInfo: string[]): void;
+    reportError(errorCode: number, leftToken: number, rightToken: number, errorInfo: string | string[], errorToken?: number): void;
+    //reportError2(errorCode: number, leftToken: number,  rightToken: number, errorInfo: string | string[]): void;
+    //reportError3(errorCode: number, leftToken: number, rightToken: number, errorInfo: string[]): void;
+    //reportError4(errorCode: number, leftToken: number, errorToken: number, rightToken: number, errorInfo: string[]): void;
 }

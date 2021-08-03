@@ -24,7 +24,7 @@ export interface IToken {
     getColumn(): number;
     getEndLine(): number;
     getEndColumn(): number;
-    getValue(inputChars: string[]): string;
+    getValue(inputChars: string): string;
     toString(): string;
 }
 ;

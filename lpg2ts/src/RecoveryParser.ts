@@ -1,20 +1,24 @@
-export class RecoveryParser extends DiagnoseParser implements ParseErrorCodes {
+import { DiagnoseParser, PrimaryRepairInfo } from "./DiagnoseParser";
+import { BacktrackingParser } from "./BacktrackingParser";
+import { IntSegmentedTuple } from "./IntSegmentedTuple";
+import { IntTuple } from "./IntTuple";
+import { IPrsStream } from "./IPrsStream";
+import { ParseTable } from "./ParseTable";
+import { Monitor } from "./Monitor";
+import { ParseErrorCodes } from "./ParseErrorCodes";
+import { ConfigurationStack } from "./ConfigurationStack";
+import { ConfigurationElement } from "./ConfigurationElement";
+import { BadParseException } from "./BadParseException";
+
+export class RecoveryParser extends DiagnoseParser   {
     private parser: BacktrackingParser;
     private action: IntSegmentedTuple;
     private tokens: IntTuple;
     private actionStack: Int32Array;
-    private scope_repair: DiagnoseParser.PrimaryRepairInfo = new DiagnoseParser.PrimaryRepairInfo();
-    constructor(parser: BacktrackingParser, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable) {
-        this.this(parser, null, action, tokens, tokStream, prs);
-    }
-    constructor(parser: BacktrackingParser, monitor: Monitor, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable) {
-        this.this(parser, monitor, action, tokens, tokStream, prs, 0, 0);
-    }
-    constructor(parser: BacktrackingParser, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable, maxErrors: number, maxTime: number) {
-        this.this(parser, null, action, tokens, tokStream, prs, maxErrors, maxTime);
-    }
-    constructor(parser: BacktrackingParser, monitor: Monitor, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable, maxErrors: number, maxTime: number) {
-        super(monitor, tokStream, prs, maxErrors, maxTime);
+    private scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo();
+ 
+    constructor(parser: BacktrackingParser, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor,) {
+        super(tokStream, prs, maxErrors, maxTime, monitor);
         this.parser = parser;
         this.action = action;
         this.tokens = tokens;
@@ -30,7 +34,7 @@ export class RecoveryParser extends DiagnoseParser implements ParseErrorCodes {
         return;
     }
     public reportError(scope_index: number, error_token: number): void {
-        var text: string = "\"";
+        let text: string = "\"";
         for (var i: number = this.scopeSuffix(scope_index); this.scopeRhs(i) != 0; i++) {
             if (!this.isNullable(this.scopeRhs(i))) {
                 var symbol_index: number = (this.scopeRhs(i) > this.NT_OFFSET ? this.nonterminalIndex(this.scopeRhs(i) - this.NT_OFFSET) : this.terminalIndex(this.scopeRhs(i)));
@@ -43,7 +47,7 @@ export class RecoveryParser extends DiagnoseParser implements ParseErrorCodes {
             }
         }
         text += "\"";
-        this.tokStream.reportError(ParseErrorCodes.SCOPE_CODE, error_token, error_token, [text]);
+        this.tokStream.reportError(ParseErrorCodes.SCOPE_CODE, error_token, error_token,[text]);
         return;
     }
     public recover(marker_token: number, error_token: number): number {
@@ -59,7 +63,7 @@ export class RecoveryParser extends DiagnoseParser implements ParseErrorCodes {
         do {
             this.action.reset(old_action_size);
             if (!this.fixError(restart_token, error_token)) {
-                throw new Error(error_token);
+                throw new BadParseException(error_token);
             }
             if (this.monitor != null && this.monitor.isCancelled()) {
                 break;

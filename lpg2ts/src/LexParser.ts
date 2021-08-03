@@ -105,10 +105,8 @@ export class LexParser {
             this.action = new IntTuple(1 << 10);
         }
     }
-    public parseCharacters(start_offset: number, end_offset: number): void {
-        this.parseCharacters(null, start_offset, end_offset);
-    }
-    public parseCharacters(monitor: Monitor, start_offset: number, end_offset: number): void {
+    
+    public parseCharacters(start_offset: number, end_offset: number, monitor: Monitor = null): void {
         this.resetTokenStream(start_offset);
         while (this.curtok <= end_offset) {
             if (monitor != null && monitor.isCancelled()) {
@@ -118,7 +116,7 @@ export class LexParser {
         }
     }
  
-    public parseCharacters(monitor: Monitor=null): void {
+    public parseCharactersWhitMonitor(monitor: Monitor=null): void {
         this.taking_actions = true;
         this.resetTokenStream(0);
         this.lastToken = this.tokStream.getPrevious(this.curtok);
@@ -139,10 +137,13 @@ export class LexParser {
         act = this.prs.tAction(act, sym);
         return (act > this.LA_STATE_OFFSET ? this.lookahead(act, this.tokStream.peek()) : act);
     }
-    public scanNextToken(): boolean {
+    public scanNextToken2(): boolean {
         return this.lexNextToken(this.tokStream.getStreamLength());
     }
-    public scanNextToken(start_offset: number): boolean {
+    public scanNextToken(start_offset: number = -0xffff): boolean {
+        if (-0xffff === start_offset) {
+            return this.scanNextToken2();
+        }
         this.resetTokenStream(start_offset);
         return this.lexNextToken(this.tokStream.getStreamLength());
     }

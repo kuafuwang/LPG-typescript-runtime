@@ -1,5 +1,5 @@
 export class UnimplementedTerminalsException extends Error {
-    private static serialVersionUID: number = 1;
+    
     public symbols: java.util.ArrayList<any>;
     constructor(symbols: java.util.ArrayList<any>) {
         super();

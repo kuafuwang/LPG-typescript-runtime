@@ -10,6 +10,8 @@ import { ErrorToken } from "./ErrorToken";
 import { PrsStream } from "./PrsStream";
 import { ConfigurationStack } from "./ConfigurationStack";
 import { ConfigurationElement } from "./ConfigurationElement";
+import { IPrsStream, instanceOfIPrsStream } from "./IPrsStream";
+import { BadParseException } from "./BadParseException";
 
 export class BacktrackingParser extends Stacks {
     private monitor: Monitor;
@@ -35,8 +37,8 @@ export class BacktrackingParser extends Stacks {
         if (marker_kind == 0) {
             return 0;
         } else {
-            if (this.markerTokenIndex == 0) {
-                if (!(this.tokStream instanceof IPrsStream )) {
+            if (this.markerTokenIndex === 0) {
+                if (!(instanceOfIPrsStream(this.tokStream))) {
                     throw new Error();
                 }
                 this.markerTokenIndex = (<IPrsStream>this.tokStream).makeErrorToken(this.tokStream.getPrevious(start_token_index), this.tokStream.getPrevious(start_token_index), this.tokStream.getPrevious(start_token_index), marker_kind);
@@ -52,37 +54,45 @@ export class BacktrackingParser extends Stacks {
     public getCurrentRule(): number {
         return this.currentAction;
     }
-    public getFirstToken(): number {
+    public getFirstToken2(): number {
         return this.tokStream.getFirstRealToken(this.getToken(1));
     }
-    public getFirstToken(i: number): number {
+    public getFirstToken(i: number = -0xffff): number {
+        if (-0xffff === i) {
+            return this.getFirstToken2();
+        }
         return this.tokStream.getFirstRealToken(this.getToken(i));
     }
-    public getLastToken(): number {
+    public getLastToken2(): number {
         return this.tokStream.getLastRealToken(this.lastToken);
     }
-    public getLastToken(i: number): number {
+    public getLastToken(i: number = -0xffff): number {
+        if (-0xffff === i) {
+            return this.getLastToken2();
+        }
         var l: number = (i >= this.prs.rhs(this.currentAction) ? this.lastToken : this.tokens.get(this.locationStack[this.stateStackTop + i] - 1));
         return this.tokStream.getLastRealToken(l);
     }
-    public setMonitor(monitor: IMonitor): void {
+    public setMonitor(monitor: Monitor): void {
         this.monitor = monitor;
     }
-    public reset(): void {
+    public reset1(): void {
         this.action.reset();
         this.skipTokens = false;
         this.markerTokenIndex = 0;
     }
-    public reset(monitor: IMonitor1, tokStream: ITokenStream): void {
+    public reset2(tokStream: TokenStream, monitor: Monitor): void {
         this.monitor = monitor;
-        this.tokStream = <ITokenStream1>tokStream;
-        this.reset();
+        this.tokStream = <TokenStream>tokStream;
+        this.reset1();
     }
-    public reset(tokStream: ITokenStream2): void {
-        this.reset(null, tokStream);
-    }
-    public reset(monitor: IMonitor2, tokStream: ITokenStream3, prs: IParseTable, ra: IRuleAction): void {
-        this.reset(monitor, tokStream);
+   
+    public reset(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor): void {
+        if (!tokStream) {
+            this.reset1();
+            return;
+        }
+        this.reset2(tokStream, monitor);
         this.prs = prs;
         this.ra = ra;
         this.START_STATE = prs.getStartState();
@@ -100,43 +110,48 @@ export class BacktrackingParser extends Stacks {
             throw new Error();
         }
     }
-    public reset(tokStream: ITokenStream4, prs: IParseTable1, ra: IRuleAction1): void {
-        this.reset(null, tokStream, prs, ra);
+    public reset3(tokStream: TokenStream, prs: ParseTable, ra: RuleAction): void {
+        this.reset(tokStream, prs, ra, null);
     }
-    constructor() { }
-    constructor(tokStream: ITokenStream5, prs: IParseTable2, ra: IRuleAction2) {
-        this.reset(null, tokStream, prs, ra);
+  
+    constructor(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor) {
+        super();
+        this.reset(tokStream, prs, ra, monitor);
     }
-    constructor(monitor: IMonitor3, tokStream: ITokenStream6, prs: IParseTable3, ra: IRuleAction3) {
-        this.reset(monitor, tokStream, prs, ra);
-    }
+
     public reallocateOtherStacks(start_token_index: number): void {
         if (this.actionStack == null) {
-            this.actionStack = new Int32Array(super.stateStack.length);
-            super.locationStack = new Int32Array(super.stateStack.length);
-            super.parseStack = new Array<any>(super.stateStack.length);
+            this.actionStack = new Int32Array(this.stateStack.length);
+            this.locationStack = new Int32Array(this.stateStack.length);
+            this.parseStack = new Array<any>(this.stateStack.length);
             this.actionStack[0] = 0;
             this.locationStack[0] = start_token_index;
         } else {
-            if (this.actionStack.length < super.stateStack.length) {
+            if (this.actionStack.length < this.stateStack.length) {
                 var old_length: number = this.actionStack.length;
-                java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(super.stateStack.length), 0, old_length);
-                java.lang.System.arraycopy(super.locationStack, 0, super.locationStack = new Int32Array(super.stateStack.length), 0, old_length);
-                java.lang.System.arraycopy(super.parseStack, 0, super.parseStack = new Array<any>(super.stateStack.length), 0, old_length);
+                java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_length);
+                java.lang.System.arraycopy(this.locationStack, 0, this.locationStack = new Int32Array(this.stateStack.length), 0, old_length);
+                java.lang.System.arraycopy(this.parseStack, 0, this.parseStack = new Array<any>(this.stateStack.length), 0, old_length);
             }
         }
         return;
     }
-    public fuzzyParse(): any {
-        return this.fuzzyParseEntry(0, java.lang.Integer.MAX_VALUE);
-    }
-    public fuzzyParse(max_error_count: number): any {
+    //public fuzzyParse(): any {
+    //    return this.fuzzyParseEntry(0, java.lang.Integer.MAX_VALUE);
+    //}
+    public fuzzyParse(max_error_count?: number): any {
+        if (!max_error_count) {
+            max_error_count = Number.MAX_VALUE;
+        }
         return this.fuzzyParseEntry(0, max_error_count);
     }
-    public fuzzyParseEntry(marker_kind: number): any {
-        return this.fuzzyParseEntry(marker_kind, java.lang.Integer.MAX_VALUE);
-    }
-    public fuzzyParseEntry(marker_kind: number, max_error_count: number): any {
+    //public fuzzyParseEntry(marker_kind: number): any {
+    //    return this.fuzzyParseEntry(marker_kind, java.lang.Integer.MAX_VALUE);
+    //}
+    public fuzzyParseEntry(marker_kind: number, max_error_count?: number): any {
+        if (!max_error_count) {
+            max_error_count = Number.MAX_VALUE;
+        }
         this.action.reset();
         this.tokStream.reset();
         this.reallocateStateStack();
@@ -145,12 +160,12 @@ export class BacktrackingParser extends Stacks {
         var first_token: number = this.tokStream.peek(), start_token: number = first_token, marker_token: number = this.getMarkerToken(marker_kind, first_token);
         this.tokens = new IntTuple(this.tokStream.getStreamLength());
         this.tokens.add(this.tokStream.getPrevious(first_token));
-        var error_token: number = this.backtrackParse(this.action, marker_token);
+        var error_token: number = this.backtrackParseInternal(this.action, marker_token);
         if (error_token != 0) {
-            if (!(this.tokStream instanceof IPrsStream)) {
+            if (!(instanceOfIPrsStream(this.tokStream))) {
                 throw new Error();
             }
-            var rp: RecoveryParser = new RecoveryParser(this, this.monitor, this.action, this.tokens, <IPrsStream>this.tokStream, this.prs, max_error_count, 0);
+            var rp: RecoveryParser = new RecoveryParser(this, this.action, this.tokens, <IPrsStream>this.tokStream, this.prs, max_error_count, 0, this.monitor);
             start_token = rp.recover(marker_token, error_token);
         }
         if (marker_token != 0 && start_token == first_token) {
@@ -163,33 +178,29 @@ export class BacktrackingParser extends Stacks {
         this.tokens.add(t);
         return this.parseActions(marker_kind);
     }
-    public parse(): any {
-        return this.parseEntry(0, 0);
-    }
-    public parse(max_error_count: number): any {
+   
+    public parse(max_error_count: number = 0): any {
         return this.parseEntry(0, max_error_count);
     }
-    public parseEntry(marker_kind: number): any {
-        return this.parseEntry(marker_kind, 0);
-    }
-    public parseEntry(marker_kind: number, max_error_count: number): any {
+   
+    public parseEntry(marker_kind: number, max_error_count: number = 0): any {
         this.action.reset();
         this.tokStream.reset();
         this.reallocateStateStack();
         this.stateStackTop = 0;
         this.stateStack[0] = this.START_STATE;
         this.skipTokens = max_error_count < 0;
-        if (max_error_count > 0 && this.tokStream instanceof IPrsStream) {
+        if (max_error_count > 0 &&  instanceOfIPrsStream(this.tokStream)  ) {
             max_error_count = 0;
         }
         this.tokens = new IntTuple(this.tokStream.getStreamLength());
         this.tokens.add(this.tokStream.getPrevious(this.tokStream.peek()));
         var start_token_index: number = this.tokStream.peek(), repair_token: number = this.getMarkerToken(marker_kind, start_token_index), start_action_index: number = this.action.size(), temp_stack: Int32Array = new Int32Array(this.stateStackTop + 1);
         java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
-        var initial_error_token: number = this.backtrackParse(this.action, repair_token);
-        for (var error_token: number = initial_error_token, count: number = 0; error_token != 0; error_token = this.backtrackParse(this.action, repair_token), count++) {
+        var initial_error_token: number = this.backtrackParseInternal(this.action, repair_token);
+        for (var error_token: number = initial_error_token, count: number = 0; error_token != 0; error_token = this.backtrackParseInternal(this.action, repair_token), count++) {
             if (count == max_error_count) {
-                throw new Error(initial_error_token);
+                throw new BadParseException(initial_error_token);
             }
             this.action.reset(start_action_index);
             this.tokStream.reset(start_token_index);
@@ -205,7 +216,7 @@ export class BacktrackingParser extends Stacks {
                 }
             }
             if (this.stateStackTop < 0) {
-                throw new Error(initial_error_token);
+                throw new BadParseException(initial_error_token);
             }
             temp_stack = new Int32Array(this.stateStackTop + 1);
             java.lang.System.arraycopy(this.stateStack, 0, temp_stack, 0, temp_stack.length);
@@ -250,7 +261,7 @@ export class BacktrackingParser extends Stacks {
             } else {
                 if (this.tokStream.getKind(curtok) > this.NT_OFFSET) {
                     var badtok: ErrorToken = <ErrorToken>(<PrsStream>this.tokStream).getIToken(curtok);
-                    throw new Error(badtok.getErrorToken().getTokenIndex());
+                    throw new BadParseException(badtok.getErrorToken().getTokenIndex());
                 }
                 this.lastToken = curtok;
                 curtok = this.tokens.get(++ti);
@@ -272,11 +283,16 @@ export class BacktrackingParser extends Stacks {
     public backtrackParse(stack: Int32Array, stack_top: number, action: IntSegmentedTuple, initial_token: number): number {
         this.stateStackTop = stack_top;
         java.lang.System.arraycopy(stack, 0, this.stateStack, 0, this.stateStackTop + 1);
-        return this.backtrackParse(action, initial_token);
+        return this.backtrackParseInternal(action, initial_token);
     }
-    private backtrackParse(action: IntSegmentedTuple, initial_token: number): number {
+    private backtrackParseInternal(action: IntSegmentedTuple, initial_token: number): number {
         var configuration_stack: ConfigurationStack = new ConfigurationStack(this.prs);
-        var error_token: number = 0, maxStackTop: number = this.stateStackTop, start_token: number = this.tokStream.peek(), curtok: number = (initial_token > 0 ? initial_token : this.tokStream.getToken()), current_kind: number = this.tokStream.getKind(curtok), act: number = this.tAction(this.stateStack[this.stateStackTop], current_kind);
+        var error_token: number = 0,
+            maxStackTop: number = this.stateStackTop,
+            start_token: number = this.tokStream.peek(),
+            curtok: number = (initial_token > 0 ? initial_token : this.tokStream.getToken()),
+            current_kind: number = this.tokStream.getKind(curtok),
+            act: number = this.tAction(this.stateStack[this.stateStackTop], current_kind);
         for (; ;) {
             if (this.monitor != null && this.monitor.isCancelled()) {
                 return 0;

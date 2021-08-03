@@ -1,8 +1,8 @@
 export class UnknownStreamType extends Error {
-    private static serialVersionUID: number = 1;
+    
     private str: string;
    
-    constructor(str: string = null) {
+    constructor(str?: string) {
         super();
         if (!str) {
             this.str = "UnknownStreamType";

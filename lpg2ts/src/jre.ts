@@ -434,7 +434,7 @@ module java {
             isEmpty(): boolean;
             size(): number;
             contains(o: E): boolean;
-            toArray<E>(a: Array<E>): E[];
+            toArray<E1>(a: Array<E1>): E[];
             iterator(): Iterator<E>;
             containsAll(c: Collection<any>): boolean;
             addAll(c: Collection<any>): boolean;
@@ -538,7 +538,7 @@ module java {
                 return this.size() == 0;
             }
 
-            toArray<E>(a: Array<E>): E[] {
+            toArray<E1>(a: Array<E1>): E[] {
                 return <E[]><any>Object.keys(this.content).map(key => this.content[key]);
             }
 
@@ -559,7 +559,7 @@ module java {
 
 
         export class AbstractList<E> implements List<E> {
-            private content: E[] = [];
+            public   content: E[] = [];
 
             addAll(index: any, vals?: any): boolean {
                 var tempArray = vals.toArray(null);
@@ -587,8 +587,9 @@ module java {
                 return true;
             }
 
-            toArray(a: Array<E>): E[] {
-                return this.content;
+            toArray<E1>(a: Array<E1>): E[] {
+               
+                return this.content;;
             }
 
             size(): number {

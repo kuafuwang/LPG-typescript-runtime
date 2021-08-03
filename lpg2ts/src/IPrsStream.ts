@@ -44,9 +44,9 @@ export interface IPrsStream extends TokenStream {
     getEndLineNumberOfTokenAt(i: number): number;
     getColumnOfTokenAt(i: number): number;
     getEndColumnOfTokenAt(i: number): number;
-    getInputChars(): string[];
+    getInputChars(): string;
     getInputBytes(): Int8Array;
-    toString(first_token: number, last_token: number): string;
+    toStringFromIndex(first_token: number, last_token: number): string;
     toString(t1: IToken, t2: IToken): string;
     getTokenIndexAtCharacter(offset: number): number;
     getTokenAtCharacter(offset: number): IToken;
@@ -54,5 +54,9 @@ export interface IPrsStream extends TokenStream {
     dumpTokens(): void;
     dumpToken(i: number): void;
     makeErrorToken(first: number, last: number, error: number, kind: number): number;
+     m3C89586D99F2567D21410F29B1B2606574892Aa7 : number;
 }
 ;
+export  function instanceOfIPrsStream(object: any): object is IPrsStream {
+    return 'm3C89586D99F2567D21410F29B1B2606574892Aa7' in object;
+}
