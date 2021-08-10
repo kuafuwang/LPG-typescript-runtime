@@ -1,16 +1,15 @@
 import { AbstractToken } from "./AbstractToken";
-import { IPrsStream } from "./IPrsStream";
-import { IToken } from "./IToken";
+import { IPrsStream, IToken } from "./Protocol";
 
-; export class Adjunct extends AbstractToken {
+export class Adjunct extends AbstractToken {
 
-    constructor(prsStream: IPrsStream = null, startOffset: number, endOffset: number, kind: number) {
-        super(prsStream, startOffset, endOffset, kind);
+    constructor(startOffset: number, endOffset: number, kind: number, prsStream?: IPrsStream ) {
+        super(startOffset, endOffset, kind, prsStream);
     }
     public getFollowingAdjuncts(): IToken[] {
-        return null;
+        return [];
     }
     public getPrecedingAdjuncts(): IToken[] {
-        return null;
+        return [];
     }
 };

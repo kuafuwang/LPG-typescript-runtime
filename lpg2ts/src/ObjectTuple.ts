@@ -1,4 +1,4 @@
-import { java as Java } from "./jre";
+import { Lpg as Lpg } from "./Utils";
 
 export class ObjectTuple {
     public array: any[];
@@ -17,18 +17,19 @@ export class ObjectTuple {
         this.array[i] = element;
     }
     public nextIndex(): number {
-        var i: number = this.top++;
+        let i: number = this.top++;
         if (i >= this.array.length) {
-            Java.lang.System.arraycopy(this.array, 0, this.array = new Array<any>(i * 2), 0, i);
+            Lpg.Lang.System.arraycopy(this.array, 0, this.array = new Array<any>(i * 2), 0, i);
         }
         return i;
     }
     public add(element: any): void {
-        var i: number = this.nextIndex();
+        let i: number = this.nextIndex();
         this.array[i] = element;
     }
    
-    constructor(estimate: number=10) {
+    constructor(estimate: number = 10) {
+        this.top = 0;
         this.array = new Array<any>(estimate);
     }
 }

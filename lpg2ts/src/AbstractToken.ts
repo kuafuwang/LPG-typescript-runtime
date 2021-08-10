@@ -1,8 +1,7 @@
-import { IToken } from "./IToken";
-import { IPrsStream } from "./IPrsStream";
-import { ILexStream } from "./ILexStream";
+
 import { LexStream } from "./LexStream";
 import { UnknownStreamType } from "./UnknownStreamType";
+import { IToken, IPrsStream, ILexStream } from "./Protocol";
 
 
 export abstract class AbstractToken implements IToken {
@@ -10,17 +9,17 @@ export abstract class AbstractToken implements IToken {
     private startOffset: number = 0;
     private endOffset: number = 0;
     private tokenIndex: number = 0;
-    private adjunctIndex: number;
-    private iPrsStream: IPrsStream;
+    private adjunctIndex: number=0;
+    private iPrsStream?: IPrsStream;
 
-    constructor(iPrsStream: IPrsStream, startOffset: number, endOffset: number, kind: number) {
+    constructor(startOffset: number, endOffset: number, kind: number, iPrsStream?: IPrsStream) {
         this.iPrsStream = iPrsStream;
         this.startOffset = startOffset;
         this.endOffset = endOffset;
         this.kind = kind;
     }
-    abstract  getPrecedingAdjuncts(): IToken[] ;
-    abstract getFollowingAdjuncts(): IToken[] ;
+    abstract getPrecedingAdjuncts(): IToken[] | undefined;
+    abstract getFollowingAdjuncts(): IToken[] | undefined;
     public getKind(): number {
         return this.kind;
     }
@@ -51,39 +50,49 @@ export abstract class AbstractToken implements IToken {
     public getAdjunctIndex(): number {
         return this.adjunctIndex;
     }
-    public getIPrsStream(): IPrsStream {
+    public getIPrsStream(): IPrsStream | undefined{
         return this.iPrsStream;
     }
-    public getILexStream(): ILexStream {
-        return this.iPrsStream == null ? null : this.iPrsStream.getILexStream();
+    public getILexStream(): ILexStream | undefined {
+        return this.iPrsStream?.getILexStream();
     }
     public getLine(): number {
-        return (this.iPrsStream == null ? 0 : this.iPrsStream.getILexStream().getLineNumberOfCharAt(this.startOffset));
+        let ret = (this.iPrsStream == undefined ? 0 : this.iPrsStream.getILexStream()?.getLineNumberOfCharAt(this.startOffset));
+        if (ret) return ret;
+        return 0;
     }
     public getColumn(): number {
-        return (this.iPrsStream == null ? 0 : this.iPrsStream.getILexStream().getColumnOfCharAt(this.startOffset));
+        let ret = (this.iPrsStream == undefined ? 0 : this.iPrsStream.getILexStream()?.getColumnOfCharAt(this.startOffset));
+        if (ret) return ret;
+        return 0;
     }
     public getEndLine(): number {
-        return (this.iPrsStream == null ? 0 : this.iPrsStream.getILexStream().getLineNumberOfCharAt(this.endOffset));
+       
+        let ret = (this.iPrsStream == undefined ? 0 : this.iPrsStream.getILexStream()?.getLineNumberOfCharAt(this.endOffset));
+        if (ret) return ret;
+        return 0;
     }
     public getEndColumn(): number {
-        return (this.iPrsStream == null ? 0 : this.iPrsStream.getILexStream().getColumnOfCharAt(this.endOffset));
+        let ret = (this.iPrsStream == undefined ? 0 : this.iPrsStream.getILexStream()?.getColumnOfCharAt(this.endOffset));
+        if (ret) return ret;
+        return 0;
     }
 
-    public getPrsStream(): IPrsStream {
+    public getPrsStream(): IPrsStream | undefined {
         return this.iPrsStream;
     }
-    public getLexStream(): ILexStream {
-        return this.iPrsStream == null ? null : this.iPrsStream.getILexStream();
+    public getLexStream(): ILexStream | undefined{
+        return this.iPrsStream?.getILexStream();
     }
 
   
     public getValue(inputChars: string): string {
-        if (this.iPrsStream != null) {
+        if (this.iPrsStream == undefined) {
             return this.toString();
         }
-        if (this.iPrsStream.getLexStream() instanceof LexStream) {
-            var lex_stream: LexStream = <LexStream>this.iPrsStream.getLexStream();
+        let lex = this.iPrsStream.getLexStream();
+        if (lex instanceof LexStream) {
+            let lex_stream: LexStream = <LexStream>this.iPrsStream.getLexStream();
             if (inputChars !== lex_stream.getInputChars()) {
                 throw new Error();
             }
@@ -92,6 +101,6 @@ export abstract class AbstractToken implements IToken {
         throw new UnknownStreamType("Unknown stream type ")/* + this.iPrsStream.getLexStream().*///.toString());
     }
     public toString(): string {
-        return (this.iPrsStream == null ? "<toString>" : this.iPrsStream.toString(this, this));
+        return (this.iPrsStream == undefined ? "<toString>" : this.iPrsStream.toString(this, this));
     }
 };

@@ -1,16 +1,16 @@
-import { java as Java } from "./jre";
+import { Lpg as Lpg } from "./Utils";
 
 export class IntSegmentedTuple {
-    private top: number;
-    private _size: number;
+    private top: number=0;
+    private _size: number=0;
     private log_blksize: number = 3;
     private base_size: number = 4;
     private base: Array<Int32Array>;
     private allocateMoreSpace(): void {
-        var k: number = this._size >> this.log_blksize;
+        let k: number = this._size >> this.log_blksize;
         if (k == this.base_size) {
             this.base_size *= 2;
-            Java.lang.System.arraycopy(this.base, 0, this.base = new Array<Int32Array>(this.base_size), 0, k);
+            Lpg.Lang.System.arraycopy(this.base, 0, this.base = new Array<Int32Array>(this.base_size), 0, k);
         }
         this.base[k] = new Int32Array(1 << this.log_blksize);
         this._size += (1 << this.log_blksize);
@@ -42,20 +42,20 @@ export class IntSegmentedTuple {
         this.base[i >> this.log_blksize][i % (1 << this.log_blksize)] = element;
     }
     public NextIndex(): number {
-        var i: number = this.top++;
+        let i: number = this.top++;
         if (i == this._size) {
             this.allocateMoreSpace();
         }
         return i;
     }
     public add(element: number): void {
-        var i: number = this.NextIndex();
+        let i: number = this.NextIndex();
         this.base[i >> this.log_blksize][i % (1 << this.log_blksize)] = element;
     }
     public binarySearch(element: number): number {
-        var low: number = 0, high: number = this.top;
+        let low: number = 0, high: number = this.top;
         while (high > low) {
-            var mid: number = (high + low) / 2, mid_element: number = this.get(mid);
+            let mid: number = (high + low) / 2, mid_element: number = this.get(mid);
             if (element == mid_element) {
                 return mid;
             } else {

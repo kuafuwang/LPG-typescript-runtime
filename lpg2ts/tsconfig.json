@@ -3,10 +3,17 @@
     "module": "commonjs",
     "target": "es6",
     "lib": [ "es6" ],
-    "outDir": "out",
+
     "sourceMap": true,
     "experimentalDecorators": true,
-    "declaration": true
+    "declaration": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true
+    
   },
   "exclude": [
     "node_modules"

@@ -1,6 +1,7 @@
-import { IToken } from "./IToken";
+
 import { IAstVisitor } from "./IAstVisitor";
-import { java as Java } from "./jre";
+import { Lpg as Lpg } from "./Utils";
+import { IToken } from "./Protocol";
 
 export interface IAst {
     getNextAst(): IAst;
@@ -9,7 +10,7 @@ export interface IAst {
     getRightIToken(): IToken;
     getPrecedingAdjuncts(): IToken[];
     getFollowingAdjuncts(): IToken[];
-    getChildren(): Java.util.ArrayList<IAst>;
-    getAllChildren(): Java.util.ArrayList<IAst>;
+    getChildren(): Lpg.Util.ArrayList<IAst>;
+    getAllChildren(): Lpg.Util.ArrayList<IAst>;
     accept(v: IAstVisitor): void;
 };

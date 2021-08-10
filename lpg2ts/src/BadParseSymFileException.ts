@@ -5,7 +5,7 @@ export class BadParseSymFileException extends Error {
     constructor(str?: string) {
         super();
         
-        if (str) {
+        if (!str) {
             this.str = "BadParseSymFileException";
         } else {
             this.str = str;

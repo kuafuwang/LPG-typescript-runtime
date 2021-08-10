@@ -1,8 +1,8 @@
-import { java as Java } from "./jre";
+import { Lpg as Lpg } from "./Utils";
 
 export class IntTuple {
     private array: Int32Array;
-    private top: number;
+    private top: number=0;
 
     public reset(n: number = 0): void {
         this.top = n;
@@ -17,17 +17,19 @@ export class IntTuple {
         this.array[i] = element;
     }
     public nextIndex(): number {
-        var i: number = this.top++;
+        let i: number = this.top++;
         if (i >= this.array.length) {
-            Java.lang.System.arraycopy(this.array, 0, this.array = new Int32Array(i * 2), 0, i);
+            Lpg.Lang.System.arraycopy(this.array, 0, this.array = new Int32Array(i * 2), 0, i);
         }
         return i;
     }
     public add(element: number): void {
-        var i: number = this.nextIndex();
+        let i: number = this.nextIndex();
         this.array[i] = element;
     }
-
+    public capacity(): number {
+        return this.array.length;
+    }
     constructor(estimate: number = 10) {
         this.array = new Int32Array(estimate);
     }

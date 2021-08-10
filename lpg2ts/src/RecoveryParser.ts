@@ -2,20 +2,21 @@ import { DiagnoseParser, PrimaryRepairInfo } from "./DiagnoseParser";
 import { BacktrackingParser } from "./BacktrackingParser";
 import { IntSegmentedTuple } from "./IntSegmentedTuple";
 import { IntTuple } from "./IntTuple";
-import { IPrsStream } from "./IPrsStream";
+
 import { ParseTable } from "./ParseTable";
 import { Monitor } from "./Monitor";
 import { ParseErrorCodes } from "./ParseErrorCodes";
 import { ConfigurationStack } from "./ConfigurationStack";
 import { ConfigurationElement } from "./ConfigurationElement";
 import { BadParseException } from "./BadParseException";
-import { java as Java } from "./jre";
+import { Lpg as Lpg } from "./Utils";
+import { IPrsStream } from "./Protocol";
 
 export class RecoveryParser extends DiagnoseParser   {
     private parser: BacktrackingParser;
     private action: IntSegmentedTuple;
     private tokens: IntTuple;
-    private actionStack: Int32Array;
+    private actionStack: Int32Array = new Int32Array(0);
     private scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo();
  
     constructor(parser: BacktrackingParser, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor,) {
@@ -26,19 +27,19 @@ export class RecoveryParser extends DiagnoseParser   {
     }
     public reallocateStacks(): void {
         super.reallocateStacks();
-        if (this.actionStack == null) {
+        if (this.actionStack.length === 0) {
             this.actionStack = new Int32Array(this.stateStack.length);
         } else {
-            var old_stack_length: number = this.actionStack.length;
-            Java.lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_stack_length);
+            let old_stack_length: number = this.actionStack.length;
+            Lpg.Lang.System.arraycopy(this.actionStack, 0, this.actionStack = new Int32Array(this.stateStack.length), 0, old_stack_length);
         }
         return;
     }
     public reportError(scope_index: number, error_token: number): void {
         let text: string = "\"";
-        for (var i: number = this.scopeSuffix(scope_index); this.scopeRhs(i) != 0; i++) {
+        for (let i: number = this.scopeSuffix(scope_index); this.scopeRhs(i) != 0; i++) {
             if (!this.isNullable(this.scopeRhs(i))) {
-                var symbol_index: number = (this.scopeRhs(i) > this.NT_OFFSET ? this.nonterminalIndex(this.scopeRhs(i) - this.NT_OFFSET) : this.terminalIndex(this.scopeRhs(i)));
+                let symbol_index: number = (this.scopeRhs(i) > this.NT_OFFSET ? this.nonterminalIndex(this.scopeRhs(i) - this.NT_OFFSET) : this.terminalIndex(this.scopeRhs(i)));
                 if (this.name(symbol_index).length > 0) {
                     if (text.length > 1) {
                         text += " ";
@@ -52,13 +53,13 @@ export class RecoveryParser extends DiagnoseParser   {
         return;
     }
     public recover(marker_token: number, error_token: number): number {
-        if (this.stateStack == null) {
+        if (this.stateStack.length === 0) {
             this.reallocateStacks();
         }
         this.tokens.reset();
         this.tokStream.reset();
         this.tokens.add(this.tokStream.getPrevious(this.tokStream.peek()));
-        var restart_token: number = (marker_token != 0 ? marker_token : this.tokStream.getToken()), old_action_size: number = 0;
+        let restart_token: number = (marker_token != 0 ? marker_token : this.tokStream.getToken()), old_action_size: number = 0;
         this.stateStackTop = 0;
         this.stateStack[this.stateStackTop] = this.START_STATE;
         do {
@@ -78,10 +79,10 @@ export class RecoveryParser extends DiagnoseParser   {
         return restart_token;
     }
     private fixError(start_token: number, error_token: number): boolean {
-        var curtok: number = start_token, current_kind: number = this.tokStream.getKind(curtok), first_stream_token: number = this.tokStream.peek();
+        let curtok: number = start_token, current_kind: number = this.tokStream.getKind(curtok), first_stream_token: number = this.tokStream.peek();
         this.buffer[1] = error_token;
         this.buffer[0] = this.tokStream.getPrevious(this.buffer[1]);
-        for (var k: number = 2; k < DiagnoseParser.BUFF_SIZE; k++) {
+        for (let k: number = 2; k < DiagnoseParser.BUFF_SIZE; k++) {
             this.buffer[k] = this.tokStream.getNext(this.buffer[k - 1]);
         }
         this.scope_repair.distance = 0;
@@ -90,7 +91,7 @@ export class RecoveryParser extends DiagnoseParser   {
         this.main_configuration_stack = new ConfigurationStack(this.prs);
         this.locationStack[this.stateStackTop] = curtok;
         this.actionStack[this.stateStackTop] = this.action.size();
-        var act: number = this.tAction(this.stateStack[this.stateStackTop], current_kind);
+        let act: number = this.tAction(this.stateStack[this.stateStackTop], current_kind);
         for (; ;) {
             if (this.monitor != null && this.monitor.isCancelled()) {
                 return true;
@@ -106,7 +107,7 @@ export class RecoveryParser extends DiagnoseParser   {
                     this.stateStack[++this.stateStackTop] = act;
                 } catch ($ex$) {
                     if ($ex$ instanceof Error) {
-                        var e: Error = <Error>$ex$;
+                        let e: Error = <Error>$ex$;
                         this.reallocateStacks();
                         this.stateStack[this.stateStackTop] = act;
                     } else {
@@ -120,8 +121,8 @@ export class RecoveryParser extends DiagnoseParser   {
             } else {
                 if (act == this.ERROR_ACTION) {
                     if (curtok != error_token || this.main_configuration_stack.size() > 0) {
-                        var configuration: ConfigurationElement = this.main_configuration_stack.pop();
-                        if (configuration == null) {
+                        let configuration: ConfigurationElement = this.main_configuration_stack.pop();
+                        if (configuration == undefined) {
                             act = this.ERROR_ACTION;
                         } else {
                             this.stateStackTop = configuration.stack_top;
@@ -167,7 +168,7 @@ export class RecoveryParser extends DiagnoseParser   {
                             this.stateStack[++this.stateStackTop] = act;
                         } catch ($ex$) {
                             if ($ex$ instanceof Error) {
-                                var e: Error = <Error>$ex$;
+                                let e: Error = <Error>$ex$;
                                 this.reallocateStacks();
                                 this.stateStack[this.stateStackTop] = act;
                             } else {
@@ -178,7 +179,7 @@ export class RecoveryParser extends DiagnoseParser   {
                             this.scopeTrial(this.scope_repair, this.stateStack, this.stateStackTop);
                             if (this.scope_repair.distance >= DiagnoseParser.MIN_DISTANCE) {
                                 this.tokens.add(start_token);
-                                for (var token: number = first_stream_token; token != error_token; token = this.tokStream.getNext(token)) {
+                                for (let token: number = first_stream_token; token != error_token; token = this.tokStream.getNext(token)) {
                                     this.tokens.add(token);
                                 }
                                 this.acceptRecovery(error_token);
@@ -195,11 +196,11 @@ export class RecoveryParser extends DiagnoseParser   {
         return (act != this.ERROR_ACTION);
     }
     private acceptRecovery(error_token: number): void {
-        var recovery_action: IntTuple = new IntTuple();
-        for (var k: number = 0; k <= this.scopeStackTop; k++) {
-            var scope_index: number = this.scopeIndex[k], la: number = this.scopeLa(scope_index);
+        let recovery_action: IntTuple = new IntTuple();
+        for (let k: number = 0; k <= this.scopeStackTop; k++) {
+            let scope_index: number = this.scopeIndex[k], la: number = this.scopeLa(scope_index);
             recovery_action.reset();
-            var act: number = this.tAction(this.stateStack[this.stateStackTop], la);
+            let act: number = this.tAction(this.stateStack[this.stateStackTop], la);
             if (act > this.ACCEPT_ACTION && act < this.ERROR_ACTION) {
                 do {
                     recovery_action.add(this.baseAction(act++));
@@ -207,18 +208,18 @@ export class RecoveryParser extends DiagnoseParser   {
             } else {
                 recovery_action.add(act);
             }
-            var start_action_size: number = this.action.size();
-            var index: number;
+            let start_action_size: number = this.action.size();
+            let index: number;
             for (index = 0; index < recovery_action.size(); index++) {
                 this.action.reset(start_action_size);
                 this.tokStream.reset(error_token);
                 this.tempStackTop = this.stateStackTop - 1;
-                var max_pos: number = this.stateStackTop;
+                let max_pos: number = this.stateStackTop;
                 act = recovery_action.get(index);
                 while (act <= this.NUM_RULES) {
                     this.action.add(act);
                     do {
-                        var lhs_symbol: number = this.lhs(act);
+                        let lhs_symbol: number = this.lhs(act);
                         this.tempStackTop -= (this.rhs(act) - 1);
                         act = (this.tempStackTop > max_pos ? this.tempStack[this.tempStackTop] : this.stateStack[this.tempStackTop]);
                         act = this.ntAction(act, lhs_symbol);
@@ -232,14 +233,14 @@ export class RecoveryParser extends DiagnoseParser   {
                 }
                 if (act != this.ERROR_ACTION) {
                     this.nextStackTop = ++this.tempStackTop;
-                    for (var i: number = 0; i <= max_pos; i++) {
+                    for (let i: number = 0; i <= max_pos; i++) {
                         this.nextStack[i] = this.stateStack[i];
                     }
-                    for (var i: number = max_pos + 1; i <= this.tempStackTop; i++) {
+                    for (let i: number = max_pos + 1; i <= this.tempStackTop; i++) {
                         this.nextStack[i] = this.tempStack[i];
                     }
                     if (this.completeScope(this.action, this.scopeSuffix(scope_index))) {
-                        for (var i: number = this.scopeSuffix(this.scopeIndex[k]); this.scopeRhs(i) != 0; i++) {
+                        for (let i: number = this.scopeSuffix(this.scopeIndex[k]); this.scopeRhs(i) != 0; i++) {
                             this.tokens.add((<IPrsStream>this.tokStream).makeErrorToken(error_token, this.tokStream.getPrevious(error_token), error_token, this.scopeRhs(i)));
                         }
                         this.reportError(this.scopeIndex[k], this.tokStream.getPrevious(error_token));
@@ -248,18 +249,18 @@ export class RecoveryParser extends DiagnoseParser   {
                 }
             }
             this.stateStackTop = this.nextStackTop;
-            Java.lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
+            Lpg.Lang.System.arraycopy(this.nextStack, 0, this.stateStack, 0, this.stateStackTop + 1);
         }
         return;
     }
     private completeScope(action: IntSegmentedTuple, scope_rhs_index: number): boolean {
-        var kind: number = this.scopeRhs(scope_rhs_index);
+        let kind: number = this.scopeRhs(scope_rhs_index);
         if (kind == 0) {
             return true;
         }
-        var act: number = this.nextStack[this.nextStackTop];
+        let act: number = this.nextStack[this.nextStackTop];
         if (kind > this.NT_OFFSET) {
-            var lhs_symbol: number = kind - this.NT_OFFSET;
+            let lhs_symbol: number = kind - this.NT_OFFSET;
             if (this.baseCheck(act + lhs_symbol) != lhs_symbol) {
                 return false;
             }
@@ -291,8 +292,8 @@ export class RecoveryParser extends DiagnoseParser   {
                 return true;
             } else {
                 if (act > this.ACCEPT_ACTION && act < this.ERROR_ACTION) {
-                    var save_action_size: number = action.size();
-                    for (var i: number = act; this.baseAction(i) != 0; i++) {
+                    let save_action_size: number = action.size();
+                    for (let i: number = act; this.baseAction(i) != 0; i++) {
                         action.reset(save_action_size);
                         act = this.baseAction(i);
                         action.add(act);

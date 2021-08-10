@@ -1,5 +1,5 @@
 import { Token } from "./Token";
-import { IToken } from "./IToken";
+import { IToken } from "./Protocol";
 
 
 export class ErrorToken extends Token {
@@ -27,10 +27,10 @@ export class ErrorToken extends Token {
     public getErrorToken(): IToken {
         return this.errorToken;
     }
-    public getPrecedingAdjuncts(): IToken[] {
+    public getPrecedingAdjuncts(): IToken[] | undefined{
         return this.firstToken.getPrecedingAdjuncts();
     }
-    public getFollowingAdjuncts(): IToken[] {
+    public getFollowingAdjuncts(): IToken[] | undefined{
         return this.lastToken.getFollowingAdjuncts();
     }
 }

@@ -77,9 +77,6 @@
     <TypeScriptCompile Include="src\IAstVisitor.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\ILexStream.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\IMessageHandler.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -89,13 +86,7 @@
     <TypeScriptCompile Include="src\IntTuple.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\IPrsStream.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\IToken.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\jre.ts" />
+    <TypeScriptCompile Include="src\Utils.ts" />
     <TypeScriptCompile Include="src\LexParser.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -130,6 +121,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\ParseTable.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\Protocol.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\PrsStream.ts">

@@ -1,13 +1,13 @@
-import { java as Java } from "./jre";
+import { Lpg as Lpg } from "./Utils";
 
 export class UnimplementedTerminalsException extends Error {
     
-    public symbols: Java.util.ArrayList<any>;
-    constructor(symbols: Java.util.ArrayList<any>) {
+    public symbols: Lpg.Util.ArrayList<any>;
+    constructor(symbols: Lpg.Util.ArrayList<any>) {
         super();
         this.symbols = symbols;
     }
-    public getSymbols(): Java.util.ArrayList<any> {
+    public getSymbols(): Lpg.Util.ArrayList<any> {
         return this.symbols;
     }
 }
