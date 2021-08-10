@@ -1,8 +1,8 @@
 import { Stacks } from "./Stacks";
 import { Monitor } from "./Monitor";
-import { TokenStream } from "./TokenStream";
-import { ParseTable } from "./ParseTable";
-import { RuleAction } from "./RuleAction";
+import { TokenStream, EscapeStrictPropertyInitializationTokenStream } from "./TokenStream";
+import { ParseTable, EscapeStrictPropertyInitializationParseTable } from "./ParseTable";
+import { RuleAction, EscapeStrictPropertyInitializationRuleAction } from "./RuleAction";
 import { IntSegmentedTuple } from "./IntSegmentedTuple";
 import { IntTuple } from "./IntTuple";
 import { RecoveryParser } from "./RecoveryParser";
@@ -26,9 +26,9 @@ export class BacktrackingParser extends Stacks {
     private ERROR_ACTION: number=0;
     private lastToken: number=0;
     private currentAction: number=0;
-    private tokStream: TokenStream;
-    private prs: ParseTable;
-    private ra: RuleAction;
+    private tokStream: TokenStream = new EscapeStrictPropertyInitializationTokenStream();
+    private prs: ParseTable = new EscapeStrictPropertyInitializationParseTable();
+    private ra: RuleAction = new EscapeStrictPropertyInitializationRuleAction();
     private action: IntSegmentedTuple = new IntSegmentedTuple(10, 1024);
     private tokens: IntTuple = new IntTuple(0);
     private actionStack: Int32Array = new Int32Array(0);

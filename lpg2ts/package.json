@@ -1,11 +1,24 @@
 {
   "name": "lpg2ts",
-  "version": "0.0.0",
-  "description": "lpg2ts",
+  "version": "0.0.1",
+  "description": "lpg2ts , Typescript runtime for LPG2 ",
   "main": "src/index.js",
   "author": {
-    "name": ""
+    "name": "kuafuwang"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kuafuwang/LPG-typescript-runtime"
+  },
+  "keywords": [
+    "LPG2",
+    "typescript"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kuafuwang/LPG-typescript-runtimeissues"
+  },
+  "homepage": "https://github.com/kuafuwang/LPG-typescript-runtime#readme",
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean"

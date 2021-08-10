@@ -1,9 +1,9 @@
 import { Stacks } from "./Stacks";
 import { Monitor } from "./Monitor";
 import { IntTuple } from "./IntTuple";
-import { TokenStream } from "./TokenStream";
-import { ParseTable } from "./ParseTable";
-import { RuleAction } from "./RuleAction";
+import { TokenStream, EscapeStrictPropertyInitializationTokenStream } from "./TokenStream";
+import { ParseTable, EscapeStrictPropertyInitializationParseTable } from "./ParseTable";
+import { RuleAction, EscapeStrictPropertyInitializationRuleAction } from "./RuleAction";
 import { BadParseException } from "./BadParseException";
 
 export class DeterministicParser extends Stacks {
@@ -21,9 +21,9 @@ export class DeterministicParser extends Stacks {
     private lastToken: number=0;
     private currentAction: number=0;
     private action: IntTuple = new IntTuple(0);
-    private tokStream: TokenStream;
-    private prs: ParseTable;
-    private ra: RuleAction;
+    private tokStream: TokenStream = new EscapeStrictPropertyInitializationTokenStream();
+    private prs: ParseTable = new EscapeStrictPropertyInitializationParseTable();
+    private ra: RuleAction = new EscapeStrictPropertyInitializationRuleAction();
     private lookahead(act: number, token: number): number {
         act = this.prs.lookAhead(act - this.LA_STATE_OFFSET, this.tokStream.getKind(token));
         return (act > this.LA_STATE_OFFSET ? this.lookahead(act, this.tokStream.getNext(token)) : act);

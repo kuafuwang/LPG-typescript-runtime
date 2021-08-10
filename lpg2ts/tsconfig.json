@@ -7,12 +7,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "declaration": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": false,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "alwaysStrict": true
+    "strict": true
     
   },
   "exclude": [

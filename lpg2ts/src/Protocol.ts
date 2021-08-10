@@ -48,8 +48,117 @@ export interface ILexStream extends TokenStream {
     toString(startOffset: number, endOffset: number): string;
     m77Ac341Feebeb7C0A7Ff8F9C6540531500693Bac: number;
 }
-;
-;
+
+export  class EscapeStrictPropertyInitializationLexStream implements ILexStream {
+    getIPrsStream(): IPrsStream | undefined {
+        throw new Error("Method not implemented.");
+    }
+    getPrsStream(): IPrsStream | undefined {
+        throw new Error("Method not implemented.");
+    }
+    setPrsStream(stream: IPrsStream): void {
+        throw new Error("Method not implemented.");
+    }
+    getLineCount(): number {
+        throw new Error("Method not implemented.");
+    }
+    orderedExportedSymbols(): string[] {
+        throw new Error("Method not implemented.");
+    }
+    getLineOffset(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getLineNumberOfCharAt(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getColumnOfCharAt(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getCharValue(i: number): string {
+        throw new Error("Method not implemented.");
+    }
+    getIntValue(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    makeToken(startLoc: number, endLoc: number, kind: number): void {
+        throw new Error("Method not implemented.");
+    }
+    setMessageHandler(errMsg: IMessageHandler): void {
+        throw new Error("Method not implemented.");
+    }
+    getMessageHandler(): IMessageHandler | undefined {
+        throw new Error("Method not implemented.");
+    }
+    getLocation(left_loc: number, right_loc: number): Int32Array {
+        throw new Error("Method not implemented.");
+    }
+    reportLexicalError(left_loc: number, right_loc: number, errorCode?: number, error_left_loc?: number, error_right_loc?: number, errorInfo?: string[]): void {
+        throw new Error("Method not implemented.");
+    }
+    toString(startOffset: number, endOffset: number): string {
+        throw new Error("Method not implemented.");
+    }
+    m77Ac341Feebeb7C0A7Ff8F9C6540531500693Bac: number =0;
+    getToken(): number;
+    getToken(end_token: number): number;
+    getToken(end_token?: any): number {
+        throw new Error("Method not implemented.");
+    }
+    getKind(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getNext(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getPrevious(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getName(i: number): string {
+        throw new Error("Method not implemented.");
+    }
+    peek(): number {
+        throw new Error("Method not implemented.");
+    }
+    reset(i: number): void;
+    reset(): void;
+    reset(i?: any): void {
+        throw new Error("Method not implemented.");
+    }
+    badToken(): number {
+        throw new Error("Method not implemented.");
+    }
+    getLine(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getColumn(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getEndLine(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getEndColumn(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    afterEol(i: number): boolean {
+        throw new Error("Method not implemented.");
+    }
+    getFileName(): string {
+        throw new Error("Method not implemented.");
+    }
+    getStreamLength(): number {
+        throw new Error("Method not implemented.");
+    }
+    getFirstRealToken(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    getLastRealToken(i: number): number {
+        throw new Error("Method not implemented.");
+    }
+    reportError(errorCode: number, leftToken: number, rightToken: number, errorInfo: string | string[], errorToken?: number): void {
+        throw new Error("Method not implemented.");
+    }
+}
+
 export function instanceOfILexStream(object: any): object is ILexStream {
     return 'm77Ac341Feebeb7C0A7Ff8F9C6540531500693Bac' in object;
 }

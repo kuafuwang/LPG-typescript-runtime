@@ -1,10 +1,10 @@
 
-import { ParseTable } from "./ParseTable";
-import { RuleAction } from "./RuleAction";
+import { ParseTable, EscapeStrictPropertyInitializationParseTable } from "./ParseTable";
+import { RuleAction, EscapeStrictPropertyInitializationRuleAction } from "./RuleAction";
 import { IntTuple } from "./IntTuple";
 import { Monitor } from "./Monitor";
 import { Lpg as Lpg } from "./Utils";
-import { ILexStream } from "./Protocol";
+import { ILexStream, EscapeStrictPropertyInitializationLexStream } from "./Protocol";
 
 export class LexParser {
     private taking_actions: boolean = false;
@@ -14,10 +14,12 @@ export class LexParser {
     private ACCEPT_ACTION: number=0;
     private ERROR_ACTION: number=0;
     private START_SYMBOL: number=0;
-    private NUM_RULES: number=0;
-    private tokStream: ILexStream;
-    private prs: ParseTable;
-    private ra: RuleAction;
+    private NUM_RULES: number = 0;
+    private tokStream: ILexStream = new EscapeStrictPropertyInitializationLexStream();
+    private prs: ParseTable = new EscapeStrictPropertyInitializationParseTable();
+    private ra: RuleAction = new EscapeStrictPropertyInitializationRuleAction();
+  
+  
     private action: IntTuple = new IntTuple(0);
     private readonly  STACK_INCREMENT: number = 1024;
     private stateStackTop: number = 0;
