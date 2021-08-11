@@ -48,6 +48,7 @@ export namespace Lpg {
         }
 
         export interface Collection<E> {
+        
             add(val: E): void;
             addAll(vals: Collection<E>): void;
             get(index: number): E;
@@ -75,6 +76,7 @@ export namespace Lpg {
             indexOf(o: E): number;
             lastIndexOf(o: E): number;
             remove(index: number): E;
+
         }
 
 
@@ -88,7 +90,7 @@ export namespace Lpg {
             }
 
             public hasNext(): boolean {
-                return this.cursor != this.list.size();
+                return this.cursor !== this.list.size();
             }
 
             public next(): E {
@@ -111,6 +113,7 @@ export namespace Lpg {
 
   
         export class AbstractList<E> implements List<E> {
+         
             public   content: E[] = [];
 
             addAll(index: any, vals?: any): boolean {
@@ -193,6 +196,7 @@ export namespace Lpg {
 
     
         export class ArrayList<E> extends AbstractList<E> {
+           
         }
 
     }

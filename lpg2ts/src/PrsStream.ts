@@ -1,4 +1,3 @@
-import { ParseErrorCodes } from "./ParseErrorCodes";
 import { LexStream } from "./LexStream";
 import { Token } from "./Token";
 import { ErrorToken } from "./ErrorToken";
@@ -9,11 +8,13 @@ import { NullTerminalSymbolsException } from "./NullTerminalSymbolsException";
 import { UndefinedEofSymbolException } from "./UndefinedEofSymbolException";
 import { UnimplementedTerminalsException } from "./UnimplementedTerminalsException";
 import { Lpg as Lpg } from "./Utils";
-import { IPrsStream, ILexStream, IToken } from "./Protocol";
-
+import { IPrsStream, ILexStream, IToken, EscapeStrictPropertyInitializationLexStream } from "./Protocol";
+//
+// PrsStream holds an arraylist of tokens "lexed" from the input stream.
+//
 export class PrsStream implements IPrsStream {
     m3C89586D99F2567D21410F29B1B2606574892Aa7: number=0;
-    private iLexStream?: ILexStream;
+    private iLexStream: ILexStream = new EscapeStrictPropertyInitializationLexStream();
     private kindMap: Int32Array= new Int32Array(0) ;
     private tokens: Lpg.Util.ArrayList<IToken> = new Lpg.Util.ArrayList<IToken>();
     private adjuncts: Lpg.Util.ArrayList<IToken> = new Lpg.Util.ArrayList<IToken>();
@@ -21,8 +22,9 @@ export class PrsStream implements IPrsStream {
     private len: number = 0;
  
     constructor(iLexStream?: ILexStream) {
-        this.iLexStream = iLexStream;
+       
         if (iLexStream) {
+            this.iLexStream = iLexStream;
             iLexStream.setPrsStream(this);
             this.resetTokenStream();
         }
@@ -32,14 +34,16 @@ export class PrsStream implements IPrsStream {
         return [];
     }
     public remapTerminalSymbols(ordered_parser_symbols: string[], eof_symbol: number): void {
-        if (!this.iLexStream) {
+        // lexStream might be null, maybe only erroneously, but it has happened
+        if (!this.iLexStream || this.iLexStream instanceof EscapeStrictPropertyInitializationLexStream ) {
             throw new ReferenceError("PrsStream.remapTerminalSymbols(..):  lexStream is undefined");
         }
+
         let ordered_lexer_symbols: string[] = this.iLexStream.orderedExportedSymbols();
-        if (ordered_lexer_symbols == undefined) {
+        if (ordered_lexer_symbols === undefined) {
             throw new NullTerminalSymbolsException();
         }
-        if (ordered_parser_symbols == undefined) {
+        if (ordered_parser_symbols === undefined) {
             throw new NullTerminalSymbolsException();
         }
         let unimplemented_symbols: Lpg.Util.ArrayList<number> = new Lpg.Util.ArrayList<number>();
@@ -78,12 +82,12 @@ export class PrsStream implements IPrsStream {
         this.resetTokenStream();
     }
     public resetLexStream(lexStream: LexStream): void {
-        this.iLexStream = lexStream;
-        if (lexStream != undefined) {
+
+        if (lexStream) {
             lexStream.setPrsStream(this);
+            this.iLexStream = lexStream;
         }
     }
-
 
 
     public makeToken(startLoc: number, endLoc: number, kind: number): void {
@@ -102,11 +106,25 @@ export class PrsStream implements IPrsStream {
         this.tokens.remove(last_index);
     }
     public makeErrorToken(firsttok: number, lasttok: number, errortok: number, kind: number): number {
-        let index: number = this.tokens.size();
-        let token: Token = new ErrorToken(this.getIToken(firsttok), this.getIToken(lasttok), this.getIToken(errortok), this.getStartOffset(firsttok), this.getEndOffset(lasttok), kind);
+        let index: number = this.tokens.size(); // the next index
+
+        //
+        // Note that when creating an error token, we do not remap its kind.
+        // Since this is not a lexical operation, it is the responsibility of
+        // the calling program (a parser driver) to pass to us the proper kind
+        // that it wants for an error token.
+        //
+        let token: Token = new ErrorToken(  this.getIToken(firsttok),
+                                            this.getIToken(lasttok),
+                                            this.getIToken(errortok),
+                                            this.getStartOffset(firsttok),
+                                            this.getEndOffset(lasttok),
+                                            kind);
+
         token.setTokenIndex(this.tokens.size());
         this.tokens.add(token);
         token.setAdjunctIndex(this.adjuncts.size());
+
         return index;
     }
     public addToken(token: IToken): void {
@@ -115,14 +133,14 @@ export class PrsStream implements IPrsStream {
         token.setAdjunctIndex(this.adjuncts.size());
     }
     public makeAdjunct(startLoc: number, endLoc: number, kind: number): void {
-        let token_index: number = this.tokens.size() - 1;
+        let token_index: number = this.tokens.size() - 1;// index of last token processed
         let adjunct: Adjunct = new Adjunct(startLoc, endLoc, this.mapKind(kind), this);
         adjunct.setAdjunctIndex(this.adjuncts.size());
         adjunct.setTokenIndex(token_index);
         this.adjuncts.add(adjunct);
     }
     public addAdjunct(adjunct: IToken): void {
-        let token_index: number = this.tokens.size() - 1;
+        let token_index: number = this.tokens.size() - 1;// index of last token processed
         adjunct.setTokenIndex(token_index);
         adjunct.setAdjunctIndex(this.adjuncts.size());
         this.adjuncts.add(adjunct);
@@ -269,17 +287,17 @@ export class PrsStream implements IPrsStream {
         }
         this.len = len;
     }
-    public getILexStream(): ILexStream | undefined{
+    public getILexStream(): ILexStream {
         return this.iLexStream;
     }
-    public getLexStream(): ILexStream | undefined {
+    public getLexStream(): ILexStream {
         return this.iLexStream;
     }
     public dumpTokens(): void {
         if (this.getSize() <= 2) {
             return;
         }
-        console.log(" Kind \tOffset \tLen \tLine \tCol \tText\n");
+        Lpg.Lang.System.Out.println(" Kind \tOffset \tLen \tLine \tCol \tText\n");
         for (let i: number = 1; i < this.getSize() - 1; i++) {
             this.dumpToken(i);
         }
@@ -294,7 +312,11 @@ export class PrsStream implements IPrsStream {
         console.log("\n");
     }
     private getAdjunctsFromIndex(i: number): IToken[] {
-        let start_index: number = (<IToken>this.tokens.get(i)).getAdjunctIndex(), end_index: number = (i + 1 == this.tokens.size() ? this.adjuncts.size() : (<IToken>this.tokens.get(this.getNext(i))).getAdjunctIndex()), size: number = end_index - start_index;
+        let start_index: number = (<IToken>this.tokens.get(i)).getAdjunctIndex(),
+            end_index: number = (i + 1 == this.tokens.size()
+                                        ? this.adjuncts.size()
+                                        : (<IToken>this.tokens.get(this.getNext(i))).getAdjunctIndex()),
+            size: number = end_index - start_index;
         let slice: IToken[] = new Array<IToken>(size);
         for (let j: number = start_index, k: number = 0; j < end_index; j++, k++) {
             slice[k] = <IToken>this.adjuncts.get(j);
@@ -314,8 +336,8 @@ export class PrsStream implements IPrsStream {
         this.index = this.getNext(this.index);
         return this.index;
     }
-    public getToken(end_token: number = -1): number {
-        if (-1 === end_token) {
+    public getToken(end_token?: number ): number {
+        if (!end_token) {
             return this.getToken2();
         }
         return this.index = (this.index < end_token ? this.getNext(this.index) : this.len - 1);
@@ -366,6 +388,17 @@ export class PrsStream implements IPrsStream {
         if (!this.iLexStream) return"";
         return this.iLexStream?.getFileName();
     }
+
+    //
+    // Here is where we report errors.  The default method is simply to print the error message to the console.
+    // However, the user may supply an error message handler to process error messages.  To support that
+    // a message handler interface is provided that has a single method handleMessage().  The user has his
+    // error message handler class implement the IMessageHandler interface and provides an object of this type
+    // to the runtime using the setMessageHandler(errorMsg) method. If the message handler object is set,
+    // the reportError methods will invoke its handleMessage() method.
+    //
+    // IMessageHandler errMsg = null; // the error message handler object is declared in LexStream
+    //
     public setMessageHandler(errMsg: IMessageHandler): void {
         this.iLexStream?.setMessageHandler(errMsg);
     }
@@ -387,4 +420,4 @@ export class PrsStream implements IPrsStream {
         this.iLexStream?.reportLexicalError(errorCode, this.getStartOffset(leftToken), this.getEndOffset(rightToken), this.getStartOffset(errorToken), this.getEndOffset(errorToken), tempInfo);
     }
 }
-;
+

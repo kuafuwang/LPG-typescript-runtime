@@ -80,6 +80,7 @@
     <TypeScriptCompile Include="src\IMessageHandler.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\index.ts" />
     <TypeScriptCompile Include="src\IntSegmentedTuple.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

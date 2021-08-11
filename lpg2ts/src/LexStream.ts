@@ -4,15 +4,23 @@ import { IMessageHandler } from "./IMessageHandler";
 import { IntSegmentedTuple } from "./IntSegmentedTuple";
 import { ILexStream, IPrsStream } from "./Protocol";
 
+//
+// LexStream contains an array of characters as the input stream to be parsed.
+// There are methods to retrieve and classify characters.
+// The lexparser "token" is implemented simply as the index of the next character in the array.
+// The user must subclass LexStreamBase and implement the abstract methods: getKind.
+//
 export class LexStream implements ILexStream {
     m77Ac341Feebeb7C0A7Ff8F9C6540531500693Bac: number=0;
-    public static DEFAULT_TAB: number = 1;
+    public static readonly DEFAULT_TAB: number = 1;
+
     private index: number = -1;
     private streamLength: number = 0;
     private inputChars: string="";
     private fileName: string="";
     private lineOffsets: IntSegmentedTuple;
     private tab: number = LexStream.DEFAULT_TAB;
+
     public prsStream?: IPrsStream;
     private errMsg?: IMessageHandler;
 
@@ -68,7 +76,7 @@ export class LexStream implements ILexStream {
     }
     public setInputChars(inputChars: string): void {
         this.inputChars = inputChars;
-        this.index = -1;
+        this.index = -1; // reset the start index to the beginning of the input
     }
     public getInputChars(): string {
         return this.inputChars;
@@ -116,9 +124,7 @@ export class LexStream implements ILexStream {
     public getIPrsStream(): IPrsStream  | undefined{
         return this.prsStream;
     }
-    public getPrsStream(): IPrsStream | undefined{
-        return this.prsStream;
-    }
+
     public orderedExportedSymbols(): string[] {
         return [];
     }
@@ -137,7 +143,8 @@ export class LexStream implements ILexStream {
         return index < 0 ? -index : index == 0 ? 1 : index;
     }
     public getColumnOfCharAt(i: number): number {
-        let lineNo: number = this.getLineNumberOfCharAt(i), start: number = this.lineOffsets.get(lineNo - 1);
+        let lineNo: number = this.getLineNumberOfCharAt(i),
+            start: number = this.lineOffsets.get(lineNo - 1);
         if (start + 1 >= this.streamLength) {
             return 1;
         }
@@ -179,8 +186,12 @@ export class LexStream implements ILexStream {
     public peek(): number {
         return this.getNext(this.index);
     }
-    public reset(i: number=0): void {
-        this.index = i - 1;
+    public reset(i?: number): void {
+        if(i)
+            this.index = i - 1;
+        else{
+            this.index = -1;
+        }
     }
     
     public badToken(): number {
@@ -226,7 +237,7 @@ export class LexStream implements ILexStream {
         return this.errMsg;
     }
     public makeToken(startLoc: number, endLoc: number, kind: number): void {
-        if (this.prsStream != null) {
+        if (this.prsStream) {
             this.prsStream.makeToken(startLoc, endLoc, kind);
         } else {
             this.reportLexicalError(startLoc, endLoc);
@@ -237,7 +248,8 @@ export class LexStream implements ILexStream {
         let length: number = (right_loc < this.streamLength ? right_loc : this.streamLength - 1) - left_loc + 1;
         return new Int32Array([left_loc, length, this.getLineNumberOfCharAt(left_loc), this.getColumnOfCharAt(left_loc), this.getLineNumberOfCharAt(right_loc), this.getColumnOfCharAt(right_loc)]);
     }
-    public reportLexicalError(left_loc: number, right_loc: number, errorCode?: number, error_left_loc_arg?: number, error_right_loc_arg?: number, errorInfoArg?:  string[]): void {
+    public reportLexicalError(left_loc: number, right_loc: number, errorCode?: number,
+                              error_left_loc_arg?: number, error_right_loc_arg?: number, errorInfoArg?:  string[]): void {
 
         let error_left_loc: number = 0;
         if (error_left_loc_arg) {
@@ -260,7 +272,7 @@ export class LexStream implements ILexStream {
         }
 
 
-        if (this.errMsg == undefined) {
+        if (!this.errMsg) {
             let locationInfo: string = this.getFileName() + ':' + this.getLineNumberOfCharAt(left_loc) + ':' + this.getColumnOfCharAt(left_loc) + ':' + this.getLineNumberOfCharAt(right_loc) + ':' + this.getColumnOfCharAt(right_loc) + ':' + error_left_loc + ':' + error_right_loc + ':' + errorCode + ": ";
             console.log("****Error: " + locationInfo);
             if (errorInfo) {
