@@ -3,7 +3,7 @@
     "module": "commonjs",
     "target": "es6",
     "lib": [ "es6" ],
-
+    "outDir": "target",
     "sourceMap": true,
     "experimentalDecorators": true,
     "declaration": true,
@@ -11,6 +11,8 @@
     
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "target"
+    
   ]
 }
