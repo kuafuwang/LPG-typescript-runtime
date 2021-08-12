@@ -57,7 +57,7 @@ export namespace Lpg {
             isEmpty(): boolean;
             size(): number;
             contains(o: E): boolean;
-            toArray<E1>(a: Array<E1>): E[];
+            toArray(): E[];
             iterator(): Iterator<E>;
             containsAll(c: Collection<any>): boolean;
             addAll(c: Collection<any>): boolean;
@@ -116,12 +116,28 @@ export namespace Lpg {
          
             public   content: E[] = [];
 
-            addAll(index: any, vals?: any): boolean {
-                let tempArray = vals.toArray(null);
-                for (let i = 0; i < tempArray.length; i++) {
-                    this.content.push(tempArray[i]);
+            public clone() : AbstractList<E> {
+                let result = new  AbstractList<E>();
+                for (let i = 0; i < this.content.length; i++) {
+                    this.content.push(this.content[i]);
                 }
-                return false;
+                return result;
+            }
+            addAll(index: any, vals?: any): boolean {
+                if (typeof vals !== 'undefined') {
+                    let tempArray = vals.toArray();
+                    for (let i = 0; i < tempArray.length; i++) {
+                        this.add(index,tempArray[i]);
+                    }
+                    return true;
+                }
+                else{
+                    let tempArray = index.toArray();
+                    for (let i = 0; i < tempArray.length; i++) {
+                        this.content.push(tempArray[i]);
+                    }
+                    return true;
+                }
             }
 
             clear() {
@@ -142,8 +158,7 @@ export namespace Lpg {
                 return true;
             }
 
-            toArray<E1>(a: Array<E1>): E[] {
-               
+            toArray(): E[] {     
                 return this.content;;
             }
 

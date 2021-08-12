@@ -6,6 +6,6 @@ export interface IAbstractArrayList<T extends IAst> {
     getElementAt(i: number): T;
     getList(): Lpg.Util.List<T>;
     add(elt: T): void;
-    getAllChildren(): Lpg.Util.List<T>;
+  
 }
 ;

@@ -81,7 +81,7 @@ export class PrsStream implements IPrsStream {
         this.iLexStream = lexStream;
         this.resetTokenStream();
     }
-    public resetLexStream(lexStream: LexStream): void {
+    public resetLexStream(lexStream: ILexStream): void {
 
         if (lexStream) {
             lexStream.setPrsStream(this);
@@ -358,12 +358,22 @@ export class PrsStream implements IPrsStream {
     public peek(): number {
         return this.getNext(this.index);
     }
-    public reset(i: number = -1): void {
-        if (i === -1) {
-            this.index = i;
-            return;
-        }
+    public   reset1() : void
+    {
+        this.index = 0;
+    }
+    public   reset2(i : number) : void
+    {
         this.index = this.getPrevious(i);
+    }
+    public reset(i?: number): void {
+        if (!i) 
+        {
+            this.reset1();
+        }
+        else{
+            this.reset2(i);
+        }
     }
  
     public badToken(): number {

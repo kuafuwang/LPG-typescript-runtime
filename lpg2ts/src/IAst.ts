@@ -4,8 +4,10 @@ import { Lpg as Lpg } from "./Utils";
 import { IToken } from "./Protocol";
 
 export interface IAst {
-    getNextAst(): IAst;
-    getParent(): IAst;
+   // getTypeInfo() : string;
+
+    getNextAst(): IAst | undefined;
+    getParent(): IAst| undefined;
 
     getLeftIToken(): IToken;
     getRightIToken(): IToken;

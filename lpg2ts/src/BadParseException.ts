@@ -1,9 +1,9 @@
 export class BadParseException extends Error
 {
     
-    public errorToken: number;
+    public error_token: number;
     constructor(errorToken: number) {
         super();
-        this.errorToken = errorToken;
+        this.error_token = errorToken;
     }
 };

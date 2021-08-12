@@ -18,8 +18,8 @@ export abstract class AbstractToken implements IToken {
         this.endOffset = endOffset;
         this.kind = kind;
     }
-    abstract getPrecedingAdjuncts(): IToken[] | undefined;
-    abstract getFollowingAdjuncts(): IToken[] | undefined;
+    abstract getPrecedingAdjuncts(): IToken[] ;
+    abstract getFollowingAdjuncts(): IToken[] ;
     public getKind(): number {
         return this.kind;
     }

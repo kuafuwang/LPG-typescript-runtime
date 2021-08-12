@@ -6,10 +6,10 @@ export class Adjunct extends AbstractToken {
     constructor(startOffset: number, endOffset: number, kind: number, prsStream?: IPrsStream ) {
         super(startOffset, endOffset, kind, prsStream);
     }
-    public getFollowingAdjuncts(): IToken[] | undefined {
-        return undefined;
+    public getFollowingAdjuncts(): IToken[]  {
+        return [];
     }
-    public getPrecedingAdjuncts(): IToken[] | undefined {
-        return undefined;
+    public getPrecedingAdjuncts(): IToken[]  {
+        return [];
     }
 };

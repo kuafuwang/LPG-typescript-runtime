@@ -19,8 +19,8 @@ export interface IToken {
     getAdjunctIndex(): number;
     setAdjunctIndex(i: number): void;
 
-    getPrecedingAdjuncts(): IToken[] | undefined;
-    getFollowingAdjuncts(): IToken[] | undefined;
+    getPrecedingAdjuncts(): IToken[] ;
+    getFollowingAdjuncts(): IToken[] ;
 
     getILexStream(): ILexStream| undefined;
     getIPrsStream(): IPrsStream | undefined;

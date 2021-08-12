@@ -38,7 +38,7 @@ export interface ParseTable {
     getNumRules(): number;
     getNumNonterminals(): number;
     getNumSymbols(): number;
-    getSegmentSize(): number;
+
     getStartState(): number;
     getStartSymbol(): number;
     getEoftSymbol(): number;

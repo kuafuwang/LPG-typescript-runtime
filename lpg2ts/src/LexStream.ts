@@ -40,7 +40,7 @@ export class LexStream implements ILexStream {
     public initialize(fileName: string, inputChars?: string, lineOffsets?: IntSegmentedTuple): void {
       if (!inputChars) {
           try {
-              inputChars= fs.readFileSync(fileName, "utf8").toString();
+              inputChars= fs.readFileSync(fileName, "ascii");
           } catch ($ex$) {
               if ($ex$ instanceof Error) {
                   let e: Error = <Error>$ex$;

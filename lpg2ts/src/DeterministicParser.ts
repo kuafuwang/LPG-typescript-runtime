@@ -128,7 +128,7 @@ export class DeterministicParser extends Stacks {
         }
         throw new UnavailableParserInformationException();
     }
-    public setMonitor(monitor: Monitor): void {
+    public setMonitor(monitor?: Monitor): void {
         this.monitor = monitor;
     }
     public reset1(): void {
@@ -145,28 +145,32 @@ export class DeterministicParser extends Stacks {
     }
    
     public reset(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor): void {
+        if (ra)
+            this.ra = ra;
+        if (prs)
+        {
+                this.prs = prs;
+          
+                this.START_STATE = prs.getStartState();
+                this.NUM_RULES = prs.getNumRules();
+                this.NT_OFFSET = prs.getNtOffset();
+                this.LA_STATE_OFFSET = prs.getLaStateOffset();
+                this.EOFT_SYMBOL = prs.getEoftSymbol();
+                this.ERROR_SYMBOL = prs.getErrorSymbol();
+                this.ACCEPT_ACTION = prs.getAcceptAction();
+                this.ERROR_ACTION = prs.getErrorAction();
+                if (!prs.isValidForParser()) throw new BadParseSymFileException();
+                if (prs.getBacktrack()) throw new NotDeterministicParseTableException();
+        }
         if (!tokStream) {
             this.reset1();
             return;
         }
         this.reset2(tokStream, monitor);
-        if (ra)
-            this.ra = ra;
-        if (!prs)
-            return;
 
-        this.prs = prs;
-      
-        this.START_STATE = prs.getStartState();
-        this.NUM_RULES = prs.getNumRules();
-        this.NT_OFFSET = prs.getNtOffset();
-        this.LA_STATE_OFFSET = prs.getLaStateOffset();
-        this.EOFT_SYMBOL = prs.getEoftSymbol();
-        this.ERROR_SYMBOL = prs.getErrorSymbol();
-        this.ACCEPT_ACTION = prs.getAcceptAction();
-        this.ERROR_ACTION = prs.getErrorAction();
-        if (!prs.isValidForParser()) throw new BadParseSymFileException();
-        if (prs.getBacktrack()) throw new NotDeterministicParseTableException();
+
+
+
     }
    
     constructor(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor) {

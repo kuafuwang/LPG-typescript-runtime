@@ -27,10 +27,10 @@ export class ErrorToken extends Token {
     public getErrorToken(): IToken {
         return this.errorToken;
     }
-    public getPrecedingAdjuncts(): IToken[] | undefined{
+    public getPrecedingAdjuncts(): IToken[] {
         return this.firstToken.getPrecedingAdjuncts();
     }
-    public getFollowingAdjuncts(): IToken[] | undefined{
+    public getFollowingAdjuncts(): IToken[] {
         return this.lastToken.getFollowingAdjuncts();
     }
 }
