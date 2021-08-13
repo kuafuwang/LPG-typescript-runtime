@@ -6,8 +6,8 @@ import { IToken } from "./Protocol";
 export interface IAst {
    // getTypeInfo() : string;
 
-    getNextAst(): IAst | undefined;
-    getParent(): IAst| undefined;
+    getNextAst(): IAst | null;
+    getParent(): IAst| null;
 
     getLeftIToken(): IToken;
     getRightIToken(): IToken;

@@ -45,7 +45,7 @@ export class IntSegmentedTuple {
         // See operator[] below.
         //
         //
-        if (k === this.base_size) {
+        if (k == this.base_size) {
             this.base_size *= 2;
             Lpg.Lang.System.arraycopy(this.base, 0, this.base = new Array<Int32Array>(this.base_size), 0, k);
         }
@@ -81,7 +81,9 @@ export class IntSegmentedTuple {
         }
         this.top = n;
     }
-
+     needInterger() : void{
+       throw Error("IntSegmentedTuple need interger")
+    }
     //
     // This function is used to reset the size of a dynamic array without
     // allocating or deallocting space. It may be invoked with an integer
@@ -89,6 +91,9 @@ export class IntSegmentedTuple {
     // indicates that the size should be reset to 0.
     //
     public reset(n: number = 0): void {
+        if(!Number.isInteger(n)){
+            this.needInterger();
+        }
         this.top = n;
     }
 
@@ -118,13 +123,19 @@ export class IntSegmentedTuple {
     // should be thrown if it yields true.
     //
     public get(i: number): number {
-        return this.base[i >> this.log_blksize][i % (1 << this.log_blksize)];
+        if(!Number.isInteger(i)){
+            this.needInterger();
+        }
+        return  this.base[i >> this.log_blksize][i % (1 << this.log_blksize)];
     }
 
     //
     // Insert an element in the dynamic array at the location indicated.
     //
     public set(i: number, element: number): void {
+        if(!Number.isInteger(i)){
+            this.needInterger();
+        }
         this.base[i >> this.log_blksize][i % (1 << this.log_blksize)] = element;
     }
 
@@ -133,7 +144,7 @@ export class IntSegmentedTuple {
     //
     public NextIndex(): number {
         let i: number = this.top++;
-        if (i === this._size) {
+        if (i == this._size) {
             this.allocateMoreSpace();
         }
         return i;
@@ -156,12 +167,15 @@ export class IntSegmentedTuple {
     // which the new element would be inserted in the array.
     //
     public binarySearch(element: number): number {
+        if(!Number.isInteger(element)){
+            this.needInterger();
+        }
         let low: number = 0,
             high: number = this.top;
         while (high > low) {
-            let mid: number = (high + low) / 2,
+            let mid: number = Math.floor((high + low) / 2),
                 mid_element: number = this.get(mid);
-            if (element === mid_element) {
+            if (element == mid_element) {
                 return mid;
             } else {
                 if (element < mid_element) {

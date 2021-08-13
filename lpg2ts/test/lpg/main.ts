@@ -17,5 +17,4 @@ function  main(): void{
         console.log("失败");
     }
 }
-
 main();

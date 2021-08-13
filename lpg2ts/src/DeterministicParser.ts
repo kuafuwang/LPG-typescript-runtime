@@ -13,7 +13,7 @@ export class DeterministicParser extends Stacks {
     private taking_actions: boolean = false;
     private markerKind: number = 0;
 
-    private monitor?: Monitor;
+    private monitor?: Monitor | null;
     private START_STATE: number=0;
     private NUM_RULES: number=0;
     private NT_OFFSET: number=0;
@@ -138,13 +138,13 @@ export class DeterministicParser extends Stacks {
             this.action.reset();
         }
     }
-    public reset2(tokStream: TokenStream,monitor?: Monitor): void {
+    public reset2(tokStream: TokenStream,monitor?: Monitor | null): void {
         this.monitor = monitor;
         this.tokStream = <TokenStream>tokStream;
         this.reset1();
     }
    
-    public reset(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor): void {
+    public reset(tokStream?: TokenStream | null , prs?: ParseTable | null, ra?: RuleAction  | null , monitor?: Monitor | null): void {
         if (ra)
             this.ra = ra;
         if (prs)
@@ -173,7 +173,7 @@ export class DeterministicParser extends Stacks {
 
     }
    
-    constructor(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor) {
+    constructor(tokStream?: TokenStream | null , prs?: ParseTable | null, ra?: RuleAction | null, monitor?: Monitor | null) {
         super();
         this.reset(tokStream, prs, ra, monitor);
     }
@@ -191,7 +191,7 @@ export class DeterministicParser extends Stacks {
         this.lastToken = this.tokStream.getPrevious(this.tokStream.peek());
         let curtok: number,
             current_kind: number;
-        if (marker_kind === 0) {
+        if (marker_kind == 0) {
             curtok = this.tokStream.getToken();
             current_kind = this.tokStream.getKind(curtok);
         } else {
@@ -245,10 +245,10 @@ export class DeterministicParser extends Stacks {
 
         this. taking_actions = false; // indicate that we are done
 
-        if (this.currentAction === this.ERROR_ACTION)
+        if (this.currentAction == this.ERROR_ACTION)
             throw new BadParseException(curtok);
 
-        return this.parseStack[marker_kind === 0 ? 0 : 1];
+        return this.parseStack[marker_kind == 0 ? 0 : 1];
     }
     //
     // This method is invoked when using the parser in an incremental mode
@@ -263,12 +263,12 @@ export class DeterministicParser extends Stacks {
     //
     public resetParserEntry(marker_kind: number): void {
         this.markerKind = marker_kind;
-        if (this.stateStack === undefined || this.stateStack.length === 0) {
+        if (this.stateStack == undefined || this.stateStack.length == 0) {
             this.reallocateStacks();// make initial allocation
         }
         this.stateStackTop = 0;
         this.stateStack[this.stateStackTop] = this.START_STATE;
-        if (this.action.capacity() === 0) {
+        if (this.action.capacity() == 0) {
             this.action = new IntTuple(1 << 20);
         } else {
             this.action.reset();
@@ -289,7 +289,7 @@ export class DeterministicParser extends Stacks {
     //
     private recoverableState(state: number): boolean {
         for (let k: number = this.prs.asi(state); this.prs.asr(k) !== 0; k++) {
-            if (this.prs.asr(k) === this.ERROR_SYMBOL) {
+            if (this.prs.asr(k) == this.ERROR_SYMBOL) {
                 return true;
             }
         }
@@ -301,7 +301,7 @@ export class DeterministicParser extends Stacks {
     // the error token. If we can't do that, reset it to the beginning.
     //
     public errorReset(): void {
-        let gate: number = (this.markerKind === 0 ? 0 : 1);
+        let gate: number = (this.markerKind == 0 ? 0 : 1);
         for (; this.stateStackTop >= gate; this.stateStackTop--) {
             if (this.recoverableState(this.stateStack[this.stateStackTop])) {
                 break;

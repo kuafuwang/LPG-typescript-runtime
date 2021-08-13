@@ -20,7 +20,7 @@ import { LPGLexerprs } from "./LPGLexerprs";
 import { LPGLexersym } from "./LPGLexersym";
 import { LPGParsersym } from "./LPGParsersym";
 
-    //#line 7 "LPGLexer.gi
+    //#line 8 "LPGLexer.gi
 
 
 
@@ -135,7 +135,7 @@ export class LPGLexer extends Object implements RuleAction
         }        
     }
 
-    //#line 12 "LPGLexer.gi
+    //#line 13 "LPGLexer.gi
  
 
     //#line 163 "LexerBasicMapF.gi
@@ -178,12 +178,12 @@ export class LPGLexer extends Object implements RuleAction
     makeToken( arg0 : number, arg1?: number, arg2? : number) : void
     {
         if(arg1 && arg2){
-         
+        
             this.makeToken1(arg0,arg1,arg2);
             return ;
         }
         let  startOffset  = this.getLeftSpan();
-         let   endOffset = this.getRightSpan();
+        let   endOffset = this.getRightSpan();
         this.lexStream.makeToken(startOffset, endOffset, arg0);
         if (this.printTokens)  this.printValue(startOffset, endOffset);
     }

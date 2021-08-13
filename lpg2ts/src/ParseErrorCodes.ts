@@ -15,7 +15,9 @@ export enum ParseErrorCodes {
      INVALID_TOKEN_CODE = 11,
      ERROR_RULE_ERROR_CODE = 11,
      ERROR_RULE_WARNING_CODE = 12,
-     NO_MESSAGE_CODE = 13
+     NO_MESSAGE_CODE = 13,
+
+     MANUAL_CODE = 14
 }
 
 export let errorMsgText: readonly string[] =

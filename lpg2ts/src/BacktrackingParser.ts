@@ -18,7 +18,7 @@ import { BadParseSymFileException } from "./BadParseSymFileException";
 import { NotBacktrackParseTableException } from "./NotBacktrackParseTableException";
 
 export class BacktrackingParser extends Stacks {
-    private monitor?: Monitor;
+    private monitor?: Monitor | null;
     private START_STATE: number=0;
     private NUM_RULES: number=0;
     private NT_OFFSET: number=0;
@@ -47,10 +47,10 @@ export class BacktrackingParser extends Stacks {
     //
     private markerTokenIndex: number = 0;
     private getMarkerToken(marker_kind: number, start_token_index: number): number {
-        if (marker_kind === 0) {
+        if (marker_kind == 0) {
             return 0;
         } else {
-            if (this.markerTokenIndex === 0) {
+            if (this.markerTokenIndex == 0) {
                 if (!(instanceOfIPrsStream(this.tokStream))) {
                     throw new TokenStreamNotIPrsStreamException();
                 }
@@ -105,13 +105,13 @@ export class BacktrackingParser extends Stacks {
         this.skipTokens = false;
         this.markerTokenIndex = 0;
     }
-    public reset2(tokStream: TokenStream, monitor?: Monitor): void {
+    public reset2(tokStream: TokenStream, monitor?: Monitor | null): void {
         this.monitor = monitor;
         this.tokStream = <TokenStream>tokStream;
         this.reset1();
     }
    
-    public reset(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor): void {
+    public reset(tokStream?: TokenStream | null, prs?: ParseTable | null, ra?: RuleAction | null, monitor?: Monitor | null): void {
         if (prs) 
         {
             this.prs = prs;
@@ -143,7 +143,7 @@ export class BacktrackingParser extends Stacks {
         this.reset(tokStream, prs, ra);
     }
   
-    constructor(tokStream?: TokenStream, prs?: ParseTable, ra?: RuleAction, monitor?: Monitor) {
+    constructor(tokStream?: TokenStream | null, prs?: ParseTable | null, ra?: RuleAction | null, monitor?: Monitor | null) {
         super();
         this.reset(tokStream, prs, ra, monitor);
     }
@@ -152,7 +152,7 @@ export class BacktrackingParser extends Stacks {
     // Allocate or reallocate all the stacks. Their sizes should always be the same.
     //
     public reallocateOtherStacks(start_token_index: number): void {
-        if (!this.actionStack ||this.actionStack.length === 0) {
+        if (!this.actionStack ||this.actionStack.length == 0) {
             this.actionStack = new Int32Array(this.stateStack.length);
             this.locationStack = new Int32Array(this.stateStack.length);
             this.parseStack = new Array<any>(this.stateStack.length);
@@ -211,7 +211,7 @@ export class BacktrackingParser extends Stacks {
             let rp = new RecoveryParser(this, this.action, this.tokens, <IPrsStream>this.tokStream, this.prs, max_error_count, 0, this.monitor);
             start_token = rp.recover(marker_token, error_token);
         }
-        if (marker_token !== 0 && start_token === first_token) {
+        if (marker_token !== 0 && start_token == first_token) {
             this.tokens.add(marker_token);
         }
         let t: number;
@@ -268,7 +268,7 @@ export class BacktrackingParser extends Stacks {
             error_token !== 0;
             error_token = this.backtrackParseInternal(this.action, repair_token), count++)
         {
-            if (count === max_error_count) {
+            if (count == max_error_count) {
                 throw new BadParseException(initial_error_token);
             }
             this.action.reset(start_action_index);
@@ -446,19 +446,19 @@ export class BacktrackingParser extends Stacks {
                 curtok = this.tokStream.getToken();
                 current_kind = this.tokStream.getKind(curtok);
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 error_token = (error_token > curtok ? error_token : curtok);
 
                 let configuration = configuration_stack.pop();
-                if (configuration === undefined) {
+                if (configuration == undefined) {
                     act = this.ERROR_ACTION;
                 } else {
                     action.reset(configuration.action_length);
                     act = configuration.act;
                     curtok = configuration.curtok;
                     current_kind = this.tokStream.getKind(curtok);
-                    this.tokStream.reset(curtok === initial_token
+                    this.tokStream.reset(curtok == initial_token
                                                 ? start_token
                                                 : this.tokStream.getNext(curtok));
                     this.stateStackTop = configuration.stack_top;
@@ -489,7 +489,7 @@ export class BacktrackingParser extends Stacks {
 
             act = this.tAction(act, current_kind);
         }
-        return (act === this.ERROR_ACTION ? error_token : 0);
+        return (act == this.ERROR_ACTION ? error_token : 0);
     }
     private backtrackParseUpToError(initial_token: number, error_token: number): void {
         //
@@ -540,11 +540,11 @@ export class BacktrackingParser extends Stacks {
                 current_kind = this.tokStream.getKind(curtok);
                 this.tokens.add(curtok);
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 if (curtok !== error_token) {
                     let configuration = configuration_stack.pop();
-                    if (configuration === undefined) {
+                    if (configuration == undefined) {
                         act = this.ERROR_ACTION;
                     } else {
                         this.action.reset(configuration.action_length);
@@ -553,7 +553,7 @@ export class BacktrackingParser extends Stacks {
                         this.tokens.reset(next_token_index);
                         curtok = this.tokens.get(next_token_index - 1);
                         current_kind = this.tokStream.getKind(curtok);
-                        this.tokStream.reset(curtok === initial_token
+                        this.tokStream.reset(curtok == initial_token
                                                     ? start_token
                                                     : this.tokStream.getNext(curtok));
                         this.stateStackTop = configuration.stack_top;
@@ -624,17 +624,17 @@ export class BacktrackingParser extends Stacks {
                 }
                 current_kind = this.tokStream.getKind(curtok);
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 let configuration = configuration_stack.pop();
-                if (configuration === undefined) {
+                if (configuration == undefined) {
                     act = this.ERROR_ACTION;
                 } else {
                     this.stateStackTop = configuration.stack_top;
                     configuration.retrieveStack(this.stateStack);
                     act = configuration.act;
                     curtok = configuration.curtok;
-                    if (curtok === 0) {
+                    if (curtok == 0) {
                         current_kind = this.ERROR_SYMBOL;
                         this.tokStream.reset(start_token);
                     } else {
@@ -687,11 +687,11 @@ export class BacktrackingParser extends Stacks {
         //
         // If we can reach the end of the input successfully, we claim victory.
         //
-        return (act === this.ACCEPT_ACTION);
+        return (act == this.ACCEPT_ACTION);
     }
     private recoverableState(state: number): boolean {
         for (let k: number = this.prs.asi(state); this.prs.asr(k) !== 0; k++) {
-            if (this.prs.asr(k) === this.ERROR_SYMBOL) {
+            if (this.prs.asr(k) == this.ERROR_SYMBOL) {
                 return true;
             }
         }

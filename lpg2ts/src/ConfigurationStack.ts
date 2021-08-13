@@ -62,7 +62,7 @@ export class ConfigurationStack {
         node.siblings = root.siblings;
         root.siblings = node;
 
-        return (index === stack_top ? node : this.makeStateList(node, stack, index + 1, stack_top));
+        return (index == stack_top ? node : this.makeStateList(node, stack, index + 1, stack_top));
     }
     public findConfiguration(stack: Int32Array, stack_top: number, curtok: number): boolean {
 
@@ -72,7 +72,7 @@ export class ConfigurationStack {
 
         for (let configuration: ConfigurationElement | undefined = this.table[hash_address]; ; ) {
             if (configuration) {
-                if (configuration.curtok === curtok && last_element === configuration.last_element) {
+                if (configuration.curtok == curtok && last_element == configuration.last_element) {
                     return true;
                 }
                 configuration = configuration.next;

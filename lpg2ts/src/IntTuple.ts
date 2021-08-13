@@ -21,6 +21,7 @@ export class IntTuple {
     // indicates that the size should be reset to 0.
     //
     public reset(n: number = 0): void {
+        
         this.top = n;
     }
 
@@ -30,7 +31,9 @@ export class IntTuple {
     public size(): number {
         return this.top;
     }
-
+    needInterger() : void{
+        throw Error(" IntTuple  need interger index")
+    }
     //
     // Return a reference to the ith element of the dynamic array.
     //
@@ -39,6 +42,9 @@ export class IntTuple {
     // should be thrown if it yields true.
     //
     public get(i: number): number {
+        if(!Number.isInteger(i)){
+            this.needInterger();
+        }
         return this.array[i];
     }
 
@@ -46,6 +52,9 @@ export class IntTuple {
     // Insert an element in the dynamic array at the location indicated.
     //
     public set(i: number, element: number): void {
+        if(!Number.isInteger(i)){
+            this.needInterger();
+        }
         this.array[i] = element;
     }
 

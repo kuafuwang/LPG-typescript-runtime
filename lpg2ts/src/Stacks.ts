@@ -42,7 +42,7 @@ export class Stacks {
         let old_stack_length: number = (this.stateStack == undefined ? 0 : this.stateStack.length),
             stack_length: number = old_stack_length + this.STACK_INCREMENT;
 
-        if (!this.stateStack || this.stateStack.length === 0) {
+        if (!this.stateStack || this.stateStack.length == 0) {
             this.stateStack = new Int32Array(stack_length);
             this.locationStack = new Int32Array(stack_length);
             this.parseStack = new Array<any>(stack_length);
@@ -60,7 +60,7 @@ export class Stacks {
     public reallocateStateStack(): void {
         let old_stack_length: number = (this.stateStack == undefined ? 0 : this.stateStack.length),
             stack_length: number = old_stack_length + this.STACK_INCREMENT;
-        if (this.stateStack == undefined || this.stateStack.length === 0) {
+        if (this.stateStack == undefined || this.stateStack.length == 0) {
             this.stateStack = new Int32Array(stack_length);
         } else {
             Lpg.Lang.System.arraycopy(this.stateStack, 0, this.stateStack = new Int32Array(stack_length), 0, old_stack_length);

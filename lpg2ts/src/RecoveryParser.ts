@@ -24,7 +24,8 @@ export class RecoveryParser extends DiagnoseParser   {
     // maxTime is the maximum amount of time allowed for diagnosing
     // but at least one error must be diagnosed 
     //
-    constructor(parser: BacktrackingParser, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor,) {
+    constructor(parser: BacktrackingParser, action: IntSegmentedTuple, tokens: IntTuple, tokStream: IPrsStream, 
+        prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor | null) {
         super(tokStream, prs, maxErrors, maxTime, monitor);
         this.parser = parser;
         this.action = action;
@@ -33,7 +34,7 @@ export class RecoveryParser extends DiagnoseParser   {
 
     public reallocateStacks(): void {
         super.reallocateStacks();
-        if (!this.actionStack || this.actionStack.length === 0) {
+        if (!this.actionStack || this.actionStack.length == 0) {
             this.actionStack = new Int32Array(this.stateStack.length);
         } else {
             let old_stack_length: number = this.actionStack.length;
@@ -61,7 +62,7 @@ export class RecoveryParser extends DiagnoseParser   {
         return;
     }
     public recover(marker_token: number, error_token: number): number {
-        if (!this.stateStack || this.stateStack.length === 0) {
+        if (!this.stateStack || this.stateStack.length == 0) {
             this.reallocateStacks();
         }
 
@@ -163,11 +164,11 @@ export class RecoveryParser extends DiagnoseParser   {
                 act = this.tAction(act, current_kind);
                 continue;
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 if (curtok !== error_token || this.main_configuration_stack.size() > 0) {
                     let configuration = this.main_configuration_stack.pop();
-                    if (configuration === undefined) {
+                    if (configuration == undefined) {
                         act = this.ERROR_ACTION;
                     } else {
                         this.stateStackTop = configuration.stack_top;
@@ -220,7 +221,7 @@ export class RecoveryParser extends DiagnoseParser   {
                 }
                 this.stateStack[this.stateStackTop] = act;
           
-                if (curtok === error_token) {
+                if (curtok == error_token) {
                     this.scopeTrial(this.scope_repair, this.stateStack, this.stateStackTop);
                     if (this.scope_repair.distance >= MIN_DISTANCE)
                     {
@@ -355,7 +356,7 @@ export class RecoveryParser extends DiagnoseParser   {
     }
     private completeScope(action: IntSegmentedTuple, scope_rhs_index: number): boolean {
         let kind: number = this.scopeRhs(scope_rhs_index);
-        if (kind === 0) {
+        if (kind == 0) {
             return true;
         }
 

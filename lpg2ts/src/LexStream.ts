@@ -69,7 +69,7 @@ export class LexStream implements ILexStream {
         this.lineOffsets.reset();
         this.setLineOffset(-1);
         for (let i: number = 0; i < this.inputChars.length; i++) {
-            if (this.inputChars.charCodeAt(i) === 0x0A) {
+            if (this.inputChars.charCodeAt(i) == 0x0A) {
                 this.setLineOffset(i);
             }
         }
@@ -149,7 +149,7 @@ export class LexStream implements ILexStream {
             return 1;
         }
         for (let k: number = start + 1; k < i; k++) {
-            if (this.inputChars[k] === '\t') {
+            if (this.inputChars[k] == '\t') {
                 let offset: number = (k - start) - 1;
                 start -= ((this.tab - 1) - offset % this.tab);
             }

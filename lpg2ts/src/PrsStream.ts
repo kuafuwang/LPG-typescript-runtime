@@ -21,7 +21,7 @@ export class PrsStream implements IPrsStream {
     private index: number = 0;
     private len: number = 0;
  
-    constructor(iLexStream?: ILexStream) {
+    constructor(iLexStream?: ILexStream | null) {
        
         if (iLexStream) {
             this.iLexStream = iLexStream;
@@ -40,10 +40,10 @@ export class PrsStream implements IPrsStream {
         }
 
         let ordered_lexer_symbols: string[] = this.iLexStream.orderedExportedSymbols();
-        if (ordered_lexer_symbols === undefined) {
+        if (ordered_lexer_symbols == undefined) {
             throw new NullTerminalSymbolsException();
         }
-        if (ordered_parser_symbols === undefined) {
+        if (ordered_parser_symbols == undefined) {
             throw new NullTerminalSymbolsException();
         }
         let unimplemented_symbols: Lpg.Util.ArrayList<number> = new Lpg.Util.ArrayList<number>();
@@ -70,7 +70,7 @@ export class PrsStream implements IPrsStream {
         }
     }
     public mapKind(kind: number): number {
-        return (this.kindMap.length === 0 ? kind : this.kindMap[kind]);
+        return (this.kindMap.length == 0 ? kind : this.kindMap[kind]);
     }
     public resetTokenStream(): void {
         this.tokens = new Lpg.Util.ArrayList<IToken>();
@@ -281,7 +281,7 @@ export class PrsStream implements IPrsStream {
         this.len = this.tokens.size();
     }
     public setStreamLength(len: number = -1): void {
-        if (-1 === len) {
+        if (-1 == len) {
             this.setStreamLength2();
             return;
         }
@@ -427,7 +427,7 @@ export class PrsStream implements IPrsStream {
         else {
             tempInfo = [];
         }
-        this.iLexStream?.reportLexicalError(errorCode, this.getStartOffset(leftToken), this.getEndOffset(rightToken), this.getStartOffset(errorToken), this.getEndOffset(errorToken), tempInfo);
+        this.iLexStream?.reportLexicalError(this.getStartOffset(leftToken), this.getEndOffset(rightToken),errorCode, this.getStartOffset(errorToken), this.getEndOffset(errorToken), tempInfo);
     }
 }
 

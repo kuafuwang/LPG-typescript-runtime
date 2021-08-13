@@ -3,12 +3,14 @@
 
 
 
-    //#line 7 "LPGParser.g
+    //#line 8 "LPGParser.g
 
   
 import {BadParseException, RuleAction, PrsStream, ParseTable, BacktrackingParser, IToken, ErrorToken, ILexStream, NullExportedSymbolsException, 
-    UnimplementedTerminalsException, Lpg, UndefinedEofSymbolException, NotBacktrackParseTableException, BadParseSymFileException, 
-    IPrsStream, Monitor, DiagnoseParser, IAst, IAstVisitor, IAbstractArrayList } from "..\/..\/src";
+UnimplementedTerminalsException, Lpg, UndefinedEofSymbolException, NotBacktrackParseTableException, BadParseSymFileException, 
+IPrsStream, Monitor, DiagnoseParser, IAst, IAstVisitor, IAbstractArrayList, NotDeterministicParseTableException,
+ DeterministicParser, NullTerminalSymbolsException } from "..\/..\/src";
+
 import { LPGParserprs } from ".\/LPGParserprs";
 import { LPGParsersym } from ".\/LPGParsersym";
  
@@ -97,7 +99,7 @@ export class LPGParser extends Object implements RuleAction
         super();
         try
         {
-            this.btParser = new BacktrackingParser(undefined, LPGParser.prsTable, <RuleAction> this);
+            this.btParser = new BacktrackingParser(null, LPGParser.prsTable, <RuleAction> this);
         }
         catch (e)
         {
@@ -138,7 +140,7 @@ export class LPGParser extends Object implements RuleAction
 
  
 
-    public parser(error_repair_count : number = 0 ,  monitor? : Monitor) :  any
+    public parser(error_repair_count : number = 0 ,  monitor? : Monitor) :  any | null
     {
         this.btParser.setMonitor(monitor);
         
@@ -168,7 +170,7 @@ export class LPGParser extends Object implements RuleAction
     //
     
 
-    //#line 233 "LPGParser.g
+    //#line 236 "LPGParser.g
 
 
 
@@ -184,15 +186,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 1:  LPG ::= options_segment LPG_INPUT
             //
             case 1: {
-               //#line 46 "LPGParser.g"
+               //#line 49 "LPGParser.g"
                 this.setResult(
-                    //#line 46 LPGParser.g
+                    //#line 49 LPGParser.g
                     new LPG(this.getLeftIToken(), this.getRightIToken(),
-                            //#line 46 LPGParser.g
+                            //#line 49 LPGParser.g
                             <option_specList>this.getRhsSym(1),
-                            //#line 46 LPGParser.g
+                            //#line 49 LPGParser.g
                             <LPG_itemList>this.getRhsSym(2))
-                //#line 46 LPGParser.g
+                //#line 49 LPGParser.g
                 );
             break;
             }
@@ -200,11 +202,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 2:  LPG_INPUT ::= %Empty
             //
             case 2: {
-               //#line 49 "LPGParser.g"
+               //#line 52 "LPGParser.g"
                 this.setResult(
-                    //#line 49 LPGParser.g
+                    //#line 52 LPGParser.g
                     new LPG_itemList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 49 LPGParser.g
+                //#line 52 LPGParser.g
                 );
             break;
             }
@@ -212,7 +214,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 3:  LPG_INPUT ::= LPG_INPUT LPG_item
             //
             case 3: {
-               //#line 50 "LPGParser.g"
+               //#line 53 "LPGParser.g"
                 (<LPG_itemList>this.getRhsSym(1)).addElement(<ILPG_item>this.getRhsSym(2));
             break;
             }
@@ -220,13 +222,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 4:  LPG_item ::= ALIAS_KEY$ alias_segment END_KEY_OPT$
             //
             case 4: {
-               //#line 53 "LPGParser.g"
+               //#line 56 "LPGParser.g"
                 this.setResult(
-                    //#line 53 LPGParser.g
+                    //#line 56 LPGParser.g
                     new AliasSeg(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 53 LPGParser.g
+                                 //#line 56 LPGParser.g
                                  <aliasSpecList>this.getRhsSym(2))
-                //#line 53 LPGParser.g
+                //#line 56 LPGParser.g
                 );
             break;
             }
@@ -234,13 +236,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 5:  LPG_item ::= AST_KEY$ ast_segment END_KEY_OPT$
             //
             case 5: {
-               //#line 54 "LPGParser.g"
+               //#line 57 "LPGParser.g"
                 this.setResult(
-                    //#line 54 LPGParser.g
+                    //#line 57 LPGParser.g
                     new AstSeg(this.getLeftIToken(), this.getRightIToken(),
-                               //#line 54 LPGParser.g
+                               //#line 57 LPGParser.g
                                <action_segmentList>this.getRhsSym(2))
-                //#line 54 LPGParser.g
+                //#line 57 LPGParser.g
                 );
             break;
             }
@@ -248,13 +250,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 6:  LPG_item ::= DEFINE_KEY$ define_segment END_KEY_OPT$
             //
             case 6: {
-               //#line 55 "LPGParser.g"
+               //#line 58 "LPGParser.g"
                 this.setResult(
-                    //#line 55 LPGParser.g
+                    //#line 58 LPGParser.g
                     new DefineSeg(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 55 LPGParser.g
+                                  //#line 58 LPGParser.g
                                   <defineSpecList>this.getRhsSym(2))
-                //#line 55 LPGParser.g
+                //#line 58 LPGParser.g
                 );
             break;
             }
@@ -262,13 +264,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 7:  LPG_item ::= EOF_KEY$ eof_segment END_KEY_OPT$
             //
             case 7: {
-               //#line 56 "LPGParser.g"
+               //#line 59 "LPGParser.g"
                 this.setResult(
-                    //#line 56 LPGParser.g
+                    //#line 59 LPGParser.g
                     new EofSeg(this.getLeftIToken(), this.getRightIToken(),
-                               //#line 56 LPGParser.g
+                               //#line 59 LPGParser.g
                                <Ieof_segment>this.getRhsSym(2))
-                //#line 56 LPGParser.g
+                //#line 59 LPGParser.g
                 );
             break;
             }
@@ -276,13 +278,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 8:  LPG_item ::= EOL_KEY$ eol_segment END_KEY_OPT$
             //
             case 8: {
-               //#line 57 "LPGParser.g"
+               //#line 60 "LPGParser.g"
                 this.setResult(
-                    //#line 57 LPGParser.g
+                    //#line 60 LPGParser.g
                     new EolSeg(this.getLeftIToken(), this.getRightIToken(),
-                               //#line 57 LPGParser.g
+                               //#line 60 LPGParser.g
                                <Ieol_segment>this.getRhsSym(2))
-                //#line 57 LPGParser.g
+                //#line 60 LPGParser.g
                 );
             break;
             }
@@ -290,13 +292,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 9:  LPG_item ::= ERROR_KEY$ error_segment END_KEY_OPT$
             //
             case 9: {
-               //#line 58 "LPGParser.g"
+               //#line 61 "LPGParser.g"
                 this.setResult(
-                    //#line 58 LPGParser.g
+                    //#line 61 LPGParser.g
                     new ErrorSeg(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 58 LPGParser.g
+                                 //#line 61 LPGParser.g
                                  <Ierror_segment>this.getRhsSym(2))
-                //#line 58 LPGParser.g
+                //#line 61 LPGParser.g
                 );
             break;
             }
@@ -304,13 +306,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 10:  LPG_item ::= EXPORT_KEY$ export_segment END_KEY_OPT$
             //
             case 10: {
-               //#line 59 "LPGParser.g"
+               //#line 62 "LPGParser.g"
                 this.setResult(
-                    //#line 59 LPGParser.g
+                    //#line 62 LPGParser.g
                     new ExportSeg(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 59 LPGParser.g
+                                  //#line 62 LPGParser.g
                                   <terminal_symbolList>this.getRhsSym(2))
-                //#line 59 LPGParser.g
+                //#line 62 LPGParser.g
                 );
             break;
             }
@@ -318,13 +320,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 11:  LPG_item ::= GLOBALS_KEY$ globals_segment END_KEY_OPT$
             //
             case 11: {
-               //#line 60 "LPGParser.g"
+               //#line 63 "LPGParser.g"
                 this.setResult(
-                    //#line 60 LPGParser.g
+                    //#line 63 LPGParser.g
                     new GlobalsSeg(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 60 LPGParser.g
+                                   //#line 63 LPGParser.g
                                    <action_segmentList>this.getRhsSym(2))
-                //#line 60 LPGParser.g
+                //#line 63 LPGParser.g
                 );
             break;
             }
@@ -332,13 +334,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 12:  LPG_item ::= HEADERS_KEY$ headers_segment END_KEY_OPT$
             //
             case 12: {
-               //#line 61 "LPGParser.g"
+               //#line 64 "LPGParser.g"
                 this.setResult(
-                    //#line 61 LPGParser.g
+                    //#line 64 LPGParser.g
                     new HeadersSeg(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 61 LPGParser.g
+                                   //#line 64 LPGParser.g
                                    <action_segmentList>this.getRhsSym(2))
-                //#line 61 LPGParser.g
+                //#line 64 LPGParser.g
                 );
             break;
             }
@@ -346,13 +348,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 13:  LPG_item ::= IDENTIFIER_KEY$ identifier_segment END_KEY_OPT$
             //
             case 13: {
-               //#line 62 "LPGParser.g"
+               //#line 65 "LPGParser.g"
                 this.setResult(
-                    //#line 62 LPGParser.g
+                    //#line 65 LPGParser.g
                     new IdentifierSeg(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 62 LPGParser.g
+                                      //#line 65 LPGParser.g
                                       <Iidentifier_segment>this.getRhsSym(2))
-                //#line 62 LPGParser.g
+                //#line 65 LPGParser.g
                 );
             break;
             }
@@ -360,13 +362,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 14:  LPG_item ::= IMPORT_KEY$ import_segment END_KEY_OPT$
             //
             case 14: {
-               //#line 63 "LPGParser.g"
+               //#line 66 "LPGParser.g"
                 this.setResult(
-                    //#line 63 LPGParser.g
+                    //#line 66 LPGParser.g
                     new ImportSeg(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 63 LPGParser.g
+                                  //#line 66 LPGParser.g
                                   <import_segment>this.getRhsSym(2))
-                //#line 63 LPGParser.g
+                //#line 66 LPGParser.g
                 );
             break;
             }
@@ -374,13 +376,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 15:  LPG_item ::= INCLUDE_KEY$ include_segment END_KEY_OPT$
             //
             case 15: {
-               //#line 64 "LPGParser.g"
+               //#line 67 "LPGParser.g"
                 this.setResult(
-                    //#line 64 LPGParser.g
+                    //#line 67 LPGParser.g
                     new IncludeSeg(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 64 LPGParser.g
+                                   //#line 67 LPGParser.g
                                    <include_segment>this.getRhsSym(2))
-                //#line 64 LPGParser.g
+                //#line 67 LPGParser.g
                 );
             break;
             }
@@ -388,13 +390,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 16:  LPG_item ::= KEYWORDS_KEY$ keywords_segment END_KEY_OPT$
             //
             case 16: {
-               //#line 65 "LPGParser.g"
+               //#line 68 "LPGParser.g"
                 this.setResult(
-                    //#line 65 LPGParser.g
+                    //#line 68 LPGParser.g
                     new KeywordsSeg(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 65 LPGParser.g
+                                    //#line 68 LPGParser.g
                                     <keywordSpecList>this.getRhsSym(2))
-                //#line 65 LPGParser.g
+                //#line 68 LPGParser.g
                 );
             break;
             }
@@ -402,13 +404,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 17:  LPG_item ::= NAMES_KEY$ names_segment END_KEY_OPT$
             //
             case 17: {
-               //#line 66 "LPGParser.g"
+               //#line 69 "LPGParser.g"
                 this.setResult(
-                    //#line 66 LPGParser.g
+                    //#line 69 LPGParser.g
                     new NamesSeg(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 66 LPGParser.g
+                                 //#line 69 LPGParser.g
                                  <nameSpecList>this.getRhsSym(2))
-                //#line 66 LPGParser.g
+                //#line 69 LPGParser.g
                 );
             break;
             }
@@ -416,13 +418,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 18:  LPG_item ::= NOTICE_KEY$ notice_segment END_KEY_OPT$
             //
             case 18: {
-               //#line 67 "LPGParser.g"
+               //#line 70 "LPGParser.g"
                 this.setResult(
-                    //#line 67 LPGParser.g
+                    //#line 70 LPGParser.g
                     new NoticeSeg(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 67 LPGParser.g
+                                  //#line 70 LPGParser.g
                                   <action_segmentList>this.getRhsSym(2))
-                //#line 67 LPGParser.g
+                //#line 70 LPGParser.g
                 );
             break;
             }
@@ -430,13 +432,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 19:  LPG_item ::= RULES_KEY$ rules_segment END_KEY_OPT$
             //
             case 19: {
-               //#line 68 "LPGParser.g"
+               //#line 71 "LPGParser.g"
                 this.setResult(
-                    //#line 68 LPGParser.g
+                    //#line 71 LPGParser.g
                     new RulesSeg(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 68 LPGParser.g
+                                 //#line 71 LPGParser.g
                                  <rules_segment>this.getRhsSym(2))
-                //#line 68 LPGParser.g
+                //#line 71 LPGParser.g
                 );
             break;
             }
@@ -444,13 +446,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 20:  LPG_item ::= SOFT_KEYWORDS_KEY$ keywords_segment END_KEY_OPT$
             //
             case 20: {
-               //#line 69 "LPGParser.g"
+               //#line 72 "LPGParser.g"
                 this.setResult(
-                    //#line 69 LPGParser.g
+                    //#line 72 LPGParser.g
                     new SoftKeywordsSeg(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 69 LPGParser.g
+                                        //#line 72 LPGParser.g
                                         <keywordSpecList>this.getRhsSym(2))
-                //#line 69 LPGParser.g
+                //#line 72 LPGParser.g
                 );
             break;
             }
@@ -458,13 +460,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 21:  LPG_item ::= START_KEY$ start_segment END_KEY_OPT$
             //
             case 21: {
-               //#line 70 "LPGParser.g"
+               //#line 73 "LPGParser.g"
                 this.setResult(
-                    //#line 70 LPGParser.g
+                    //#line 73 LPGParser.g
                     new StartSeg(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 70 LPGParser.g
+                                 //#line 73 LPGParser.g
                                  <start_symbolList>this.getRhsSym(2))
-                //#line 70 LPGParser.g
+                //#line 73 LPGParser.g
                 );
             break;
             }
@@ -472,13 +474,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 22:  LPG_item ::= TERMINALS_KEY$ terminals_segment END_KEY_OPT$
             //
             case 22: {
-               //#line 71 "LPGParser.g"
+               //#line 74 "LPGParser.g"
                 this.setResult(
-                    //#line 71 LPGParser.g
+                    //#line 74 LPGParser.g
                     new TerminalsSeg(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 71 LPGParser.g
+                                     //#line 74 LPGParser.g
                                      <terminals_segment_terminalList>this.getRhsSym(2))
-                //#line 71 LPGParser.g
+                //#line 74 LPGParser.g
                 );
             break;
             }
@@ -486,13 +488,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 23:  LPG_item ::= TRAILERS_KEY$ trailers_segment END_KEY_OPT$
             //
             case 23: {
-               //#line 72 "LPGParser.g"
+               //#line 75 "LPGParser.g"
                 this.setResult(
-                    //#line 72 LPGParser.g
+                    //#line 75 LPGParser.g
                     new TrailersSeg(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 72 LPGParser.g
+                                    //#line 75 LPGParser.g
                                     <action_segmentList>this.getRhsSym(2))
-                //#line 72 LPGParser.g
+                //#line 75 LPGParser.g
                 );
             break;
             }
@@ -500,13 +502,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 24:  LPG_item ::= TYPES_KEY$ types_segment END_KEY_OPT$
             //
             case 24: {
-               //#line 73 "LPGParser.g"
+               //#line 76 "LPGParser.g"
                 this.setResult(
-                    //#line 73 LPGParser.g
+                    //#line 76 LPGParser.g
                     new TypesSeg(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 73 LPGParser.g
+                                 //#line 76 LPGParser.g
                                  <type_declarationsList>this.getRhsSym(2))
-                //#line 73 LPGParser.g
+                //#line 76 LPGParser.g
                 );
             break;
             }
@@ -514,13 +516,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 25:  LPG_item ::= RECOVER_KEY$ recover_segment END_KEY_OPT$
             //
             case 25: {
-               //#line 74 "LPGParser.g"
+               //#line 77 "LPGParser.g"
                 this.setResult(
-                    //#line 74 LPGParser.g
+                    //#line 77 LPGParser.g
                     new RecoverSeg(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 74 LPGParser.g
+                                   //#line 77 LPGParser.g
                                    <SYMBOLList>this.getRhsSym(2))
-                //#line 74 LPGParser.g
+                //#line 77 LPGParser.g
                 );
             break;
             }
@@ -528,13 +530,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 26:  LPG_item ::= DISJOINTPREDECESSORSETS_KEY$ predecessor_segment END_KEY_OPT$
             //
             case 26: {
-               //#line 75 "LPGParser.g"
+               //#line 78 "LPGParser.g"
                 this.setResult(
-                    //#line 75 LPGParser.g
+                    //#line 78 LPGParser.g
                     new PredecessorSeg(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 75 LPGParser.g
+                                       //#line 78 LPGParser.g
                                        <symbol_pairList>this.getRhsSym(2))
-                //#line 75 LPGParser.g
+                //#line 78 LPGParser.g
                 );
             break;
             }
@@ -542,11 +544,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 27:  options_segment ::= %Empty
             //
             case 27: {
-               //#line 78 "LPGParser.g"
+               //#line 81 "LPGParser.g"
                 this.setResult(
-                    //#line 78 LPGParser.g
+                    //#line 81 LPGParser.g
                     new option_specList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 78 LPGParser.g
+                //#line 81 LPGParser.g
                 );
             break;
             }
@@ -554,7 +556,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 28:  options_segment ::= options_segment option_spec
             //
             case 28: {
-               //#line 78 "LPGParser.g"
+               //#line 81 "LPGParser.g"
                 (<option_specList>this.getRhsSym(1)).addElement(<option_spec>this.getRhsSym(2));
             break;
             }
@@ -562,13 +564,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 29:  option_spec ::= OPTIONS_KEY$ option_list
             //
             case 29: {
-               //#line 79 "LPGParser.g"
+               //#line 82 "LPGParser.g"
                 this.setResult(
-                    //#line 79 LPGParser.g
+                    //#line 82 LPGParser.g
                     new option_spec(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 79 LPGParser.g
+                                    //#line 82 LPGParser.g
                                     <optionList>this.getRhsSym(2))
-                //#line 79 LPGParser.g
+                //#line 82 LPGParser.g
                 );
             break;
             }
@@ -576,11 +578,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 30:  option_list ::= option
             //
             case 30: {
-               //#line 80 "LPGParser.g"
+               //#line 83 "LPGParser.g"
                 this.setResult(
-                    //#line 80 LPGParser.g
+                    //#line 83 LPGParser.g
                     optionList.optionListfromElement(<option>this.getRhsSym(1), true /* left recursive */)
-                //#line 80 LPGParser.g
+                //#line 83 LPGParser.g
                 );
             break;
             }
@@ -588,7 +590,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 31:  option_list ::= option_list ,$ option
             //
             case 31: {
-               //#line 80 "LPGParser.g"
+               //#line 83 "LPGParser.g"
                 (<optionList>this.getRhsSym(1)).addElement(<option>this.getRhsSym(3));
             break;
             }
@@ -596,15 +598,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 32:  option ::= SYMBOL option_value
             //
             case 32: {
-               //#line 81 "LPGParser.g"
+               //#line 84 "LPGParser.g"
                 this.setResult(
-                    //#line 81 LPGParser.g
+                    //#line 84 LPGParser.g
                     new option(this.getLeftIToken(), this.getRightIToken(),
-                               //#line 81 LPGParser.g
+                               //#line 84 LPGParser.g
                                new ASTNodeToken(this.getRhsIToken(1)),
-                               //#line 81 LPGParser.g
+                               //#line 84 LPGParser.g
                                <Ioption_value>this.getRhsSym(2))
-                //#line 81 LPGParser.g
+                //#line 84 LPGParser.g
                 );
             break;
             }
@@ -612,21 +614,21 @@ export class LPGParser extends Object implements RuleAction
             // Rule 33:  option_value ::= %Empty
             //
             case 33: {
-               //#line 82 "LPGParser.g"
-                this.setResult(undefined);
+               //#line 85 "LPGParser.g"
+                this.setResult(null);
             break;
             }
             //
             // Rule 34:  option_value ::= =$ SYMBOL
             //
             case 34: {
-               //#line 82 "LPGParser.g"
+               //#line 85 "LPGParser.g"
                 this.setResult(
-                    //#line 82 LPGParser.g
+                    //#line 85 LPGParser.g
                     new option_value0(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 82 LPGParser.g
+                                      //#line 85 LPGParser.g
                                       new ASTNodeToken(this.getRhsIToken(2)))
-                //#line 82 LPGParser.g
+                //#line 85 LPGParser.g
                 );
             break;
             }
@@ -634,13 +636,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 35:  option_value ::= =$ ($ symbol_list )$
             //
             case 35: {
-               //#line 82 "LPGParser.g"
+               //#line 85 "LPGParser.g"
                 this.setResult(
-                    //#line 82 LPGParser.g
+                    //#line 85 LPGParser.g
                     new option_value1(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 82 LPGParser.g
+                                      //#line 85 LPGParser.g
                                       <SYMBOLList>this.getRhsSym(3))
-                //#line 82 LPGParser.g
+                //#line 85 LPGParser.g
                 );
             break;
             }
@@ -648,11 +650,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 36:  symbol_list ::= SYMBOL
             //
             case 36: {
-               //#line 84 "LPGParser.g"
+               //#line 87 "LPGParser.g"
                 this.setResult(
-                    //#line 84 LPGParser.g
+                    //#line 87 LPGParser.g
                     SYMBOLList.SYMBOLListfromElement(new ASTNodeToken(this.getRhsIToken(1)), true /* left recursive */)
-                //#line 84 LPGParser.g
+                //#line 87 LPGParser.g
                 );
             break;
             }
@@ -660,7 +662,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 37:  symbol_list ::= symbol_list ,$ SYMBOL
             //
             case 37: {
-               //#line 85 "LPGParser.g"
+               //#line 88 "LPGParser.g"
                 (<SYMBOLList>this.getRhsSym(1)).addElement(new ASTNodeToken(this.getRhsIToken(3)));
             break;
             }
@@ -668,11 +670,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 38:  alias_segment ::= aliasSpec
             //
             case 38: {
-               //#line 88 "LPGParser.g"
+               //#line 91 "LPGParser.g"
                 this.setResult(
-                    //#line 88 LPGParser.g
+                    //#line 91 LPGParser.g
                     aliasSpecList.aliasSpecListfromElement(<IaliasSpec>this.getRhsSym(1), true /* left recursive */)
-                //#line 88 LPGParser.g
+                //#line 91 LPGParser.g
                 );
             break;
             }
@@ -680,7 +682,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 39:  alias_segment ::= alias_segment aliasSpec
             //
             case 39: {
-               //#line 88 "LPGParser.g"
+               //#line 91 "LPGParser.g"
                 (<aliasSpecList>this.getRhsSym(1)).addElement(<IaliasSpec>this.getRhsSym(2));
             break;
             }
@@ -688,64 +690,10 @@ export class LPGParser extends Object implements RuleAction
             // Rule 40:  aliasSpec ::= ERROR_KEY produces alias_rhs
             //
             case 40: {
-               //#line 90 "LPGParser.g"
-                this.setResult(
-                    //#line 90 LPGParser.g
-                    new aliasSpec0(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 90 LPGParser.g
-                                   new ASTNodeToken(this.getRhsIToken(1)),
-                                   //#line 90 LPGParser.g
-                                   <Iproduces>this.getRhsSym(2),
-                                   //#line 90 LPGParser.g
-                                   <Ialias_rhs>this.getRhsSym(3))
-                //#line 90 LPGParser.g
-                );
-            break;
-            }
-            //
-            // Rule 41:  aliasSpec ::= EOL_KEY produces alias_rhs
-            //
-            case 41: {
-               //#line 91 "LPGParser.g"
-                this.setResult(
-                    //#line 91 LPGParser.g
-                    new aliasSpec1(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 91 LPGParser.g
-                                   new ASTNodeToken(this.getRhsIToken(1)),
-                                   //#line 91 LPGParser.g
-                                   <Iproduces>this.getRhsSym(2),
-                                   //#line 91 LPGParser.g
-                                   <Ialias_rhs>this.getRhsSym(3))
-                //#line 91 LPGParser.g
-                );
-            break;
-            }
-            //
-            // Rule 42:  aliasSpec ::= EOF_KEY produces alias_rhs
-            //
-            case 42: {
-               //#line 92 "LPGParser.g"
-                this.setResult(
-                    //#line 92 LPGParser.g
-                    new aliasSpec2(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 92 LPGParser.g
-                                   new ASTNodeToken(this.getRhsIToken(1)),
-                                   //#line 92 LPGParser.g
-                                   <Iproduces>this.getRhsSym(2),
-                                   //#line 92 LPGParser.g
-                                   <Ialias_rhs>this.getRhsSym(3))
-                //#line 92 LPGParser.g
-                );
-            break;
-            }
-            //
-            // Rule 43:  aliasSpec ::= IDENTIFIER_KEY produces alias_rhs
-            //
-            case 43: {
                //#line 93 "LPGParser.g"
                 this.setResult(
                     //#line 93 LPGParser.g
-                    new aliasSpec3(this.getLeftIToken(), this.getRightIToken(),
+                    new aliasSpec0(this.getLeftIToken(), this.getRightIToken(),
                                    //#line 93 LPGParser.g
                                    new ASTNodeToken(this.getRhsIToken(1)),
                                    //#line 93 LPGParser.g
@@ -757,13 +705,13 @@ export class LPGParser extends Object implements RuleAction
             break;
             }
             //
-            // Rule 44:  aliasSpec ::= SYMBOL produces alias_rhs
+            // Rule 41:  aliasSpec ::= EOL_KEY produces alias_rhs
             //
-            case 44: {
+            case 41: {
                //#line 94 "LPGParser.g"
                 this.setResult(
                     //#line 94 LPGParser.g
-                    new aliasSpec4(this.getLeftIToken(), this.getRightIToken(),
+                    new aliasSpec1(this.getLeftIToken(), this.getRightIToken(),
                                    //#line 94 LPGParser.g
                                    new ASTNodeToken(this.getRhsIToken(1)),
                                    //#line 94 LPGParser.g
@@ -775,15 +723,15 @@ export class LPGParser extends Object implements RuleAction
             break;
             }
             //
-            // Rule 45:  aliasSpec ::= alias_lhs_macro_name produces alias_rhs
+            // Rule 42:  aliasSpec ::= EOF_KEY produces alias_rhs
             //
-            case 45: {
+            case 42: {
                //#line 95 "LPGParser.g"
                 this.setResult(
                     //#line 95 LPGParser.g
-                    new aliasSpec5(this.getLeftIToken(), this.getRightIToken(),
+                    new aliasSpec2(this.getLeftIToken(), this.getRightIToken(),
                                    //#line 95 LPGParser.g
-                                   <alias_lhs_macro_name>this.getRhsSym(1),
+                                   new ASTNodeToken(this.getRhsIToken(1)),
                                    //#line 95 LPGParser.g
                                    <Iproduces>this.getRhsSym(2),
                                    //#line 95 LPGParser.g
@@ -793,14 +741,68 @@ export class LPGParser extends Object implements RuleAction
             break;
             }
             //
-            // Rule 46:  alias_lhs_macro_name ::= MACRO_NAME
+            // Rule 43:  aliasSpec ::= IDENTIFIER_KEY produces alias_rhs
             //
-            case 46: {
+            case 43: {
+               //#line 96 "LPGParser.g"
+                this.setResult(
+                    //#line 96 LPGParser.g
+                    new aliasSpec3(this.getLeftIToken(), this.getRightIToken(),
+                                   //#line 96 LPGParser.g
+                                   new ASTNodeToken(this.getRhsIToken(1)),
+                                   //#line 96 LPGParser.g
+                                   <Iproduces>this.getRhsSym(2),
+                                   //#line 96 LPGParser.g
+                                   <Ialias_rhs>this.getRhsSym(3))
+                //#line 96 LPGParser.g
+                );
+            break;
+            }
+            //
+            // Rule 44:  aliasSpec ::= SYMBOL produces alias_rhs
+            //
+            case 44: {
                //#line 97 "LPGParser.g"
                 this.setResult(
                     //#line 97 LPGParser.g
-                    new alias_lhs_macro_name(this.getRhsIToken(1))
+                    new aliasSpec4(this.getLeftIToken(), this.getRightIToken(),
+                                   //#line 97 LPGParser.g
+                                   new ASTNodeToken(this.getRhsIToken(1)),
+                                   //#line 97 LPGParser.g
+                                   <Iproduces>this.getRhsSym(2),
+                                   //#line 97 LPGParser.g
+                                   <Ialias_rhs>this.getRhsSym(3))
                 //#line 97 LPGParser.g
+                );
+            break;
+            }
+            //
+            // Rule 45:  aliasSpec ::= alias_lhs_macro_name produces alias_rhs
+            //
+            case 45: {
+               //#line 98 "LPGParser.g"
+                this.setResult(
+                    //#line 98 LPGParser.g
+                    new aliasSpec5(this.getLeftIToken(), this.getRightIToken(),
+                                   //#line 98 LPGParser.g
+                                   <alias_lhs_macro_name>this.getRhsSym(1),
+                                   //#line 98 LPGParser.g
+                                   <Iproduces>this.getRhsSym(2),
+                                   //#line 98 LPGParser.g
+                                   <Ialias_rhs>this.getRhsSym(3))
+                //#line 98 LPGParser.g
+                );
+            break;
+            }
+            //
+            // Rule 46:  alias_lhs_macro_name ::= MACRO_NAME
+            //
+            case 46: {
+               //#line 100 "LPGParser.g"
+                this.setResult(
+                    //#line 100 LPGParser.g
+                    new alias_lhs_macro_name(this.getRhsIToken(1))
+                //#line 100 LPGParser.g
                 );
             break;
             }
@@ -808,11 +810,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 47:  alias_rhs ::= SYMBOL
             //
             case 47: {
-               //#line 99 "LPGParser.g"
+               //#line 102 "LPGParser.g"
                 this.setResult(
-                    //#line 99 LPGParser.g
+                    //#line 102 LPGParser.g
                     new alias_rhs0(this.getRhsIToken(1))
-                //#line 99 LPGParser.g
+                //#line 102 LPGParser.g
                 );
             break;
             }
@@ -820,11 +822,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 48:  alias_rhs ::= MACRO_NAME
             //
             case 48: {
-               //#line 100 "LPGParser.g"
+               //#line 103 "LPGParser.g"
                 this.setResult(
-                    //#line 100 LPGParser.g
+                    //#line 103 LPGParser.g
                     new alias_rhs1(this.getRhsIToken(1))
-                //#line 100 LPGParser.g
+                //#line 103 LPGParser.g
                 );
             break;
             }
@@ -832,11 +834,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 49:  alias_rhs ::= ERROR_KEY
             //
             case 49: {
-               //#line 101 "LPGParser.g"
+               //#line 104 "LPGParser.g"
                 this.setResult(
-                    //#line 101 LPGParser.g
+                    //#line 104 LPGParser.g
                     new alias_rhs2(this.getRhsIToken(1))
-                //#line 101 LPGParser.g
+                //#line 104 LPGParser.g
                 );
             break;
             }
@@ -844,11 +846,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 50:  alias_rhs ::= EOL_KEY
             //
             case 50: {
-               //#line 102 "LPGParser.g"
+               //#line 105 "LPGParser.g"
                 this.setResult(
-                    //#line 102 LPGParser.g
+                    //#line 105 LPGParser.g
                     new alias_rhs3(this.getRhsIToken(1))
-                //#line 102 LPGParser.g
+                //#line 105 LPGParser.g
                 );
             break;
             }
@@ -856,11 +858,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 51:  alias_rhs ::= EOF_KEY
             //
             case 51: {
-               //#line 103 "LPGParser.g"
+               //#line 106 "LPGParser.g"
                 this.setResult(
-                    //#line 103 LPGParser.g
+                    //#line 106 LPGParser.g
                     new alias_rhs4(this.getRhsIToken(1))
-                //#line 103 LPGParser.g
+                //#line 106 LPGParser.g
                 );
             break;
             }
@@ -868,11 +870,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 52:  alias_rhs ::= EMPTY_KEY
             //
             case 52: {
-               //#line 104 "LPGParser.g"
+               //#line 107 "LPGParser.g"
                 this.setResult(
-                    //#line 104 LPGParser.g
+                    //#line 107 LPGParser.g
                     new alias_rhs5(this.getRhsIToken(1))
-                //#line 104 LPGParser.g
+                //#line 107 LPGParser.g
                 );
             break;
             }
@@ -880,11 +882,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 53:  alias_rhs ::= IDENTIFIER_KEY
             //
             case 53: {
-               //#line 105 "LPGParser.g"
+               //#line 108 "LPGParser.g"
                 this.setResult(
-                    //#line 105 LPGParser.g
+                    //#line 108 LPGParser.g
                     new alias_rhs6(this.getRhsIToken(1))
-                //#line 105 LPGParser.g
+                //#line 108 LPGParser.g
                 );
             break;
             }
@@ -897,11 +899,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 55:  define_segment ::= defineSpec
             //
             case 55: {
-               //#line 111 "LPGParser.g"
+               //#line 114 "LPGParser.g"
                 this.setResult(
-                    //#line 111 LPGParser.g
+                    //#line 114 LPGParser.g
                     defineSpecList.defineSpecListfromElement(<defineSpec>this.getRhsSym(1), true /* left recursive */)
-                //#line 111 LPGParser.g
+                //#line 114 LPGParser.g
                 );
             break;
             }
@@ -909,7 +911,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 56:  define_segment ::= define_segment defineSpec
             //
             case 56: {
-               //#line 111 "LPGParser.g"
+               //#line 114 "LPGParser.g"
                 (<defineSpecList>this.getRhsSym(1)).addElement(<defineSpec>this.getRhsSym(2));
             break;
             }
@@ -917,15 +919,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 57:  defineSpec ::= macro_name_symbol macro_segment
             //
             case 57: {
-               //#line 112 "LPGParser.g"
+               //#line 115 "LPGParser.g"
                 this.setResult(
-                    //#line 112 LPGParser.g
+                    //#line 115 LPGParser.g
                     new defineSpec(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 112 LPGParser.g
+                                   //#line 115 LPGParser.g
                                    <Imacro_name_symbol>this.getRhsSym(1),
-                                   //#line 112 LPGParser.g
+                                   //#line 115 LPGParser.g
                                    <macro_segment>this.getRhsSym(2))
-                //#line 112 LPGParser.g
+                //#line 115 LPGParser.g
                 );
             break;
             }
@@ -933,11 +935,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 58:  macro_name_symbol ::= MACRO_NAME
             //
             case 58: {
-               //#line 115 "LPGParser.g"
+               //#line 118 "LPGParser.g"
                 this.setResult(
-                    //#line 115 LPGParser.g
+                    //#line 118 LPGParser.g
                     new macro_name_symbol0(this.getRhsIToken(1))
-                //#line 115 LPGParser.g
+                //#line 118 LPGParser.g
                 );
             break;
             }
@@ -945,11 +947,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 59:  macro_name_symbol ::= SYMBOL
             //
             case 59: {
-               //#line 116 "LPGParser.g"
+               //#line 119 "LPGParser.g"
                 this.setResult(
-                    //#line 116 LPGParser.g
+                    //#line 119 LPGParser.g
                     new macro_name_symbol1(this.getRhsIToken(1))
-                //#line 116 LPGParser.g
+                //#line 119 LPGParser.g
                 );
             break;
             }
@@ -957,11 +959,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 60:  macro_segment ::= BLOCK
             //
             case 60: {
-               //#line 117 "LPGParser.g"
+               //#line 120 "LPGParser.g"
                 this.setResult(
-                    //#line 117 LPGParser.g
+                    //#line 120 LPGParser.g
                     new macro_segment(this.getRhsIToken(1))
-                //#line 117 LPGParser.g
+                //#line 120 LPGParser.g
                 );
             break;
             }
@@ -984,11 +986,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 64:  export_segment ::= terminal_symbol
             //
             case 64: {
-               //#line 127 "LPGParser.g"
+               //#line 130 "LPGParser.g"
                 this.setResult(
-                    //#line 127 LPGParser.g
+                    //#line 130 LPGParser.g
                     terminal_symbolList.terminal_symbolListfromElement(<Iterminal_symbol>this.getRhsSym(1), true /* left recursive */)
-                //#line 127 LPGParser.g
+                //#line 130 LPGParser.g
                 );
             break;
             }
@@ -996,7 +998,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 65:  export_segment ::= export_segment terminal_symbol
             //
             case 65: {
-               //#line 127 "LPGParser.g"
+               //#line 130 "LPGParser.g"
                 (<terminal_symbolList>this.getRhsSym(1)).addElement(<Iterminal_symbol>this.getRhsSym(2));
             break;
             }
@@ -1004,11 +1006,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 66:  globals_segment ::= action_segment
             //
             case 66: {
-               //#line 130 "LPGParser.g"
+               //#line 133 "LPGParser.g"
                 this.setResult(
-                    //#line 130 LPGParser.g
+                    //#line 133 LPGParser.g
                     action_segmentList.action_segmentListfromElement(<action_segment>this.getRhsSym(1), true /* left recursive */)
-                //#line 130 LPGParser.g
+                //#line 133 LPGParser.g
                 );
             break;
             }
@@ -1016,7 +1018,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 67:  globals_segment ::= globals_segment action_segment
             //
             case 67: {
-               //#line 130 "LPGParser.g"
+               //#line 133 "LPGParser.g"
                 (<action_segmentList>this.getRhsSym(1)).addElement(<action_segment>this.getRhsSym(2));
             break;
             }
@@ -1034,15 +1036,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 70:  import_segment ::= SYMBOL drop_command_list
             //
             case 70: {
-               //#line 139 "LPGParser.g"
+               //#line 142 "LPGParser.g"
                 this.setResult(
-                    //#line 139 LPGParser.g
+                    //#line 142 LPGParser.g
                     new import_segment(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 139 LPGParser.g
+                                       //#line 142 LPGParser.g
                                        new ASTNodeToken(this.getRhsIToken(1)),
-                                       //#line 139 LPGParser.g
+                                       //#line 142 LPGParser.g
                                        <drop_commandList>this.getRhsSym(2))
-                //#line 139 LPGParser.g
+                //#line 142 LPGParser.g
                 );
             break;
             }
@@ -1050,11 +1052,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 71:  drop_command_list ::= %Empty
             //
             case 71: {
-               //#line 141 "LPGParser.g"
+               //#line 144 "LPGParser.g"
                 this.setResult(
-                    //#line 141 LPGParser.g
+                    //#line 144 LPGParser.g
                     new drop_commandList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 141 LPGParser.g
+                //#line 144 LPGParser.g
                 );
             break;
             }
@@ -1062,7 +1064,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 72:  drop_command_list ::= drop_command_list drop_command
             //
             case 72: {
-               //#line 141 "LPGParser.g"
+               //#line 144 "LPGParser.g"
                 (<drop_commandList>this.getRhsSym(1)).addElement(<Idrop_command>this.getRhsSym(2));
             break;
             }
@@ -1070,15 +1072,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 73:  drop_command ::= DROPSYMBOLS_KEY drop_symbols
             //
             case 73: {
-               //#line 143 "LPGParser.g"
+               //#line 146 "LPGParser.g"
                 this.setResult(
-                    //#line 143 LPGParser.g
+                    //#line 146 LPGParser.g
                     new drop_command0(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 143 LPGParser.g
+                                      //#line 146 LPGParser.g
                                       new ASTNodeToken(this.getRhsIToken(1)),
-                                      //#line 143 LPGParser.g
+                                      //#line 146 LPGParser.g
                                       <SYMBOLList>this.getRhsSym(2))
-                //#line 143 LPGParser.g
+                //#line 146 LPGParser.g
                 );
             break;
             }
@@ -1086,15 +1088,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 74:  drop_command ::= DROPRULES_KEY drop_rules
             //
             case 74: {
-               //#line 144 "LPGParser.g"
+               //#line 147 "LPGParser.g"
                 this.setResult(
-                    //#line 144 LPGParser.g
+                    //#line 147 LPGParser.g
                     new drop_command1(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 144 LPGParser.g
+                                      //#line 147 LPGParser.g
                                       new ASTNodeToken(this.getRhsIToken(1)),
-                                      //#line 144 LPGParser.g
+                                      //#line 147 LPGParser.g
                                       <drop_ruleList>this.getRhsSym(2))
-                //#line 144 LPGParser.g
+                //#line 147 LPGParser.g
                 );
             break;
             }
@@ -1102,11 +1104,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 75:  drop_symbols ::= SYMBOL
             //
             case 75: {
-               //#line 146 "LPGParser.g"
+               //#line 149 "LPGParser.g"
                 this.setResult(
-                    //#line 146 LPGParser.g
+                    //#line 149 LPGParser.g
                     SYMBOLList.SYMBOLListfromElement(new ASTNodeToken(this.getRhsIToken(1)), true /* left recursive */)
-                //#line 146 LPGParser.g
+                //#line 149 LPGParser.g
                 );
             break;
             }
@@ -1114,7 +1116,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 76:  drop_symbols ::= drop_symbols SYMBOL
             //
             case 76: {
-               //#line 147 "LPGParser.g"
+               //#line 150 "LPGParser.g"
                 (<SYMBOLList>this.getRhsSym(1)).addElement(new ASTNodeToken(this.getRhsIToken(2)));
             break;
             }
@@ -1122,11 +1124,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 77:  drop_rules ::= drop_rule
             //
             case 77: {
-               //#line 148 "LPGParser.g"
+               //#line 151 "LPGParser.g"
                 this.setResult(
-                    //#line 148 LPGParser.g
+                    //#line 151 LPGParser.g
                     drop_ruleList.drop_ruleListfromElement(<drop_rule>this.getRhsSym(1), true /* left recursive */)
-                //#line 148 LPGParser.g
+                //#line 151 LPGParser.g
                 );
             break;
             }
@@ -1134,7 +1136,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 78:  drop_rules ::= drop_rules drop_rule
             //
             case 78: {
-               //#line 149 "LPGParser.g"
+               //#line 152 "LPGParser.g"
                 (<drop_ruleList>this.getRhsSym(1)).addElement(<drop_rule>this.getRhsSym(2));
             break;
             }
@@ -1142,19 +1144,19 @@ export class LPGParser extends Object implements RuleAction
             // Rule 79:  drop_rule ::= SYMBOL optMacroName produces ruleList
             //
             case 79: {
-               //#line 151 "LPGParser.g"
+               //#line 154 "LPGParser.g"
                 this.setResult(
-                    //#line 151 LPGParser.g
+                    //#line 154 LPGParser.g
                     new drop_rule(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 151 LPGParser.g
+                                  //#line 154 LPGParser.g
                                   new ASTNodeToken(this.getRhsIToken(1)),
-                                  //#line 151 LPGParser.g
+                                  //#line 154 LPGParser.g
                                   <optMacroName>this.getRhsSym(2),
-                                  //#line 151 LPGParser.g
+                                  //#line 154 LPGParser.g
                                   <Iproduces>this.getRhsSym(3),
-                                  //#line 151 LPGParser.g
+                                  //#line 154 LPGParser.g
                                   <ruleList>this.getRhsSym(4))
-                //#line 151 LPGParser.g
+                //#line 154 LPGParser.g
                 );
             break;
             }
@@ -1162,19 +1164,19 @@ export class LPGParser extends Object implements RuleAction
             // Rule 80:  optMacroName ::= %Empty
             //
             case 80: {
-               //#line 153 "LPGParser.g"
-                this.setResult(undefined);
+               //#line 156 "LPGParser.g"
+                this.setResult(null);
             break;
             }
             //
             // Rule 81:  optMacroName ::= MACRO_NAME
             //
             case 81: {
-               //#line 153 "LPGParser.g"
+               //#line 156 "LPGParser.g"
                 this.setResult(
-                    //#line 153 LPGParser.g
+                    //#line 156 LPGParser.g
                     new optMacroName(this.getRhsIToken(1))
-                //#line 153 LPGParser.g
+                //#line 156 LPGParser.g
                 );
             break;
             }
@@ -1182,11 +1184,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 82:  include_segment ::= SYMBOL
             //
             case 82: {
-               //#line 156 "LPGParser.g"
+               //#line 159 "LPGParser.g"
                 this.setResult(
-                    //#line 156 LPGParser.g
+                    //#line 159 LPGParser.g
                     new include_segment(this.getRhsIToken(1))
-                //#line 156 LPGParser.g
+                //#line 159 LPGParser.g
                 );
             break;
             }
@@ -1194,11 +1196,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 83:  keywords_segment ::= keywordSpec
             //
             case 83: {
-               //#line 159 "LPGParser.g"
+               //#line 162 "LPGParser.g"
                 this.setResult(
-                    //#line 159 LPGParser.g
+                    //#line 162 LPGParser.g
                     keywordSpecList.keywordSpecListfromElement(<IkeywordSpec>this.getRhsSym(1), true /* left recursive */)
-                //#line 159 LPGParser.g
+                //#line 162 LPGParser.g
                 );
             break;
             }
@@ -1206,7 +1208,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 84:  keywords_segment ::= keywords_segment keywordSpec
             //
             case 84: {
-               //#line 159 "LPGParser.g"
+               //#line 162 "LPGParser.g"
                 (<keywordSpecList>this.getRhsSym(1)).addElement(<IkeywordSpec>this.getRhsSym(2));
             break;
             }
@@ -1219,17 +1221,17 @@ export class LPGParser extends Object implements RuleAction
             // Rule 86:  keywordSpec ::= terminal_symbol produces name
             //
             case 86: {
-               //#line 161 "LPGParser.g"
+               //#line 164 "LPGParser.g"
                 this.setResult(
-                    //#line 161 LPGParser.g
+                    //#line 164 LPGParser.g
                     new keywordSpec(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 161 LPGParser.g
+                                    //#line 164 LPGParser.g
                                     <Iterminal_symbol>this.getRhsSym(1),
-                                    //#line 161 LPGParser.g
+                                    //#line 164 LPGParser.g
                                     <Iproduces>this.getRhsSym(2),
-                                    //#line 161 LPGParser.g
+                                    //#line 164 LPGParser.g
                                     <Iname>this.getRhsSym(3))
-                //#line 161 LPGParser.g
+                //#line 164 LPGParser.g
                 );
             break;
             }
@@ -1237,11 +1239,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 87:  names_segment ::= nameSpec
             //
             case 87: {
-               //#line 164 "LPGParser.g"
+               //#line 167 "LPGParser.g"
                 this.setResult(
-                    //#line 164 LPGParser.g
+                    //#line 167 LPGParser.g
                     nameSpecList.nameSpecListfromElement(<nameSpec>this.getRhsSym(1), true /* left recursive */)
-                //#line 164 LPGParser.g
+                //#line 167 LPGParser.g
                 );
             break;
             }
@@ -1249,7 +1251,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 88:  names_segment ::= names_segment nameSpec
             //
             case 88: {
-               //#line 164 "LPGParser.g"
+               //#line 167 "LPGParser.g"
                 (<nameSpecList>this.getRhsSym(1)).addElement(<nameSpec>this.getRhsSym(2));
             break;
             }
@@ -1257,17 +1259,17 @@ export class LPGParser extends Object implements RuleAction
             // Rule 89:  nameSpec ::= name produces name
             //
             case 89: {
-               //#line 165 "LPGParser.g"
+               //#line 168 "LPGParser.g"
                 this.setResult(
-                    //#line 165 LPGParser.g
+                    //#line 168 LPGParser.g
                     new nameSpec(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 165 LPGParser.g
+                                 //#line 168 LPGParser.g
                                  <Iname>this.getRhsSym(1),
-                                 //#line 165 LPGParser.g
+                                 //#line 168 LPGParser.g
                                  <Iproduces>this.getRhsSym(2),
-                                 //#line 165 LPGParser.g
+                                 //#line 168 LPGParser.g
                                  <Iname>this.getRhsSym(3))
-                //#line 165 LPGParser.g
+                //#line 168 LPGParser.g
                 );
             break;
             }
@@ -1275,11 +1277,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 90:  name ::= SYMBOL
             //
             case 90: {
-               //#line 167 "LPGParser.g"
+               //#line 170 "LPGParser.g"
                 this.setResult(
-                    //#line 167 LPGParser.g
+                    //#line 170 LPGParser.g
                     new name0(this.getRhsIToken(1))
-                //#line 167 LPGParser.g
+                //#line 170 LPGParser.g
                 );
             break;
             }
@@ -1287,11 +1289,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 91:  name ::= MACRO_NAME
             //
             case 91: {
-               //#line 168 "LPGParser.g"
+               //#line 171 "LPGParser.g"
                 this.setResult(
-                    //#line 168 LPGParser.g
+                    //#line 171 LPGParser.g
                     new name1(this.getRhsIToken(1))
-                //#line 168 LPGParser.g
+                //#line 171 LPGParser.g
                 );
             break;
             }
@@ -1299,11 +1301,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 92:  name ::= EMPTY_KEY
             //
             case 92: {
-               //#line 169 "LPGParser.g"
+               //#line 172 "LPGParser.g"
                 this.setResult(
-                    //#line 169 LPGParser.g
+                    //#line 172 LPGParser.g
                     new name2(this.getRhsIToken(1))
-                //#line 169 LPGParser.g
+                //#line 172 LPGParser.g
                 );
             break;
             }
@@ -1311,11 +1313,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 93:  name ::= ERROR_KEY
             //
             case 93: {
-               //#line 170 "LPGParser.g"
+               //#line 173 "LPGParser.g"
                 this.setResult(
-                    //#line 170 LPGParser.g
+                    //#line 173 LPGParser.g
                     new name3(this.getRhsIToken(1))
-                //#line 170 LPGParser.g
+                //#line 173 LPGParser.g
                 );
             break;
             }
@@ -1323,11 +1325,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 94:  name ::= EOL_KEY
             //
             case 94: {
-               //#line 171 "LPGParser.g"
+               //#line 174 "LPGParser.g"
                 this.setResult(
-                    //#line 171 LPGParser.g
+                    //#line 174 LPGParser.g
                     new name4(this.getRhsIToken(1))
-                //#line 171 LPGParser.g
+                //#line 174 LPGParser.g
                 );
             break;
             }
@@ -1335,11 +1337,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 95:  name ::= IDENTIFIER_KEY
             //
             case 95: {
-               //#line 172 "LPGParser.g"
+               //#line 175 "LPGParser.g"
                 this.setResult(
-                    //#line 172 LPGParser.g
+                    //#line 175 LPGParser.g
                     new name5(this.getRhsIToken(1))
-                //#line 172 LPGParser.g
+                //#line 175 LPGParser.g
                 );
             break;
             }
@@ -1347,11 +1349,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 96:  notice_segment ::= action_segment
             //
             case 96: {
-               //#line 175 "LPGParser.g"
+               //#line 178 "LPGParser.g"
                 this.setResult(
-                    //#line 175 LPGParser.g
+                    //#line 178 LPGParser.g
                     action_segmentList.action_segmentListfromElement(<action_segment>this.getRhsSym(1), true /* left recursive */)
-                //#line 175 LPGParser.g
+                //#line 178 LPGParser.g
                 );
             break;
             }
@@ -1359,7 +1361,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 97:  notice_segment ::= notice_segment action_segment
             //
             case 97: {
-               //#line 175 "LPGParser.g"
+               //#line 178 "LPGParser.g"
                 (<action_segmentList>this.getRhsSym(1)).addElement(<action_segment>this.getRhsSym(2));
             break;
             }
@@ -1367,15 +1369,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 98:  rules_segment ::= action_segment_list nonTermList
             //
             case 98: {
-               //#line 178 "LPGParser.g"
+               //#line 181 "LPGParser.g"
                 this.setResult(
-                    //#line 178 LPGParser.g
+                    //#line 181 LPGParser.g
                     new rules_segment(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 178 LPGParser.g
+                                      //#line 181 LPGParser.g
                                       <action_segmentList>this.getRhsSym(1),
-                                      //#line 178 LPGParser.g
+                                      //#line 181 LPGParser.g
                                       <nonTermList>this.getRhsSym(2))
-                //#line 178 LPGParser.g
+                //#line 181 LPGParser.g
                 );
             break;
             }
@@ -1383,11 +1385,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 99:  nonTermList ::= %Empty
             //
             case 99: {
-               //#line 180 "LPGParser.g"
+               //#line 183 "LPGParser.g"
                 this.setResult(
-                    //#line 180 LPGParser.g
+                    //#line 183 LPGParser.g
                     new nonTermList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 180 LPGParser.g
+                //#line 183 LPGParser.g
                 );
             break;
             }
@@ -1395,7 +1397,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 100:  nonTermList ::= nonTermList nonTerm
             //
             case 100: {
-               //#line 180 "LPGParser.g"
+               //#line 183 "LPGParser.g"
                 (<nonTermList>this.getRhsSym(1)).addElement(<nonTerm>this.getRhsSym(2));
             break;
             }
@@ -1403,17 +1405,17 @@ export class LPGParser extends Object implements RuleAction
             // Rule 101:  nonTerm ::= ruleNameWithAttributes produces ruleList
             //
             case 101: {
-               //#line 182 "LPGParser.g"
+               //#line 185 "LPGParser.g"
                 this.setResult(
-                    //#line 182 LPGParser.g
+                    //#line 185 LPGParser.g
                     new nonTerm(this.getLeftIToken(), this.getRightIToken(),
-                                //#line 182 LPGParser.g
+                                //#line 185 LPGParser.g
                                 <RuleName>this.getRhsSym(1),
-                                //#line 182 LPGParser.g
+                                //#line 185 LPGParser.g
                                 <Iproduces>this.getRhsSym(2),
-                                //#line 182 LPGParser.g
+                                //#line 185 LPGParser.g
                                 <ruleList>this.getRhsSym(3))
-                //#line 182 LPGParser.g
+                //#line 185 LPGParser.g
                 );
             break;
             }
@@ -1421,17 +1423,17 @@ export class LPGParser extends Object implements RuleAction
             // Rule 102:  ruleNameWithAttributes ::= SYMBOL
             //
             case 102: {
-               //#line 186 "LPGParser.g"
+               //#line 189 "LPGParser.g"
                 this.setResult(
-                    //#line 186 LPGParser.g
+                    //#line 189 LPGParser.g
                     new RuleName(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 186 LPGParser.g
+                                 //#line 189 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(1)),
-                                 //#line 186 LPGParser.g
-                                 undefined,
-                                 //#line 186 LPGParser.g
-                                 undefined)
-                //#line 186 LPGParser.g
+                                 //#line 189 LPGParser.g
+                                 null,
+                                 //#line 189 LPGParser.g
+                                 null)
+                //#line 189 LPGParser.g
                 );
             break;
             }
@@ -1439,17 +1441,17 @@ export class LPGParser extends Object implements RuleAction
             // Rule 103:  ruleNameWithAttributes ::= SYMBOL MACRO_NAME$className
             //
             case 103: {
-               //#line 187 "LPGParser.g"
+               //#line 190 "LPGParser.g"
                 this.setResult(
-                    //#line 187 LPGParser.g
+                    //#line 190 LPGParser.g
                     new RuleName(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 187 LPGParser.g
+                                 //#line 190 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(1)),
-                                 //#line 187 LPGParser.g
+                                 //#line 190 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(2)),
-                                 //#line 187 LPGParser.g
-                                 undefined)
-                //#line 187 LPGParser.g
+                                 //#line 190 LPGParser.g
+                                 null)
+                //#line 190 LPGParser.g
                 );
             break;
             }
@@ -1457,17 +1459,17 @@ export class LPGParser extends Object implements RuleAction
             // Rule 104:  ruleNameWithAttributes ::= SYMBOL MACRO_NAME$className MACRO_NAME$arrayElement
             //
             case 104: {
-               //#line 188 "LPGParser.g"
+               //#line 191 "LPGParser.g"
                 this.setResult(
-                    //#line 188 LPGParser.g
+                    //#line 191 LPGParser.g
                     new RuleName(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 188 LPGParser.g
+                                 //#line 191 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(1)),
-                                 //#line 188 LPGParser.g
+                                 //#line 191 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(2)),
-                                 //#line 188 LPGParser.g
+                                 //#line 191 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(3)))
-                //#line 188 LPGParser.g
+                //#line 191 LPGParser.g
                 );
             break;
             }
@@ -1475,11 +1477,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 105:  ruleList ::= rule
             //
             case 105: {
-               //#line 202 "LPGParser.g"
+               //#line 205 "LPGParser.g"
                 this.setResult(
-                    //#line 202 LPGParser.g
+                    //#line 205 LPGParser.g
                     ruleList.ruleListfromElement(<rule>this.getRhsSym(1), true /* left recursive */)
-                //#line 202 LPGParser.g
+                //#line 205 LPGParser.g
                 );
             break;
             }
@@ -1487,7 +1489,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 106:  ruleList ::= ruleList |$ rule
             //
             case 106: {
-               //#line 202 "LPGParser.g"
+               //#line 205 "LPGParser.g"
                 (<ruleList>this.getRhsSym(1)).addElement(<rule>this.getRhsSym(3));
             break;
             }
@@ -1495,11 +1497,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 107:  produces ::= ::=
             //
             case 107: {
-               //#line 204 "LPGParser.g"
+               //#line 207 "LPGParser.g"
                 this.setResult(
-                    //#line 204 LPGParser.g
+                    //#line 207 LPGParser.g
                     new produces0(this.getRhsIToken(1))
-                //#line 204 LPGParser.g
+                //#line 207 LPGParser.g
                 );
             break;
             }
@@ -1507,11 +1509,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 108:  produces ::= ::=?
             //
             case 108: {
-               //#line 205 "LPGParser.g"
+               //#line 208 "LPGParser.g"
                 this.setResult(
-                    //#line 205 LPGParser.g
+                    //#line 208 LPGParser.g
                     new produces1(this.getRhsIToken(1))
-                //#line 205 LPGParser.g
+                //#line 208 LPGParser.g
                 );
             break;
             }
@@ -1519,11 +1521,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 109:  produces ::= ->
             //
             case 109: {
-               //#line 206 "LPGParser.g"
+               //#line 209 "LPGParser.g"
                 this.setResult(
-                    //#line 206 LPGParser.g
+                    //#line 209 LPGParser.g
                     new produces2(this.getRhsIToken(1))
-                //#line 206 LPGParser.g
+                //#line 209 LPGParser.g
                 );
             break;
             }
@@ -1531,11 +1533,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 110:  produces ::= ->?
             //
             case 110: {
-               //#line 207 "LPGParser.g"
+               //#line 210 "LPGParser.g"
                 this.setResult(
-                    //#line 207 LPGParser.g
+                    //#line 210 LPGParser.g
                     new produces3(this.getRhsIToken(1))
-                //#line 207 LPGParser.g
+                //#line 210 LPGParser.g
                 );
             break;
             }
@@ -1543,15 +1545,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 111:  rule ::= symWithAttrsList action_segment_list
             //
             case 111: {
-               //#line 209 "LPGParser.g"
+               //#line 212 "LPGParser.g"
                 this.setResult(
-                    //#line 209 LPGParser.g
+                    //#line 212 LPGParser.g
                     new rule(this.getLeftIToken(), this.getRightIToken(),
-                             //#line 209 LPGParser.g
+                             //#line 212 LPGParser.g
                              <symWithAttrsList>this.getRhsSym(1),
-                             //#line 209 LPGParser.g
+                             //#line 212 LPGParser.g
                              <action_segmentList>this.getRhsSym(2))
-                //#line 209 LPGParser.g
+                //#line 212 LPGParser.g
                 );
             break;
             }
@@ -1559,11 +1561,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 112:  symWithAttrsList ::= %Empty
             //
             case 112: {
-               //#line 211 "LPGParser.g"
+               //#line 214 "LPGParser.g"
                 this.setResult(
-                    //#line 211 LPGParser.g
+                    //#line 214 LPGParser.g
                     new symWithAttrsList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 211 LPGParser.g
+                //#line 214 LPGParser.g
                 );
             break;
             }
@@ -1571,7 +1573,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 113:  symWithAttrsList ::= symWithAttrsList symWithAttrs
             //
             case 113: {
-               //#line 211 "LPGParser.g"
+               //#line 214 "LPGParser.g"
                 (<symWithAttrsList>this.getRhsSym(1)).addElement(<IsymWithAttrs>this.getRhsSym(2));
             break;
             }
@@ -1579,11 +1581,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 114:  symWithAttrs ::= EMPTY_KEY
             //
             case 114: {
-               //#line 213 "LPGParser.g"
+               //#line 216 "LPGParser.g"
                 this.setResult(
-                    //#line 213 LPGParser.g
+                    //#line 216 LPGParser.g
                     new symWithAttrs0(this.getRhsIToken(1))
-                //#line 213 LPGParser.g
+                //#line 216 LPGParser.g
                 );
             break;
             }
@@ -1591,15 +1593,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 115:  symWithAttrs ::= SYMBOL optAttrList
             //
             case 115: {
-               //#line 214 "LPGParser.g"
+               //#line 217 "LPGParser.g"
                 this.setResult(
-                    //#line 214 LPGParser.g
+                    //#line 217 LPGParser.g
                     new symWithAttrs1(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 214 LPGParser.g
+                                      //#line 217 LPGParser.g
                                       new ASTNodeToken(this.getRhsIToken(1)),
-                                      //#line 214 LPGParser.g
+                                      //#line 217 LPGParser.g
                                       <symAttrs>this.getRhsSym(2))
-                //#line 214 LPGParser.g
+                //#line 217 LPGParser.g
                 );
             break;
             }
@@ -1607,13 +1609,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 116:  optAttrList ::= %Empty
             //
             case 116: {
-               //#line 217 "LPGParser.g"
+               //#line 220 "LPGParser.g"
                 this.setResult(
-                    //#line 217 LPGParser.g
+                    //#line 220 LPGParser.g
                     new symAttrs(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 217 LPGParser.g
-                                 undefined)
-                //#line 217 LPGParser.g
+                                 //#line 220 LPGParser.g
+                                 null)
+                //#line 220 LPGParser.g
                 );
             break;
             }
@@ -1621,13 +1623,13 @@ export class LPGParser extends Object implements RuleAction
             // Rule 117:  optAttrList ::= MACRO_NAME
             //
             case 117: {
-               //#line 218 "LPGParser.g"
+               //#line 221 "LPGParser.g"
                 this.setResult(
-                    //#line 218 LPGParser.g
+                    //#line 221 LPGParser.g
                     new symAttrs(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 218 LPGParser.g
+                                 //#line 221 LPGParser.g
                                  new ASTNodeToken(this.getRhsIToken(1)))
-                //#line 218 LPGParser.g
+                //#line 221 LPGParser.g
                 );
             break;
             }
@@ -1635,8 +1637,8 @@ export class LPGParser extends Object implements RuleAction
             // Rule 118:  opt_action_segment ::= %Empty
             //
             case 118: {
-               //#line 220 "LPGParser.g"
-                this.setResult(undefined);
+               //#line 223 "LPGParser.g"
+                this.setResult(null);
             break;
             }
             //
@@ -1648,11 +1650,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 120:  action_segment ::= BLOCK
             //
             case 120: {
-               //#line 222 "LPGParser.g"
+               //#line 225 "LPGParser.g"
                 this.setResult(
-                    //#line 222 LPGParser.g
+                    //#line 225 LPGParser.g
                     new action_segment(this.getRhsIToken(1))
-                //#line 222 LPGParser.g
+                //#line 225 LPGParser.g
                 );
             break;
             }
@@ -1660,11 +1662,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 121:  start_segment ::= start_symbol
             //
             case 121: {
-               //#line 226 "LPGParser.g"
+               //#line 229 "LPGParser.g"
                 this.setResult(
-                    //#line 226 LPGParser.g
+                    //#line 229 LPGParser.g
                     start_symbolList.start_symbolListfromElement(<Istart_symbol>this.getRhsSym(1), true /* left recursive */)
-                //#line 226 LPGParser.g
+                //#line 229 LPGParser.g
                 );
             break;
             }
@@ -1672,7 +1674,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 122:  start_segment ::= start_segment start_symbol
             //
             case 122: {
-               //#line 226 "LPGParser.g"
+               //#line 229 "LPGParser.g"
                 (<start_symbolList>this.getRhsSym(1)).addElement(<Istart_symbol>this.getRhsSym(2));
             break;
             }
@@ -1680,11 +1682,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 123:  start_symbol ::= SYMBOL
             //
             case 123: {
-               //#line 227 "LPGParser.g"
+               //#line 230 "LPGParser.g"
                 this.setResult(
-                    //#line 227 LPGParser.g
+                    //#line 230 LPGParser.g
                     new start_symbol0(this.getRhsIToken(1))
-                //#line 227 LPGParser.g
+                //#line 230 LPGParser.g
                 );
             break;
             }
@@ -1692,11 +1694,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 124:  start_symbol ::= MACRO_NAME
             //
             case 124: {
-               //#line 228 "LPGParser.g"
+               //#line 231 "LPGParser.g"
                 this.setResult(
-                    //#line 228 LPGParser.g
+                    //#line 231 LPGParser.g
                     new start_symbol1(this.getRhsIToken(1))
-                //#line 228 LPGParser.g
+                //#line 231 LPGParser.g
                 );
             break;
             }
@@ -1704,11 +1706,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 125:  terminals_segment ::= terminal
             //
             case 125: {
-               //#line 231 "LPGParser.g"
+               //#line 234 "LPGParser.g"
                 this.setResult(
-                    //#line 231 LPGParser.g
+                    //#line 234 LPGParser.g
                     terminals_segment_terminalList.terminals_segment_terminalListfromElement(this, <terminal>this.getRhsSym(1), true /* left recursive */)
-                //#line 231 LPGParser.g
+                //#line 234 LPGParser.g
                 );
             break;
             }
@@ -1716,7 +1718,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 126:  terminals_segment ::= terminals_segment terminal
             //
             case 126: {
-               //#line 231 "LPGParser.g"
+               //#line 234 "LPGParser.g"
                 (<terminals_segment_terminalList>this.getRhsSym(1)).addElement(<terminal>this.getRhsSym(2));
             break;
             }
@@ -1724,15 +1726,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 127:  terminal ::= terminal_symbol optTerminalAlias
             //
             case 127: {
-               //#line 236 "LPGParser.g"
+               //#line 239 "LPGParser.g"
                 this.setResult(
-                    //#line 236 LPGParser.g
+                    //#line 239 LPGParser.g
                     new terminal(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 236 LPGParser.g
+                                 //#line 239 LPGParser.g
                                  <Iterminal_symbol>this.getRhsSym(1),
-                                 //#line 236 LPGParser.g
+                                 //#line 239 LPGParser.g
                                  <optTerminalAlias>this.getRhsSym(2))
-                //#line 236 LPGParser.g
+                //#line 239 LPGParser.g
                 );
             break;
             }
@@ -1740,23 +1742,23 @@ export class LPGParser extends Object implements RuleAction
             // Rule 128:  optTerminalAlias ::= %Empty
             //
             case 128: {
-               //#line 238 "LPGParser.g"
-                this.setResult(undefined);
+               //#line 241 "LPGParser.g"
+                this.setResult(null);
             break;
             }
             //
             // Rule 129:  optTerminalAlias ::= produces name
             //
             case 129: {
-               //#line 238 "LPGParser.g"
+               //#line 241 "LPGParser.g"
                 this.setResult(
-                    //#line 238 LPGParser.g
+                    //#line 241 LPGParser.g
                     new optTerminalAlias(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 238 LPGParser.g
+                                         //#line 241 LPGParser.g
                                          <Iproduces>this.getRhsSym(1),
-                                         //#line 238 LPGParser.g
+                                         //#line 241 LPGParser.g
                                          <Iname>this.getRhsSym(2))
-                //#line 238 LPGParser.g
+                //#line 241 LPGParser.g
                 );
             break;
             }
@@ -1764,11 +1766,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 130:  terminal_symbol ::= SYMBOL
             //
             case 130: {
-               //#line 240 "LPGParser.g"
+               //#line 243 "LPGParser.g"
                 this.setResult(
-                    //#line 240 LPGParser.g
+                    //#line 243 LPGParser.g
                     new terminal_symbol0(this.getRhsIToken(1))
-                //#line 240 LPGParser.g
+                //#line 243 LPGParser.g
                 );
             break;
             }
@@ -1776,11 +1778,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 131:  terminal_symbol ::= MACRO_NAME
             //
             case 131: {
-               //#line 242 "LPGParser.g"
+               //#line 245 "LPGParser.g"
                 this.setResult(
-                    //#line 242 LPGParser.g
+                    //#line 245 LPGParser.g
                     new terminal_symbol1(this.getRhsIToken(1))
-                //#line 242 LPGParser.g
+                //#line 245 LPGParser.g
                 );
             break;
             }
@@ -1793,11 +1795,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 133:  types_segment ::= type_declarations
             //
             case 133: {
-               //#line 248 "LPGParser.g"
+               //#line 251 "LPGParser.g"
                 this.setResult(
-                    //#line 248 LPGParser.g
+                    //#line 251 LPGParser.g
                     type_declarationsList.type_declarationsListfromElement(<type_declarations>this.getRhsSym(1), true /* left recursive */)
-                //#line 248 LPGParser.g
+                //#line 251 LPGParser.g
                 );
             break;
             }
@@ -1805,7 +1807,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 134:  types_segment ::= types_segment type_declarations
             //
             case 134: {
-               //#line 248 "LPGParser.g"
+               //#line 251 "LPGParser.g"
                 (<type_declarationsList>this.getRhsSym(1)).addElement(<type_declarations>this.getRhsSym(2));
             break;
             }
@@ -1813,19 +1815,19 @@ export class LPGParser extends Object implements RuleAction
             // Rule 135:  type_declarations ::= SYMBOL produces barSymbolList opt_action_segment
             //
             case 135: {
-               //#line 250 "LPGParser.g"
+               //#line 253 "LPGParser.g"
                 this.setResult(
-                    //#line 250 LPGParser.g
+                    //#line 253 LPGParser.g
                     new type_declarations(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 250 LPGParser.g
+                                          //#line 253 LPGParser.g
                                           new ASTNodeToken(this.getRhsIToken(1)),
-                                          //#line 250 LPGParser.g
+                                          //#line 253 LPGParser.g
                                           <Iproduces>this.getRhsSym(2),
-                                          //#line 250 LPGParser.g
+                                          //#line 253 LPGParser.g
                                           <SYMBOLList>this.getRhsSym(3),
-                                          //#line 250 LPGParser.g
+                                          //#line 253 LPGParser.g
                                           <action_segment>this.getRhsSym(4))
-                //#line 250 LPGParser.g
+                //#line 253 LPGParser.g
                 );
             break;
             }
@@ -1833,11 +1835,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 136:  barSymbolList ::= SYMBOL
             //
             case 136: {
-               //#line 251 "LPGParser.g"
+               //#line 254 "LPGParser.g"
                 this.setResult(
-                    //#line 251 LPGParser.g
+                    //#line 254 LPGParser.g
                     SYMBOLList.SYMBOLListfromElement(new ASTNodeToken(this.getRhsIToken(1)), true /* left recursive */)
-                //#line 251 LPGParser.g
+                //#line 254 LPGParser.g
                 );
             break;
             }
@@ -1845,7 +1847,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 137:  barSymbolList ::= barSymbolList |$ SYMBOL
             //
             case 137: {
-               //#line 251 "LPGParser.g"
+               //#line 254 "LPGParser.g"
                 (<SYMBOLList>this.getRhsSym(1)).addElement(new ASTNodeToken(this.getRhsIToken(3)));
             break;
             }
@@ -1853,11 +1855,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 138:  predecessor_segment ::= %Empty
             //
             case 138: {
-               //#line 254 "LPGParser.g"
+               //#line 257 "LPGParser.g"
                 this.setResult(
-                    //#line 254 LPGParser.g
+                    //#line 257 LPGParser.g
                     new symbol_pairList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 254 LPGParser.g
+                //#line 257 LPGParser.g
                 );
             break;
             }
@@ -1865,7 +1867,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 139:  predecessor_segment ::= predecessor_segment symbol_pair
             //
             case 139: {
-               //#line 254 "LPGParser.g"
+               //#line 257 "LPGParser.g"
                 (<symbol_pairList>this.getRhsSym(1)).addElement(<symbol_pair>this.getRhsSym(2));
             break;
             }
@@ -1873,15 +1875,15 @@ export class LPGParser extends Object implements RuleAction
             // Rule 140:  symbol_pair ::= SYMBOL SYMBOL
             //
             case 140: {
-               //#line 256 "LPGParser.g"
+               //#line 259 "LPGParser.g"
                 this.setResult(
-                    //#line 256 LPGParser.g
+                    //#line 259 LPGParser.g
                     new symbol_pair(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 256 LPGParser.g
+                                    //#line 259 LPGParser.g
                                     new ASTNodeToken(this.getRhsIToken(1)),
-                                    //#line 256 LPGParser.g
+                                    //#line 259 LPGParser.g
                                     new ASTNodeToken(this.getRhsIToken(2)))
-                //#line 256 LPGParser.g
+                //#line 259 LPGParser.g
                 );
             break;
             }
@@ -1889,11 +1891,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 141:  recover_segment ::= %Empty
             //
             case 141: {
-               //#line 259 "LPGParser.g"
+               //#line 262 "LPGParser.g"
                 this.setResult(
-                    //#line 259 LPGParser.g
+                    //#line 262 LPGParser.g
                     new SYMBOLList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 259 LPGParser.g
+                //#line 262 LPGParser.g
                 );
             break;
             }
@@ -1901,7 +1903,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 142:  recover_segment ::= recover_segment recover_symbol
             //
             case 142: {
-               //#line 259 "LPGParser.g"
+               //#line 262 "LPGParser.g"
                 this.setResult(<SYMBOLList>this.getRhsSym(1));
             break;
             }
@@ -1909,11 +1911,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 143:  recover_symbol ::= SYMBOL
             //
             case 143: {
-               //#line 261 "LPGParser.g"
+               //#line 264 "LPGParser.g"
                 this.setResult(
-                    //#line 261 LPGParser.g
+                    //#line 264 LPGParser.g
                     new recover_symbol(this.getRhsIToken(1))
-                //#line 261 LPGParser.g
+                //#line 264 LPGParser.g
                 );
             break;
             }
@@ -1921,19 +1923,19 @@ export class LPGParser extends Object implements RuleAction
             // Rule 144:  END_KEY_OPT ::= %Empty
             //
             case 144: {
-               //#line 264 "LPGParser.g"
-                this.setResult(undefined);
+               //#line 267 "LPGParser.g"
+                this.setResult(null);
             break;
             }
             //
             // Rule 145:  END_KEY_OPT ::= END_KEY
             //
             case 145: {
-               //#line 265 "LPGParser.g"
+               //#line 268 "LPGParser.g"
                 this.setResult(
-                    //#line 265 LPGParser.g
+                    //#line 268 LPGParser.g
                     new END_KEY_OPT(this.getRhsIToken(1))
-                //#line 265 LPGParser.g
+                //#line 268 LPGParser.g
                 );
             break;
             }
@@ -1941,11 +1943,11 @@ export class LPGParser extends Object implements RuleAction
             // Rule 146:  action_segment_list ::= %Empty
             //
             case 146: {
-               //#line 267 "LPGParser.g"
+               //#line 270 "LPGParser.g"
                 this.setResult(
-                    //#line 267 LPGParser.g
+                    //#line 270 LPGParser.g
                     new action_segmentList(this.getLeftIToken(), this.getRightIToken(), true /* left recursive */)
-                //#line 267 LPGParser.g
+                //#line 270 LPGParser.g
                 );
             break;
             }
@@ -1953,7 +1955,7 @@ export class LPGParser extends Object implements RuleAction
             // Rule 147:  action_segment_list ::= action_segment_list action_segment
             //
             case 147: {
-               //#line 268 "LPGParser.g"
+               //#line 271 "LPGParser.g"
                 (<action_segmentList>this.getRhsSym(1)).addElement(<action_segment>this.getRhsSym(2));
             break;
             }
@@ -1968,12 +1970,12 @@ export class LPGParser extends Object implements RuleAction
 }
     export abstract class ASTNode implements IAst
     {
-        public getNextAst() : IAst | undefined { return undefined; }
+        public getNextAst() : IAst | null { return null; }
         protected leftIToken : IToken ;
         protected rightIToken: IToken ;
-        protected parent? : IAst ;
+        protected parent : IAst | null = null ;
         public  setParent(parent : IAst ) : void { this.parent = parent; }
-        public  getParent() : IAst | undefined{ return this.parent; }
+        public  getParent() : IAst | null{ return this.parent; }
 
         public getLeftIToken() : IToken { return this.leftIToken; }
         public getRightIToken() : IToken { return this.rightIToken; }
@@ -1996,7 +1998,7 @@ export class LPGParser extends Object implements RuleAction
       public   initialize() : void {}
 
         /**
-         * A list of all children of this node, excluding the undefined ones.
+         * A list of all children of this node, excluding the null ones.
          */
         public  getChildren() : Lpg.Util.ArrayList<IAst>
         {
@@ -2005,7 +2007,7 @@ export class LPGParser extends Object implements RuleAction
             for (let i = 0; i < list.size(); i++)
             {
                 let element = list.get(i);
-                if (element != undefined)
+                if (element)
                 {
                     if (++k != i)
                         list.set(k, element);
@@ -2017,7 +2019,7 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the undefined ones.
+         * A list of all children of this node, don't including the null ones.
          */
         public abstract  getAllChildren() : Lpg.Util.ArrayList<IAst>;
 
@@ -2704,13 +2706,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._options_segment);
-            list.add(this._LPG_INPUT);
+            if(this._options_segment)  list.add(this._options_segment);
+            if(this._LPG_INPUT)  list.add(this._LPG_INPUT);
             return list;
         }
 
@@ -2791,12 +2793,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._alias_segment);
+            if(this._alias_segment)  list.add(this._alias_segment);
             return list;
         }
 
@@ -2829,12 +2831,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._ast_segment);
+            if(this._ast_segment)  list.add(this._ast_segment);
             return list;
         }
 
@@ -2867,12 +2869,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._define_segment);
+            if(this._define_segment)  list.add(this._define_segment);
             return list;
         }
 
@@ -2905,12 +2907,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._eof_segment);
+            if(this._eof_segment)  list.add(this._eof_segment);
             return list;
         }
 
@@ -2943,12 +2945,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._eol_segment);
+            if(this._eol_segment)  list.add(this._eol_segment);
             return list;
         }
 
@@ -2981,12 +2983,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._error_segment);
+            if(this._error_segment)  list.add(this._error_segment);
             return list;
         }
 
@@ -3019,12 +3021,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._export_segment);
+            if(this._export_segment)  list.add(this._export_segment);
             return list;
         }
 
@@ -3057,12 +3059,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._globals_segment);
+            if(this._globals_segment)  list.add(this._globals_segment);
             return list;
         }
 
@@ -3095,12 +3097,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._headers_segment);
+            if(this._headers_segment)  list.add(this._headers_segment);
             return list;
         }
 
@@ -3133,12 +3135,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._identifier_segment);
+            if(this._identifier_segment)  list.add(this._identifier_segment);
             return list;
         }
 
@@ -3171,12 +3173,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._import_segment);
+            if(this._import_segment)  list.add(this._import_segment);
             return list;
         }
 
@@ -3209,12 +3211,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._include_segment);
+            if(this._include_segment)  list.add(this._include_segment);
             return list;
         }
 
@@ -3247,12 +3249,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._keywords_segment);
+            if(this._keywords_segment)  list.add(this._keywords_segment);
             return list;
         }
 
@@ -3285,12 +3287,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._names_segment);
+            if(this._names_segment)  list.add(this._names_segment);
             return list;
         }
 
@@ -3323,12 +3325,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._notice_segment);
+            if(this._notice_segment)  list.add(this._notice_segment);
             return list;
         }
 
@@ -3361,12 +3363,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._rules_segment);
+            if(this._rules_segment)  list.add(this._rules_segment);
             return list;
         }
 
@@ -3399,12 +3401,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._keywords_segment);
+            if(this._keywords_segment)  list.add(this._keywords_segment);
             return list;
         }
 
@@ -3437,12 +3439,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._start_segment);
+            if(this._start_segment)  list.add(this._start_segment);
             return list;
         }
 
@@ -3475,12 +3477,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._terminals_segment);
+            if(this._terminals_segment)  list.add(this._terminals_segment);
             return list;
         }
 
@@ -3513,12 +3515,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._trailers_segment);
+            if(this._trailers_segment)  list.add(this._trailers_segment);
             return list;
         }
 
@@ -3551,12 +3553,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._types_segment);
+            if(this._types_segment)  list.add(this._types_segment);
             return list;
         }
 
@@ -3589,12 +3591,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._recover_segment);
+            if(this._recover_segment)  list.add(this._recover_segment);
             return list;
         }
 
@@ -3627,12 +3629,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._predecessor_segment);
+            if(this._predecessor_segment)  list.add(this._predecessor_segment);
             return list;
         }
 
@@ -3713,12 +3715,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._option_list);
+            if(this._option_list)  list.add(this._option_list);
             return list;
         }
 
@@ -3784,19 +3786,19 @@ export class LPGParser extends Object implements RuleAction
     export class option extends ASTNode implements Ioption
     {
         private  _SYMBOL : ASTNodeToken;
-        private  _option_value? : Ioption_value;
+        private  _option_value : Ioption_value| null;
 
         public  getSYMBOL() : ASTNodeToken{ return this._SYMBOL; }
         public  setSYMBOL( _SYMBOL : ASTNodeToken) : void { this._SYMBOL = _SYMBOL; }
         /**
-         * The value returned by <b>getoption_value</b> may be <b>undefined</b>
+         * The value returned by <b>getoption_value</b> may be <b>null</b>
          */
-        public  getoption_value() : Ioption_value | undefined { return this._option_value; }
+        public  getoption_value() : Ioption_value | null { return this._option_value; }
         public  setoption_value( _option_value : Ioption_value) : void { this._option_value = _option_value; }
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
                      _SYMBOL : ASTNodeToken,
-                     _option_value : Ioption_value| undefined)
+                     _option_value : Ioption_value| null)
         {
             super(leftIToken, rightIToken)
 
@@ -3808,13 +3810,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._option_value);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._option_value)  list.add(this._option_value);
             return list;
         }
 
@@ -4020,13 +4022,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._macro_name_symbol);
-            list.add(this._macro_segment);
+            if(this._macro_name_symbol)  list.add(this._macro_name_symbol);
+            if(this._macro_segment)  list.add(this._macro_segment);
             return list;
         }
 
@@ -4182,13 +4184,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._drop_command_list);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._drop_command_list)  list.add(this._drop_command_list);
             return list;
         }
 
@@ -4302,16 +4304,16 @@ export class LPGParser extends Object implements RuleAction
     export class drop_rule extends ASTNode implements Idrop_rule
     {
         private  _SYMBOL : ASTNodeToken;
-        private  _optMacroName? : optMacroName;
+        private  _optMacroName : optMacroName| null;
         private  _produces : Iproduces;
         private  _ruleList : ruleList;
 
         public  getSYMBOL() : ASTNodeToken{ return this._SYMBOL; }
         public  setSYMBOL( _SYMBOL : ASTNodeToken) : void { this._SYMBOL = _SYMBOL; }
         /**
-         * The value returned by <b>getoptMacroName</b> may be <b>undefined</b>
+         * The value returned by <b>getoptMacroName</b> may be <b>null</b>
          */
-        public  getoptMacroName() : optMacroName | undefined { return this._optMacroName; }
+        public  getoptMacroName() : optMacroName | null { return this._optMacroName; }
         public  setoptMacroName( _optMacroName : optMacroName) : void { this._optMacroName = _optMacroName; }
         public  getproduces() : Iproduces{ return this._produces; }
         public  setproduces( _produces : Iproduces) : void { this._produces = _produces; }
@@ -4320,7 +4322,7 @@ export class LPGParser extends Object implements RuleAction
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
                      _SYMBOL : ASTNodeToken,
-                     _optMacroName : optMacroName| undefined,
+                     _optMacroName : optMacroName| null,
                      _produces : Iproduces,
                      _ruleList : ruleList)
         {
@@ -4338,15 +4340,15 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._optMacroName);
-            list.add(this._produces);
-            list.add(this._ruleList);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._optMacroName)  list.add(this._optMacroName);
+            if(this._produces)  list.add(this._produces);
+            if(this._ruleList)  list.add(this._ruleList);
             return list;
         }
 
@@ -4481,14 +4483,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._terminal_symbol);
-            list.add(this._produces);
-            list.add(this._name);
+            if(this._terminal_symbol)  list.add(this._terminal_symbol);
+            if(this._produces)  list.add(this._produces);
+            if(this._name)  list.add(this._name);
             return list;
         }
 
@@ -4581,14 +4583,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._name);
-            list.add(this._produces);
-            list.add(this._name3);
+            if(this._name)  list.add(this._name);
+            if(this._produces)  list.add(this._produces);
+            if(this._name3)  list.add(this._name3);
             return list;
         }
 
@@ -4627,13 +4629,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._action_segment_list);
-            list.add(this._nonTermList);
+            if(this._action_segment_list)  list.add(this._action_segment_list);
+            if(this._nonTermList)  list.add(this._nonTermList);
             return list;
         }
 
@@ -4726,14 +4728,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._ruleNameWithAttributes);
-            list.add(this._produces);
-            list.add(this._ruleList);
+            if(this._ruleNameWithAttributes)  list.add(this._ruleNameWithAttributes);
+            if(this._produces)  list.add(this._produces);
+            if(this._ruleList)  list.add(this._ruleList);
             return list;
         }
 
@@ -4753,44 +4755,44 @@ export class LPGParser extends Object implements RuleAction
     export class RuleName extends ASTNode implements IruleNameWithAttributes
     {
         private  _SYMBOL : ASTNodeToken;
-        private  _$className? : ASTNodeToken;
-        private  _$arrayElement? : ASTNodeToken;
+        private  _className : ASTNodeToken | null;
+        private  _arrayElement : ASTNodeToken | null;
 
         public  getSYMBOL() : ASTNodeToken{ return this._SYMBOL; }
         /**
-         * The value returned by <b>get$className</b> may be <b>undefined</b>
+         * The value returned by <b>getclassName</b> may be <b>null</b>
          */
-        public  get$className() : ASTNodeToken | undefined { return this._$className; }
+        public  getclassName() : ASTNodeToken | null { return this._className; }
         /**
-         * The value returned by <b>get$arrayElement</b> may be <b>undefined</b>
+         * The value returned by <b>getarrayElement</b> may be <b>null</b>
          */
-        public  get$arrayElement() : ASTNodeToken | undefined { return this._$arrayElement; }
+        public  getarrayElement() : ASTNodeToken | null { return this._arrayElement; }
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
                      _SYMBOL : ASTNodeToken,
-                     _$className : ASTNodeToken | undefined,
-                     _$arrayElement : ASTNodeToken | undefined)
+                     _className : ASTNodeToken | null,
+                     _arrayElement : ASTNodeToken | null)
         {
             super(leftIToken, rightIToken);
 
             this._SYMBOL = _SYMBOL;
             (<ASTNode> _SYMBOL).setParent(this);
-            this._$className = _$className;
-            if (_$className) (<ASTNode> _$className).setParent(this);
-            this._$arrayElement = _$arrayElement;
-            if (_$arrayElement) (<ASTNode> _$arrayElement).setParent(this);
+            this._className = _className;
+            if (_className) (<ASTNode> _className).setParent(this);
+            this._arrayElement = _arrayElement;
+            if (_arrayElement) (<ASTNode> _arrayElement).setParent(this);
             this.initialize();
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._$className);
-            list.add(this._$arrayElement);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._className)  list.add(this._className);
+            if(this._arrayElement)  list.add(this._arrayElement);
             return list;
         }
 
@@ -4877,13 +4879,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._symWithAttrsList);
-            list.add(this._action_segment_list);
+            if(this._symWithAttrsList)  list.add(this._symWithAttrsList);
+            if(this._action_segment_list)  list.add(this._action_segment_list);
             return list;
         }
 
@@ -4949,15 +4951,15 @@ export class LPGParser extends Object implements RuleAction
      */
     export class symAttrs extends ASTNode implements IoptAttrList
     {
-        private  _MACRO_NAME? : ASTNodeToken;
+        private  _MACRO_NAME : ASTNodeToken | null;
 
         /**
-         * The value returned by <b>getMACRO_NAME</b> may be <b>undefined</b>
+         * The value returned by <b>getMACRO_NAME</b> may be <b>null</b>
          */
-        public  getMACRO_NAME() : ASTNodeToken | undefined { return this._MACRO_NAME; }
+        public  getMACRO_NAME() : ASTNodeToken | null { return this._MACRO_NAME; }
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
-                     _MACRO_NAME : ASTNodeToken | undefined)
+                     _MACRO_NAME : ASTNodeToken | null)
         {
             super(leftIToken, rightIToken);
 
@@ -4967,12 +4969,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._MACRO_NAME);
+            if(this._MACRO_NAME)  list.add(this._MACRO_NAME);
             return list;
         }
 
@@ -5131,19 +5133,19 @@ export class LPGParser extends Object implements RuleAction
     export class terminal extends ASTNode implements Iterminal
     {
         private  _terminal_symbol : Iterminal_symbol;
-        private  _optTerminalAlias? : optTerminalAlias;
+        private  _optTerminalAlias : optTerminalAlias| null;
 
         public  getterminal_symbol() : Iterminal_symbol{ return this._terminal_symbol; }
         public  setterminal_symbol( _terminal_symbol : Iterminal_symbol) : void { this._terminal_symbol = _terminal_symbol; }
         /**
-         * The value returned by <b>getoptTerminalAlias</b> may be <b>undefined</b>
+         * The value returned by <b>getoptTerminalAlias</b> may be <b>null</b>
          */
-        public  getoptTerminalAlias() : optTerminalAlias | undefined { return this._optTerminalAlias; }
+        public  getoptTerminalAlias() : optTerminalAlias | null { return this._optTerminalAlias; }
         public  setoptTerminalAlias( _optTerminalAlias : optTerminalAlias) : void { this._optTerminalAlias = _optTerminalAlias; }
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
                      _terminal_symbol : Iterminal_symbol,
-                     _optTerminalAlias : optTerminalAlias| undefined)
+                     _optTerminalAlias : optTerminalAlias| null)
         {
             super(leftIToken, rightIToken)
 
@@ -5155,13 +5157,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._terminal_symbol);
-            list.add(this._optTerminalAlias);
+            if(this._terminal_symbol)  list.add(this._terminal_symbol);
+            if(this._optTerminalAlias)  list.add(this._optTerminalAlias);
             return list;
         }
 
@@ -5204,13 +5206,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._produces);
-            list.add(this._name);
+            if(this._produces)  list.add(this._produces);
+            if(this._name)  list.add(this._name);
             return list;
         }
 
@@ -5278,7 +5280,7 @@ export class LPGParser extends Object implements RuleAction
         private  _SYMBOL : ASTNodeToken;
         private  _produces : Iproduces;
         private  _barSymbolList : SYMBOLList;
-        private  _opt_action_segment? : action_segment;
+        private  _opt_action_segment : action_segment| null;
 
         public  getSYMBOL() : ASTNodeToken{ return this._SYMBOL; }
         public  setSYMBOL( _SYMBOL : ASTNodeToken) : void { this._SYMBOL = _SYMBOL; }
@@ -5287,16 +5289,16 @@ export class LPGParser extends Object implements RuleAction
         public  getbarSymbolList() : SYMBOLList{ return this._barSymbolList; }
         public  setbarSymbolList( _barSymbolList : SYMBOLList) : void { this._barSymbolList = _barSymbolList; }
         /**
-         * The value returned by <b>getopt_action_segment</b> may be <b>undefined</b>
+         * The value returned by <b>getopt_action_segment</b> may be <b>null</b>
          */
-        public  getopt_action_segment() : action_segment | undefined { return this._opt_action_segment; }
+        public  getopt_action_segment() : action_segment | null { return this._opt_action_segment; }
         public  setopt_action_segment( _opt_action_segment : action_segment) : void { this._opt_action_segment = _opt_action_segment; }
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
                      _SYMBOL : ASTNodeToken,
                      _produces : Iproduces,
                      _barSymbolList : SYMBOLList,
-                     _opt_action_segment : action_segment| undefined)
+                     _opt_action_segment : action_segment| null)
         {
             super(leftIToken, rightIToken)
 
@@ -5312,15 +5314,15 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._produces);
-            list.add(this._barSymbolList);
-            list.add(this._opt_action_segment);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._produces)  list.add(this._produces);
+            if(this._barSymbolList)  list.add(this._barSymbolList);
+            if(this._opt_action_segment)  list.add(this._opt_action_segment);
             return list;
         }
 
@@ -5407,13 +5409,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._SYMBOL2);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._SYMBOL2)  list.add(this._SYMBOL2);
             return list;
         }
 
@@ -5484,12 +5486,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
             return list;
         }
 
@@ -5522,12 +5524,12 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._symbol_list);
+            if(this._symbol_list)  list.add(this._symbol_list);
             return list;
         }
 
@@ -5572,14 +5574,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._ERROR_KEY);
-            list.add(this._produces);
-            list.add(this._alias_rhs);
+            if(this._ERROR_KEY)  list.add(this._ERROR_KEY);
+            if(this._produces)  list.add(this._produces);
+            if(this._alias_rhs)  list.add(this._alias_rhs);
             return list;
         }
 
@@ -5624,14 +5626,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._EOL_KEY);
-            list.add(this._produces);
-            list.add(this._alias_rhs);
+            if(this._EOL_KEY)  list.add(this._EOL_KEY);
+            if(this._produces)  list.add(this._produces);
+            if(this._alias_rhs)  list.add(this._alias_rhs);
             return list;
         }
 
@@ -5676,14 +5678,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._EOF_KEY);
-            list.add(this._produces);
-            list.add(this._alias_rhs);
+            if(this._EOF_KEY)  list.add(this._EOF_KEY);
+            if(this._produces)  list.add(this._produces);
+            if(this._alias_rhs)  list.add(this._alias_rhs);
             return list;
         }
 
@@ -5728,14 +5730,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._IDENTIFIER_KEY);
-            list.add(this._produces);
-            list.add(this._alias_rhs);
+            if(this._IDENTIFIER_KEY)  list.add(this._IDENTIFIER_KEY);
+            if(this._produces)  list.add(this._produces);
+            if(this._alias_rhs)  list.add(this._alias_rhs);
             return list;
         }
 
@@ -5780,14 +5782,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._produces);
-            list.add(this._alias_rhs);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._produces)  list.add(this._produces);
+            if(this._alias_rhs)  list.add(this._alias_rhs);
             return list;
         }
 
@@ -5832,14 +5834,14 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._alias_lhs_macro_name);
-            list.add(this._produces);
-            list.add(this._alias_rhs);
+            if(this._alias_lhs_macro_name)  list.add(this._alias_lhs_macro_name);
+            if(this._produces)  list.add(this._produces);
+            if(this._alias_rhs)  list.add(this._alias_rhs);
             return list;
         }
 
@@ -6031,13 +6033,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._DROPSYMBOLS_KEY);
-            list.add(this._drop_symbols);
+            if(this._DROPSYMBOLS_KEY)  list.add(this._DROPSYMBOLS_KEY);
+            if(this._drop_symbols)  list.add(this._drop_symbols);
             return list;
         }
 
@@ -6076,13 +6078,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._DROPRULES_KEY);
-            list.add(this._drop_rules);
+            if(this._DROPRULES_KEY)  list.add(this._DROPRULES_KEY);
+            if(this._drop_rules)  list.add(this._drop_rules);
             return list;
         }
 
@@ -6287,19 +6289,19 @@ export class LPGParser extends Object implements RuleAction
     export class symWithAttrs1 extends ASTNode implements IsymWithAttrs
     {
         private  _SYMBOL : ASTNodeToken;
-        private  _optAttrList? : symAttrs;
+        private  _optAttrList : symAttrs| null;
 
         public  getSYMBOL() : ASTNodeToken{ return this._SYMBOL; }
         public  setSYMBOL( _SYMBOL : ASTNodeToken) : void { this._SYMBOL = _SYMBOL; }
         /**
-         * The value returned by <b>getoptAttrList</b> may be <b>undefined</b>
+         * The value returned by <b>getoptAttrList</b> may be <b>null</b>
          */
-        public  getoptAttrList() : symAttrs | undefined { return this._optAttrList; }
+        public  getoptAttrList() : symAttrs | null { return this._optAttrList; }
         public  setoptAttrList( _optAttrList : symAttrs) : void { this._optAttrList = _optAttrList; }
 
         constructor(leftIToken : IToken , rightIToken : IToken ,
                      _SYMBOL : ASTNodeToken,
-                     _optAttrList : symAttrs| undefined)
+                     _optAttrList : symAttrs| null)
         {
             super(leftIToken, rightIToken)
 
@@ -6311,13 +6313,13 @@ export class LPGParser extends Object implements RuleAction
         }
 
         /**
-         * A list of all children of this node, including the null ones.
+         * A list of all children of this node, don't including the null ones.
          */
          public   getAllChildren() : Lpg.Util.ArrayList<IAst>
         {
             let list = new Lpg.Util.ArrayList<IAst>();
-            list.add(this._SYMBOL);
-            list.add(this._optAttrList);
+            if(this._SYMBOL)  list.add(this._SYMBOL);
+            if(this._optAttrList)  list.add(this._optAttrList);
             return list;
         }
 

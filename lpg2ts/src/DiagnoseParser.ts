@@ -61,7 +61,7 @@ export const  MIN_DISTANCE: number = 3;
 
 export class DiagnoseParser   {
 
-    public monitor?: Monitor;
+    public monitor?: Monitor | null;
     public tokStream: TokenStream;
 
     public prs: ParseTable;
@@ -90,7 +90,7 @@ export class DiagnoseParser   {
         this.monitor = monitor;
     }
    
-    constructor(tokStream: TokenStream, prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor) {
+    constructor(tokStream: TokenStream, prs: ParseTable, maxErrors: number=0, maxTime: number=0,monitor?: Monitor | null) {
         this.monitor = monitor;
         this.maxErrors = maxErrors;
         this.maxTime = maxTime;
@@ -231,10 +231,10 @@ export class DiagnoseParser   {
 
 
     public reallocateStacks(): void {
-        let old_stack_length: number = (this.stateStack === undefined ? 0 : this.stateStack.length),
+        let old_stack_length: number = (this.stateStack == undefined ? 0 : this.stateStack.length),
             stack_length: number = old_stack_length + STACK_INCREMENT;
 
-        if (!this.stateStack ||   this.stateStack.length === 0) {
+        if (!this.stateStack ||   this.stateStack.length == 0) {
             this.stateStack = new Int32Array(stack_length);
             this.locationStack = new Int32Array(stack_length);
             this.tempStack = new Int32Array(stack_length);
@@ -272,7 +272,7 @@ export class DiagnoseParser   {
         this.tokStream.reset();
         let current_token: number,
             current_kind: number;
-        if (marker_kind === 0) {
+        if (marker_kind == 0) {
             current_token = this.tokStream.getToken();
             current_kind = this.tokStream.getKind(current_token);
         } else {
@@ -298,7 +298,7 @@ export class DiagnoseParser   {
         // Compute sequence of actions that leads us to the
         // error_token.
         //
-        if (!this.stateStack || this.stateStack.length === 0) {
+        if (!this.stateStack || this.stateStack.length == 0) {
             this.reallocateStacks();
         }
 
@@ -307,7 +307,7 @@ export class DiagnoseParser   {
         this.tokStream.reset();
         let current_token: number,
             current_kind: number;
-        if (marker_kind === 0) {
+        if (marker_kind == 0) {
             current_token = this.tokStream.getToken();
             current_kind = this.tokStream.getKind(current_token);
         } else {
@@ -326,7 +326,7 @@ export class DiagnoseParser   {
         Lpg.Lang.System.arraycopy(this.tempStack, 0, this.stateStack, 0, this.tempStackTop + 1);
 
         this.tokStream.reset();
-        if (marker_kind === 0) {
+        if (marker_kind == 0) {
             current_token = this.tokStream.getToken();
             current_kind = this.tokStream.getKind(current_token);
         } else {
@@ -486,7 +486,7 @@ export class DiagnoseParser   {
             // At this stage, either we have an ACCEPT or an ERROR
             // action.
             //
-            if (act === this.ERROR_ACTION) {
+            if (act == this.ERROR_ACTION) {
                 //
                 // An error was detected.
                 //
@@ -517,7 +517,7 @@ export class DiagnoseParser   {
                 // If the recovery was successful on a nonterminal candidate,
                 // parse through that candidate and "read" the next token.
                 //
-                if (candidate.symbol === 0) {
+                if (candidate.symbol == 0) {
                     break;
                 } else {
                     if (candidate.symbol > this.NT_OFFSET) {
@@ -609,7 +609,7 @@ export class DiagnoseParser   {
                 curtok = this.tokStream.getToken();
                 current_kind = this.tokStream.getKind(curtok);
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 error_token = (error_token > curtok ? error_token : curtok);
 
@@ -648,7 +648,7 @@ export class DiagnoseParser   {
             this.tempStack[this.tempStackTop] = act;
             act = this.tAction(act, current_kind);
         }
-        return (act === this.ERROR_ACTION ? error_token : 0);
+        return (act == this.ERROR_ACTION ? error_token : 0);
     }
     //
     // Given the configuration consisting of the states in tempStack
@@ -701,11 +701,11 @@ export class DiagnoseParser   {
                 curtok = this.tokStream.getToken();
                 current_kind = this.tokStream.getKind(curtok);
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 if (curtok !== error_token) {
                     let configuration = configuration_stack.pop();
-                    if (configuration === undefined) {
+                    if (configuration == undefined) {
                         act = this.ERROR_ACTION;
                     } else {
                         this.tempStackTop = configuration.stack_top;
@@ -802,7 +802,7 @@ export class DiagnoseParser   {
             }
             else if (act > this.ERROR_ACTION)     // shift-reduce action
             {
-                if (buffer_index++ === MAX_DISTANCE) {
+                if (buffer_index++ == MAX_DISTANCE) {
                     break;
                 }
                 current_kind = this.tokStream.getKind(this.buffer[buffer_index]);
@@ -816,16 +816,16 @@ export class DiagnoseParser   {
             }
             else if (act < this.ACCEPT_ACTION)    // shift action
             {
-                if (buffer_index++ === MAX_DISTANCE) {
+                if (buffer_index++ == MAX_DISTANCE) {
                     break;
                 }
                 current_kind = this.tokStream.getKind(this.buffer[buffer_index]);
                 this.tokStream.reset(this.tokStream.getNext(this.buffer[buffer_index]));
             }
-            else if (act === this.ERROR_ACTION)
+            else if (act == this.ERROR_ACTION)
             {
                 let configuration = configuration_stack.pop();
-                if (configuration === undefined) {
+                if (configuration == undefined) {
                     act = this.ERROR_ACTION;
                 } else {
                     local_stack_top = configuration.stack_top;
@@ -860,7 +860,7 @@ export class DiagnoseParser   {
             local_stack[local_stack_top] = act;
             act = this.tAction(act, current_kind);
         }
-        return (act === this.ACCEPT_ACTION ? MAX_DISTANCE : buffer_index);
+        return (act == this.ACCEPT_ACTION ? MAX_DISTANCE : buffer_index);
     }
 
     //
@@ -949,7 +949,7 @@ export class DiagnoseParser   {
             // remaining tokens in the input.
             //
             let i: number;
-            for (i = BUFF_UBOUND; this.tokStream.getKind(this.buffer[i]) === this.EOFT_SYMBOL; i--)
+            for (i = BUFF_UBOUND; this.tokStream.getKind(this.buffer[i]) == this.EOFT_SYMBOL; i--)
             {
             }
 
@@ -1055,10 +1055,10 @@ export class DiagnoseParser   {
         // ...Next, adjust the distance if the recovery is a deletion or
         // (some form of) substitution...
         //
-        if (repair.code === ParseErrorCodes.INVALID_CODE ||
-            repair.code === ParseErrorCodes.DELETION_CODE ||
-            repair.code === ParseErrorCodes.SUBSTITUTION_CODE ||
-            repair.code === ParseErrorCodes.MERGE_CODE) {
+        if (repair.code == ParseErrorCodes.INVALID_CODE ||
+            repair.code == ParseErrorCodes.DELETION_CODE ||
+            repair.code == ParseErrorCodes.SUBSTITUTION_CODE ||
+            repair.code == ParseErrorCodes.MERGE_CODE) {
             repair.distance--;
         }
 
@@ -1078,8 +1078,8 @@ export class DiagnoseParser   {
         // indicates that the repair symbol should be inserted before
         // the error token.
         //
-        if (repair.code === ParseErrorCodes.INSERTION_CODE) {
-            if (this.tokStream.getKind(this.buffer[repair.bufferPosition - 1]) === 0) {
+        if (repair.code == ParseErrorCodes.INSERTION_CODE) {
+            if (this.tokStream.getKind(this.buffer[repair.bufferPosition - 1]) == 0) {
                 repair.code = ParseErrorCodes.BEFORE_CODE;
             }
         }
@@ -1116,7 +1116,7 @@ export class DiagnoseParser   {
         for (let k: number = this.asi(state); this.asr(k) != 0; k++) {
             let i: number = this.terminalIndex(this.asr(k));
             if (str.length == this.name(i).length) {
-                if (str.toLowerCase()===(this.name(i).toLowerCase())) {
+                if (str.toLowerCase()==(this.name(i).toLowerCase())) {
                     return this.asr(k);
                 }
             }
@@ -1162,7 +1162,7 @@ export class DiagnoseParser   {
         let symbol: number = this.mergeCandidate(stck[stack_top], repair.bufferPosition);
         if (symbol !== 0) {
             let j: number = this.parseCheck(stck, stack_top, symbol, repair.bufferPosition + 2);
-            if ((j > repair.distance) || (j === repair.distance && repair.misspellIndex < 10)) {
+            if ((j > repair.distance) || (j == repair.distance && repair.misspellIndex < 10)) {
                 repair.misspellIndex = 10;
                 repair.symbol = symbol;
                 repair.distance = j;
@@ -1178,12 +1178,12 @@ export class DiagnoseParser   {
                                         this.tokStream.getKind(this.buffer[repair.bufferPosition + 1]),
                                         repair.bufferPosition + 2);
 
-        let k: number = (this.tokStream.getKind(this.buffer[repair.bufferPosition]) === this.EOLT_SYMBOL &&
+        let k: number = (this.tokStream.getKind(this.buffer[repair.bufferPosition]) == this.EOLT_SYMBOL &&
                          this.tokStream.afterEol(this.buffer[repair.bufferPosition + 1])
                          ? 10
                          : 0);
 
-        if (j > repair.distance || (j === repair.distance && k > repair.misspellIndex)) {
+        if (j > repair.distance || (j == repair.distance && k > repair.misspellIndex)) {
             repair.misspellIndex = k;
             repair.code = ParseErrorCodes.DELETION_CODE;
             repair.distance = j;
@@ -1226,7 +1226,7 @@ export class DiagnoseParser   {
         for (let i: number = this.asi(next_state); this.asr(i) !== 0; i++) {
             symbol = this.asr(i);
             if (symbol !== this.EOFT_SYMBOL && symbol !== this.ERROR_SYMBOL) {
-                if (root === 0) {
+                if (root == 0) {
                     this.list[symbol] = symbol;
                 } else {
                     this.list[symbol] = this.list[root];
@@ -1238,8 +1238,8 @@ export class DiagnoseParser   {
         if (stck[stack_top] !== next_state) {
             for (let i: number = this.asi(stck[stack_top]); this.asr(i) !== 0; i++) {
                 symbol = this.asr(i);
-                if (symbol !== this.EOFT_SYMBOL && symbol !== this.ERROR_SYMBOL && this.list[symbol] === 0) {
-                    if (root === 0) {
+                if (symbol !== this.EOFT_SYMBOL && symbol !== this.ERROR_SYMBOL && this.list[symbol] == 0) {
+                    if (root == 0) {
                         this.list[symbol] = symbol;
                     } else {
                         this.list[symbol] = this.list[root];
@@ -1262,11 +1262,11 @@ export class DiagnoseParser   {
         symbol = root;
         while (symbol !== 0) {
             let m: number = this.parseCheck(stck, stack_top, symbol, repair.bufferPosition),
-                n: number = (symbol === this.EOLT_SYMBOL && this.tokStream.afterEol(this.buffer[repair.bufferPosition])
+                n: number = (symbol == this.EOLT_SYMBOL && this.tokStream.afterEol(this.buffer[repair.bufferPosition])
                         ? 10
                         : 0);
             if (m > repair.distance ||
-                (m === repair.distance && n > repair.misspellIndex)) {
+                (m == repair.distance && n > repair.misspellIndex)) {
                 repair.misspellIndex = n;
                 repair.distance = m;
                 repair.symbol = symbol;
@@ -1281,12 +1281,13 @@ export class DiagnoseParser   {
         //
         symbol = root;
         while (symbol !== 0) {
+
             let m: number = this.parseCheck(stck, stack_top, symbol, repair.bufferPosition + 1),
-                n: number = (symbol === this.EOLT_SYMBOL && this.tokStream.afterEol(this.buffer[repair.bufferPosition + 1])
+                n: number = (symbol == this.EOLT_SYMBOL && this.tokStream.afterEol(this.buffer[repair.bufferPosition + 1])
                     ? 10
                     : this.misspell(symbol, this.buffer[repair.bufferPosition]));
             if (m > repair.distance ||
-                (m === repair.distance && n > repair.misspellIndex))
+                (m == repair.distance && n > repair.misspellIndex))
             {
                 repair.misspellIndex = n;
                 repair.distance = m;
@@ -1314,7 +1315,7 @@ export class DiagnoseParser   {
             }
 
             n = this.parseCheck(stck, stack_top, symbol, repair.bufferPosition);
-            if (n > repair.distance || (n === repair.distance && repair.code === ParseErrorCodes.INVALID_CODE))
+            if (n > repair.distance || (n == repair.distance && repair.code == ParseErrorCodes.INVALID_CODE))
             {
                 repair.misspellIndex = 0;
                 repair.distance = n;
@@ -1354,7 +1355,7 @@ export class DiagnoseParser   {
                                                                         repair.symbol,
                                                                         repair.bufferPosition));
 
-                    let tok: number = (repair.code === ParseErrorCodes.INSERTION_CODE ? prevtok : current_token);
+                    let tok: number = (repair.code == ParseErrorCodes.INSERTION_CODE ? prevtok : current_token);
                     this.emitError(repair.code, name_index, tok, tok);
                 }
                 break;
@@ -1539,7 +1540,7 @@ export class DiagnoseParser   {
                                             ? this.nonterminalIndex(highest_symbol - this.NT_OFFSET)
                                             : this.terminalIndex(highest_symbol));
                 }
-                if (this.tempStackTop === threshold) {
+                if (this.tempStackTop == threshold) {
                     highest_symbol = lhs_symbol + this.NT_OFFSET;
                 }
                 act = (this.tempStackTop > max_pos
@@ -1636,15 +1637,15 @@ export class DiagnoseParser   {
         //  '      <---->     "
         //
         //
-        if (n === 1 && m === 1) {
-            if ((s1.charAt(0) === ';' && s2.charAt(0) === ',') ||
-                (s1.charAt(0) === ','  && s2.charAt(0) === ';') ||
-                (s1.charAt(0) === ';' && s2.charAt(0) === ':') ||
-                (s1.charAt(0) === ':'  && s2.charAt(0) === ';') ||
-                (s1.charAt(0) === '.'  && s2.charAt(0) === ',') ||
-                (s1.charAt(0) === ','  && s2.charAt(0) === '.') ||
-                (s1.charAt(0) === '\'' && s2.charAt(0) === '\"') ||
-                (s1.charAt(0) === '\"' && s2.charAt(0) === '\'')) {
+        if (n == 1 && m == 1) {
+            if ((s1.charAt(0) == ';' && s2.charAt(0) == ',') ||
+                (s1.charAt(0) == ','  && s2.charAt(0) == ';') ||
+                (s1.charAt(0) == ';' && s2.charAt(0) == ':') ||
+                (s1.charAt(0) == ':'  && s2.charAt(0) == ';') ||
+                (s1.charAt(0) == '.'  && s2.charAt(0) == ',') ||
+                (s1.charAt(0) == ','  && s2.charAt(0) == '.') ||
+                (s1.charAt(0) == '\'' && s2.charAt(0) == '\"') ||
+                (s1.charAt(0) == '\"' && s2.charAt(0) == '\'')) {
                 return 3;
             }
         }
@@ -1668,22 +1669,22 @@ export class DiagnoseParser   {
             j: number = 0;
 
         while ((i < n) && (j < m)) {
-            if (s1.charAt(i) === s2.charAt(j)) {
+            if (s1.charAt(i) == s2.charAt(j)) {
                 count++;
                 i++;
                 j++;
-                if (num_errors === 0) {
+                if (num_errors == 0) {
                     prefix_length++;
                 }
             }
-            else if (s1.charAt(i + 1) === s2.charAt(j) && s1.charAt(i) === s2.charAt(j + 1))
+            else if (s1.charAt(i + 1) == s2.charAt(j) && s1.charAt(i) == s2.charAt(j + 1))
             {
                 count += 2;
                 i += 2;
                 j += 2;
                 num_errors++;
             }
-            else if (s1.charAt(i + 1) === s2.charAt(j + 1)) // mismatch
+            else if (s1.charAt(i + 1) == s2.charAt(j + 1)) // mismatch
             {
                 i += 2;
                 j += 2;
@@ -1714,11 +1715,11 @@ export class DiagnoseParser   {
             count = prefix_length;
         }
 
-        return (count * 10 / ((n < s1.length ? s1.length : n) + num_errors));
+        return Math.floor(count * 10 / ((n < s1.length ? s1.length : n) + num_errors));
     }
 
     public scopeTrial(repair: PrimaryRepairInfo, stack: Int32Array, stack_top: number): void {
-        if (!this.stateSeen  || this.stateSeen.length === 0 || this.stateSeen.length < this.stateStack.length) {
+        if (!this.stateSeen  || this.stateSeen.length == 0 || this.stateSeen.length < this.stateStack.length) {
             this.stateSeen = new Int32Array(this.stateStack.length);
         }
         for (let i: number = 0; i < this.stateStack.length; i++) {
@@ -1726,7 +1727,7 @@ export class DiagnoseParser   {
         }
 
         this.statePoolTop = 0;
-        if (!this.statePool ||this.statePool.length === 0 || this.statePool.length < this.stateStack.length) {
+        if (!this.statePool ||this.statePool.length == 0 || this.statePool.length < this.stateStack.length) {
             this.statePool = new Array<StateInfo>(this.stateStack.length);
         }
         this.scopeTrialCheck(repair, stack, stack_top, 0);
@@ -1738,7 +1739,7 @@ export class DiagnoseParser   {
     public scopeTrialCheck(repair: PrimaryRepairInfo, stack: Int32Array, stack_top: number, indx: number): void {
 
         for (let i: number = this.stateSeen[stack_top]; i != DiagnoseParser.NIL; i = this.statePool[i].next) {
-            if (this.statePool[i].state === stack[stack_top]) {
+            if (this.statePool[i].state == stack[stack_top]) {
                 return;
             }
         }
@@ -1811,12 +1812,12 @@ export class DiagnoseParser   {
                         k: number = this.scopePrefix(i);
                     for (j = this.tempStackTop + 1;
                         j >= (max_pos + 1) &&
-                            this.inSymbol(this.tempStack[j]) === this.scopeRhs(k); j--) {
+                            this.inSymbol(this.tempStack[j]) == this.scopeRhs(k); j--) {
                         k++;
                     }
-                    if (j === max_pos) {
+                    if (j == max_pos) {
                         for (j = max_pos;
-                            j >= 1 && this.inSymbol(stack[j]) === this.scopeRhs(k);
+                            j >= 1 && this.inSymbol(stack[j]) == this.scopeRhs(k);
                             j--) {
                             k++;
                         }
@@ -1894,8 +1895,8 @@ export class DiagnoseParser   {
                             // of recovery.
                             //
                             if ( // TODO: main_configuration_stack.size() == 0 && // no other bactracking possibilities left
-                                this.tokStream.getKind(this.buffer[repair.bufferPosition]) === this.EOFT_SYMBOL &&
-                                repair.distance === previous_distance)
+                                this.tokStream.getKind(this.buffer[repair.bufferPosition]) == this.EOFT_SYMBOL &&
+                                repair.distance == previous_distance)
                             {
                                 this.scopeStackTop = indx;
                                 repair.distance = MAX_DISTANCE;
@@ -1989,7 +1990,7 @@ export class DiagnoseParser   {
             //
             for (next_last_index = MAX_DISTANCE - 1;
                 next_last_index >= 1 &&
-                this.tokStream.getKind(this.buffer[next_last_index]) === this.EOFT_SYMBOL;
+                this.tokStream.getKind(this.buffer[next_last_index]) == this.EOFT_SYMBOL;
                 next_last_index--) {
             }
 
@@ -2033,7 +2034,7 @@ export class DiagnoseParser   {
         let last_index: number;
         for (last_index = MAX_DISTANCE - 1;
             last_index >= 1 &&
-            this.tokStream.getKind(this.buffer[last_index]) === this.EOFT_SYMBOL;
+            this.tokStream.getKind(this.buffer[last_index]) == this.EOFT_SYMBOL;
             last_index--) {
         }
         last_index++;
@@ -2091,14 +2092,14 @@ export class DiagnoseParser   {
         // Next, try scope recoveries after deletion of one, two, three,
         // four ... buffer_position tokens from the input stream.
         //
-        if (repair.code === ParseErrorCodes.SECONDARY_CODE || repair.code === ParseErrorCodes.DELETION_CODE) {
+        if (repair.code == ParseErrorCodes.SECONDARY_CODE || repair.code == ParseErrorCodes.DELETION_CODE) {
             let scope_repair: PrimaryRepairInfo = new PrimaryRepairInfo();
             for (scope_repair.bufferPosition = 2;
                 scope_repair.bufferPosition <= repair.bufferPosition &&
                 repair.code !== ParseErrorCodes.SCOPE_CODE; scope_repair.bufferPosition++)
             {
                 this.scopeTrial(scope_repair, this.stateStack, this.stateStackTop);
-                let j: number = (scope_repair.distance === MAX_DISTANCE
+                let j: number = (scope_repair.distance == MAX_DISTANCE
                                                         ? last_index
                                                         : scope_repair.distance),
                     k: number = scope_repair.bufferPosition - 1;
@@ -2116,7 +2117,7 @@ export class DiagnoseParser   {
         // diagnosis and adjust configuration...
         //
         let candidate: RepairCandidate = new RepairCandidate();
-        if (repair.code === 0) {
+        if (repair.code == 0) {
             return candidate;
         }
         this.secondaryDiagnosis(repair);
@@ -2197,7 +2198,7 @@ export class DiagnoseParser   {
                     let k: number = stack_deletions + i - 1;
                     if ((k < repair.numDeletions) ||
                         (j - k) > (repair.distance - repair.numDeletions) ||
-                        ((repair.code === ParseErrorCodes.SECONDARY_CODE) && (j - k) === (repair.distance - repair.numDeletions)))
+                        ((repair.code == ParseErrorCodes.SECONDARY_CODE) && (j - k) == (repair.distance - repair.numDeletions)))
                     {
                         repair.code = ParseErrorCodes.DELETION_CODE;
                         repair.distance = j;
@@ -2210,7 +2211,7 @@ export class DiagnoseParser   {
                 for (let l: number = this.nasi(stack[top]); l >= 0 && this.nasr(l) != 0; l++) {
                     let symbol: number = this.nasr(l) + this.NT_OFFSET;
                     parse_distance = this.parseCheck(stack, top, symbol, i);
-                    j = (parse_distance === MAX_DISTANCE ? last_index : parse_distance);
+                    j = (parse_distance == MAX_DISTANCE ? last_index : parse_distance);
 
                     if ((parse_distance - i + 1) > MIN_DISTANCE)
                     {
@@ -2265,7 +2266,7 @@ export class DiagnoseParser   {
                 break;
             default:
                 this.emitError(repair.code,
-                    (repair.code === ParseErrorCodes.SECONDARY_CODE
+                    (repair.code == ParseErrorCodes.SECONDARY_CODE
                                     ? this.getNtermIndex(this.stateStack[repair.stackPosition],
                                                         repair.symbol,
                                                         repair.bufferPosition)
@@ -2277,6 +2278,212 @@ export class DiagnoseParser   {
         return;
     }
 
+   //
+        // This procedure is invoked to form a secondary error message.
+        // The parameter k identifies the error to be processed.  The
+        // global variable: msg, is used to store the message.
+        //
+          PrintSecondaryMessage(msg_code : number,
+            name_index : number,
+            left_token_loc : number,
+            right_token_loc : number,
+            scope_name_index : number): string
+        {
+            //using std::wcout;
+            let message="";
+            let str="";
+            let i,
+                len = 0;
+
+            if (name_index >= 0)
+            {
+
+                str = this.name(name_index);
+                len = str.length;
+            }
+
+            switch (msg_code)
+            {
+                case  ParseErrorCodes.MISPLACED_CODE:
+                    message += "Misplaced construct(s)";
+                    break;
+                case  ParseErrorCodes.SCOPE_CODE:
+                    message += '\"';
+                    for (i =  this.scopeSuffix(-name_index);
+                    this.scopeRhs(i) != 0; i++)
+                    {
+                        len =  this.name( this.scopeRhs(i)).length;
+                        str = this. name( this.scopeRhs(i));
+                        for (let j = 0; j < len; j++)
+                            message += str[j];
+                        if ( this.scopeRhs(i + 1) > 0) // any more symbols to print?
+                            message += ' ';
+                    }
+                    message += '\"';
+                    message += " inserted to complete scope";
+                    //
+                    // TODO: This should not be an option
+                    //
+                    if (scope_name_index >= 0)
+                    {
+                        str =  this.name(scope_name_index);
+                        len = str.length;
+                        for (let j = 0; j < len; j++) // any more symbols to print?
+                            message += str[j];
+                    }
+                    else message += "phrase";
+                    break;
+                case  ParseErrorCodes.MANUAL_CODE:
+                    message += '\"';
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    message += "\" inserted to complete structure";
+                    break;
+                case  ParseErrorCodes.MERGE_CODE:
+                    message += "Symbols merged to form ";
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    break;
+                default:
+                {
+                    if (msg_code ==  ParseErrorCodes.DELETION_CODE || len == 0)
+                        message += "Unexpected input discarded";
+                    else
+                    {
+                        for (i = 0; i < len; i++)
+                            message += str[i];
+                        message += " expected instead";
+                    }
+                }
+                    break;
+    
+            }
+
+            return message;
+
+
+        }
+    
+
+        //
+        // This procedure is invoked to form a primary error message. The
+        // parameter k identifies the error to be processed.  The global
+        // variable: msg, is used to store the message.
+        //
+          PrintPrimaryMessage( msg_code : number,
+             name_index : number,
+             left_token_loc : number,
+             right_token_loc : number,
+             scope_name_index : number) : string
+        {
+            let message = "";
+            let str = "";
+
+            let i,
+                len = 0;
+
+            if (name_index >= 0)
+            {
+                str = this.name(name_index);
+                len = str.length;
+
+            }
+
+            switch (msg_code)
+            {
+                case ParseErrorCodes. ERROR_CODE:
+                    message += "Parsing terminated at this token";
+                    break;
+                case  ParseErrorCodes.BEFORE_CODE:
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    message += " inserted before this token";
+                    break;
+                case  ParseErrorCodes.INSERTION_CODE:
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    message += " expected after this token";
+                    break;
+                case  ParseErrorCodes.DELETION_CODE:
+                    if (left_token_loc == right_token_loc)
+                        message += "Unexpected symbol ignored";
+                    else message += "Unexpected symbols ignored";
+                    break;
+                case  ParseErrorCodes.INVALID_CODE:
+                    if (len == 0)
+                        message += "Unexpected input discarded";
+                    else
+                    {
+                        message += "Invalid ";
+                        for (i = 0; i < len; i++)
+                            message += str[i];
+                    }
+                    break;
+                case  ParseErrorCodes.SUBSTITUTION_CODE:
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    message += " expected instead of this token";
+                    break;
+                case  ParseErrorCodes.SCOPE_CODE:
+                    message += '\"';
+                    for (i = this.scopeSuffix(-name_index);
+                    this.scopeRhs(i) != 0; i++)
+                    {
+                        len = this.name(this.scopeRhs(i)).length;
+                        str = this.name(this.scopeRhs(i));
+                        for (let j = 0; j < len; j++)
+                            message += str[j];
+                        if (this.scopeRhs(i + 1) >= 0 ) // any more symbols to print?
+                            message += ' ';
+                    }
+                    message += '\"';
+                    message += " inserted to complete scope";
+                    //
+                    // TODO: This should not be an option
+                    //
+                    if (scope_name_index >= 0)
+                    {
+                        str = this.name(scope_name_index);
+                        len = str.length;
+                        for (let j = 0; j < len; j++) // any more symbols to print?
+                            message += str[j];
+                    }
+                    else message += "scope";
+                    break;
+                case  ParseErrorCodes.MANUAL_CODE:
+                    message += '\"';
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    message += "\" inserted to complete structure";
+                    break;
+                case  ParseErrorCodes.MERGE_CODE:
+                    message += "symbols merged to form ";
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    break;
+                case  ParseErrorCodes.EOF_CODE:
+                    for (i = 0; i < len; i++)
+                        message += str[i];
+                    message += " reached after this token";
+                    break;
+                default:
+                    if (msg_code ==  ParseErrorCodes.MISPLACED_CODE)
+                        message += "misplaced construct(s)";
+                    else if (len == 0)
+                        message += "unexpected input discarded";
+                    else
+                    {
+                        for (i = 0; i < len; i++)
+                            message += str[i];
+                        message += " expected instead";
+                    }
+                    break;
+            }
+
+            message += '\n';
+            return message;
+        }
+
     //
     // This method is invoked by an LPG PARSER or a semantic
     // routine to process an error message.
@@ -2285,12 +2492,26 @@ export class DiagnoseParser   {
     public emitError(msg_code: number, name_index: number, left_token: number, right_token: number, scope_name_index: number=0): void {
         let left_token_loc: number = (left_token > right_token ? right_token : left_token),
             right_token_loc: number = right_token;
+            let token_name: string = "";
+            if (left_token_loc < right_token_loc)
+                token_name = this.PrintSecondaryMessage(msg_code,
+                    name_index,
+                    left_token_loc,
+                    right_token_loc,
+                    scope_name_index);
+            else
+                token_name = this.PrintPrimaryMessage(msg_code,
+                    name_index,
+                    left_token_loc,
+                    right_token_loc,
+                    scope_name_index);
 
-        let token_name: string = (name_index >= 0 &&
-            !(this.name(name_index).toUpperCase() === "ERROR")
-                ? "\"" + this.name(name_index) + "\""
-                : "");
-
+         if(token_name.length == 0){
+            token_name = (name_index >= 0 &&
+                !(this.name(name_index).toUpperCase() == "ERROR")
+                    ? "\"" + this.name(name_index) + "\""
+                    : "");
+         }
         if (msg_code == ParseErrorCodes.INVALID_CODE) {
             msg_code = token_name.length == 0 ? ParseErrorCodes.INVALID_CODE : ParseErrorCodes.INVALID_TOKEN_CODE;
         }

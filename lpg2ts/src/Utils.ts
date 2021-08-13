@@ -221,7 +221,7 @@ function arrayInstanceOf(arr: any, arg: Function): boolean {
     if (!(arr instanceof Array)) {
         return false;
     } else {
-        if (arr.length === 0) {
+        if (arr.length == 0) {
             return true;
         } else {
             return (arr[0] instanceof arg);

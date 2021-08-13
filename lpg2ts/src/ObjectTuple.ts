@@ -12,7 +12,9 @@ export class ObjectTuple {
 
     public array: any[];
     public top: number;
-
+    needInterger() : void{
+        throw Error(" ObjectTuple  need interger index")
+    }
     //
     // This function is used to reset the size of a dynamic array without
     // allocating or deallocting space. It may be invoked with an integer
@@ -20,6 +22,9 @@ export class ObjectTuple {
     // indicates that the size should be reset to 0.
     //
     public reset(n: number=0): void {
+        if(!Number.isInteger(n)){
+            this.needInterger();
+        }
         this.top = n;
     }
     public capacity(): number {
@@ -40,6 +45,9 @@ export class ObjectTuple {
     // should be thrown if it yields true.
     //
     public get(i: number): any {
+        if(!Number.isInteger(i)){
+            this.needInterger();
+        }
         return this.array[i];
     }
 
@@ -47,6 +55,9 @@ export class ObjectTuple {
     // Insert an element in the dynamic array at the location indicated.
     //
     public set(i: number, element: any): void {
+        if(!Number.isInteger(i)){
+            this.needInterger();
+        }
         this.array[i] = element;
     }
 

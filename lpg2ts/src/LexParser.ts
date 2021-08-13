@@ -37,7 +37,7 @@ export class LexParser {
         this.NUM_RULES = prs.getNumRules();
     }
 
-    constructor(tokStream?: ILexStream, prs?: ParseTable, ra?: RuleAction) {
+    constructor(tokStream?: ILexStream | null, prs?: ParseTable | null, ra?: RuleAction | null) {
         if (tokStream && prs && ra)
             this.reset(tokStream, prs, ra);
     }
@@ -52,7 +52,7 @@ export class LexParser {
     private tempStack: Int32Array = new Int32Array(0);
 
     private reallocateStacks(): void {
-        let old_stack_length: number = (this.stack.length === 0 ? 0 : this.stackLength);
+        let old_stack_length: number = (this.stack.length == 0 ? 0 : this.stackLength);
         this.stackLength += this.STACK_INCREMENT;
         if (old_stack_length == 0) {
             this.stack = new Int32Array(this.stackLength);
