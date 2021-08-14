@@ -11,8 +11,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-import { ParseTable } from "../../src";
 import { JavaLexersym } from "./JavaLexersym";
+import { ParseTable } from "../../src";
 export class JavaLexerprs implements ParseTable {
     public   readonly ERROR_SYMBOL : number = 0;
     public   getErrorSymbol() : number { return this.ERROR_SYMBOL; }

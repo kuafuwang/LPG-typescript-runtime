@@ -4,7 +4,7 @@ Options in effect for e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:
     ACTION-BLOCK=("E:\LPG-typescript-runtime\lpg2ts\test\java/JavaParser.ts","/.","./")
 
     AST-DIRECTORY=""  AST-TYPE="Ast"  NOATTRIBUTES  AUTOMATIC-AST=NESTED  
-    BACKTRACK  BYTE  CONFLICTS  
+    NOBACKTRACK  BYTE  CONFLICTS  
     DAT-DIRECTORY="e:\LPG2-grammars-example\java-ts-version\"  
     DAT-FILE="e:\LPG2-grammars-example\java-ts-version\JavaParserdcl.data"  
     DCL-FILE="E:\LPG-typescript-runtime\lpg2ts\test\java/JavaParserdcl.ts"  
@@ -18,16 +18,16 @@ Options in effect for e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:
     IMP-FILE="E:\LPG-typescript-runtime\lpg2ts\test\java/JavaParserimp.ts"  
     IMPORT-TERMINALS="GJavaLexer.gi"  
     INCLUDE-DIRECTORY="E:/LPG2/lpg-generator-templates-2.1.00/include/typescript;E:/LPG2/lpg-generator-templates-2.1.00/templates/typescript"
-    LALR=1  LEGACY  LIST  MARGIN=4  MAX-CASES=1024  NAMES=OPTIMIZED  NT-CHECK  
+    LALR=1  LEGACY  LIST  MARGIN=4  MAX-CASES=1024  NAMES=OPTIMIZED  NONT-CHECK
     OR_MARKER='|'  OUT-DIRECTORY="E:\LPG-typescript-runtime\lpg2ts\test\java"  
-    PACKAGE=""  PARENT-SAVED  PARSETABLE-INTERFACES="ParseTable"  PREFIX="TK_"
-    PRIORITY  PROGRAMMING_LANGUAGE=TYPESCRIPT  
+    PACKAGE="LpgJava"  PARENT-SAVED  PARSETABLE-INTERFACES="ParseTable"  
+    PREFIX="TK_"  PRIORITY  PROGRAMMING_LANGUAGE=TYPESCRIPT  
     PRS-FILE="E:\LPG-typescript-runtime\lpg2ts\test\java/JavaParserprs.ts"  
     NOQUIET  READ-REDUCE  REMAP-TERMINALS  RULE_CLASSNAMES=SEQUENTIAL  SCOPES  
     NOSERIALIZE  NOSHIFT-DEFAULT  NOSINGLE-PRODUCTIONS  NOSOFT-KEYWORDS  STATES
     SUFFIX=""  
     SYM-FILE="E:\LPG-typescript-runtime\lpg2ts\test\java/JavaParsersym.ts"  
-    TAB-FILE="GJavaParser.t"  TABLE  TEMPLATE="btParserTemplateF.gi"  
+    TAB-FILE="GJavaParser.t"  TABLE  TEMPLATE="dtParserTemplateF.gi"  
     TRACE=CONFLICTS  VARIABLES  VERBOSE  VISITOR=DEFAULT  VISITOR-TYPE="Visitor"
     WARNINGS  XREF  
 
@@ -78,7 +78,7 @@ Defined Symbols:
 
     $BeginAction
     /.%Header%case %rule_number: {    
-                       //#line %next_line "%input_file%"./
+                        //#line %next_line "%input_file%"./
 
 
     $EndAction
@@ -103,7 +103,7 @@ Defined Symbols:
 
     $BadAction
     /.%Header%case %rule_number:    
-                        throw ("No action specified for rule " + %rule_number);./
+                        throw Error("No action specified for rule " + %rule_number);./
 
 
     $NullAction
@@ -114,27 +114,26 @@ Defined Symbols:
 
     $BeginActions
     /.    
-                
-            public  ruleAction(ruleNumber : number) : void    
+            public  ruleAction(ruleNumber : number ) : void    
             {    
                 switch (ruleNumber)    
-                {./
+                {    
+                    //#line %next_line "%input_file%"./
 
 
     $SplitActions
     /.    
-                        default:    
-                            this.ruleAction%rule_number(ruleNumber);    
-                            break;    
-                    }    
-                    return;    
-                }    
-                
-                public  ruleAction%rule_number(ruleNumber  : number) : void    
-                {    
-                    switch (ruleNumber)    
-                    {    
-                        //#line %next_line "%input_file%"./
+    	            default:    
+    	                this.ruleAction%rule_number(ruleNumber);    
+    	                break;    
+    	        }    
+    	        return;    
+    	    }    
+    	    
+    	    public  ruleAction%rule_number(ruleNumber : number ) : void    
+    	    {    
+    	        switch (ruleNumber)    
+    	        {./
 
 
     $EndActions
@@ -149,22 +148,28 @@ Defined Symbols:
     $entry_declarations
     /.    
                
-            public  parse%entry_name(monitor? : Monitor, error_repair_count : number = 0) : %ast_class | null    
+            public  resetParse%entry_name() : void    
             {    
-                this.btParser.setMonitor(monitor);    
+                this.dtParser.resetParserEntry(%sym_type.%entry_marker);    
+            }    
+                
+            public  parse%entry_name(monitor? : Monitor | null, error_repair_count: number = 0) : %ast_class | null    
+            {    
+                if(monitor)    
+                    this.dtParser.setMonitor(monitor);    
                     
                 try    
                 {    
-                    return <%ast_class> this.btParser.fuzzyParseEntry(%sym_type.%entry_marker, error_repair_count);    
+                    return <%ast_class> this.dtParser.parseEntry(%sym_type.%entry_marker);    
                 }    
                 catch (ex)    
                 {    
                     if( ex instanceof BadParseException ){    
-                        let e = <BadParseException>(ex);    
+                      let e = <BadParseException>(ex);    
+                      this.prsStream.reset(e.error_token); // point to error token    
         
-                        this.prsStream.reset(e.error_token); // point to error token    
-                        let diagnoseParser = new DiagnoseParser(this.prsStream, %action_type.prsTable);    
-                        diagnoseParser.diagnoseEntry(%sym_type.%entry_marker, e.error_token);    
+                      let diagnoseParser = new DiagnoseParser(this.prsStream, %action_type.prsTable);    
+                      diagnoseParser.diagnoseEntry(%sym_type.%entry_marker, e.error_token);    
                     }    
                     else{    
                         throw ex;    
@@ -199,17 +204,17 @@ Defined Symbols:
 
     $setResult
     /. // macro setResult is deprecated. Use function setResult    
-                     this.getParser().setSym1./
+                     this.dtParsergetParser().setSym1./
 
 
     $getSym
     /. // macro getSym is deprecated. Use function getRhsSym    
-                  this.getParser().getSym./
+                  this.dtParsergetParser().getSym./
 
 
     $getToken
     /. // macro getToken is deprecated. Use function getRhsTokenIndex    
-                    this.getParser().getToken./
+                    this.dtParsergetParser().getToken./
 
 
     $getIToken
@@ -219,12 +224,12 @@ Defined Symbols:
 
     $getLeftSpan
     /. // macro getLeftSpan is deprecated. Use function getLeftSpan    
-                       this.getParser().getFirstToken./
+                       this.dtParsergetParser().getFirstToken./
 
 
     $getRightSpan
     /. // macro getRightSpan is deprecated. Use function getRightSpan    
-                        this.getParser().getLastToken./
+                       this.dtParsergetParser().getLastToken./
 
 
 Aliases:
@@ -974,576 +979,13 @@ Rules:
 537                   | TypeBound
 538    TypeArgumentsopt ::= %Empty
 539                       | TypeArguments
-
-
-Strongly-connected components in ranks:
-
-    ArrayType
-    ReferenceType
-    Type
-
-    ArrayAccess
-    MethodInvocation
-    ClassInstanceCreationExpression
-    PrimaryNoNewArray
-    Primary
-    FieldAccess
-
-    PostDecrementExpression
-    PostfixExpression
-    PostIncrementExpression
-
-
-
-RANK RULE
-==== ====
-1    234   NormalAnnotation ::= AT TypeName LPAREN ElementValuePairsopt RPAREN
-2    245   MarkerAnnotation ::= AT TypeName
-3    246   SingleElementAnnotation ::= AT TypeName LPAREN ElementValue RPAREN
-4    231   Annotation ::= NormalAnnotation
-5    232   Annotation ::= MarkerAnnotation
-6    233   Annotation ::= SingleElementAnnotation
-7    229   Annotations ::= Annotation
-8    230   Annotations ::= Annotations Annotation
-9    525   Annotationsopt ::= Annotations
-10   524   Annotationsopt ::=
-11   62    PackageDeclaration ::= Annotationsopt package PackageName SEMICOLON
-12   531   PackageDeclarationopt ::= PackageDeclaration
-13   530   PackageDeclarationopt ::=
-14   67    SingleTypeImportDeclaration ::= import TypeName SEMICOLON
-15   68    TypeImportOnDemandDeclaration ::= import PackageOrTypeName DOT MULTIPLY SEMICOLON
-16   69    SingleStaticImportDeclaration ::= import static TypeName DOT identifier SEMICOLON
-17   70    StaticImportOnDemandDeclaration ::= import static TypeName DOT MULTIPLY SEMICOLON
-18   63    ImportDeclaration ::= SingleTypeImportDeclaration
-19   64    ImportDeclaration ::= TypeImportOnDemandDeclaration
-20   65    ImportDeclaration ::= SingleStaticImportDeclaration
-21   66    ImportDeclaration ::= StaticImportOnDemandDeclaration
-22   58    ImportDeclarations ::= ImportDeclaration
-23   59    ImportDeclarations ::= ImportDeclarations ImportDeclaration
-24   529   ImportDeclarationsopt ::= ImportDeclarations
-25   528   ImportDeclarationsopt ::=
-26   79    ClassModifier ::= Annotation
-27   80    ClassModifier ::= public
-28   81    ClassModifier ::= protected
-29   82    ClassModifier ::= private
-30   83    ClassModifier ::= abstract
-31   84    ClassModifier ::= static
-32   85    ClassModifier ::= final
-33   86    ClassModifier ::= strictfp
-34   77    ClassModifiers ::= ClassModifier
-35   78    ClassModifiers ::= ClassModifiers ClassModifier
-36   523   ClassModifiersopt ::= ClassModifiers
-37   522   ClassModifiersopt ::=
-38   76    NormalClassDeclaration ::= ClassModifiersopt class identifier TypeParametersopt Superopt Interfacesopt ClassBody
-39   175   EnumDeclaration ::= ClassModifiersopt enum identifier Interfacesopt EnumBody
-40   74    ClassDeclaration ::= NormalClassDeclaration
-41   75    ClassDeclaration ::= EnumDeclaration
-42   187   InterfaceModifier ::= Annotation
-43   188   InterfaceModifier ::= public
-44   189   InterfaceModifier ::= protected
-45   190   InterfaceModifier ::= private
-46   191   InterfaceModifier ::= abstract
-47   192   InterfaceModifier ::= static
-48   193   InterfaceModifier ::= strictfp
-49   185   InterfaceModifiers ::= InterfaceModifier
-50   186   InterfaceModifiers ::= InterfaceModifiers InterfaceModifier
-51   485   InterfaceModifiersopt ::= InterfaceModifiers
-52   484   InterfaceModifiersopt ::=
-53   184   NormalInterfaceDeclaration ::= InterfaceModifiersopt interface identifier TypeParametersopt ExtendsInterfacesopt InterfaceBody
-54   217   AnnotationTypeDeclaration ::= InterfaceModifiersopt AT interface identifier AnnotationTypeBody
-55   182   InterfaceDeclaration ::= NormalInterfaceDeclaration
-56   183   InterfaceDeclaration ::= AnnotationTypeDeclaration
-57   71    TypeDeclaration ::= ClassDeclaration
-58   72    TypeDeclaration ::= InterfaceDeclaration
-59   73    TypeDeclaration ::= SEMICOLON
-60   60    TypeDeclarations ::= TypeDeclaration
-61   61    TypeDeclarations ::= TypeDeclarations TypeDeclaration
-62   527   TypeDeclarationsopt ::= TypeDeclarations
-63   526   TypeDeclarationsopt ::=
-64   1     CompilationUnit ::= ClassBodyDeclarationsoptMarker ClassBodyDeclarationsopt
-65   2     CompilationUnit ::= LPGUserActionMarker LPGUserAction
-66   57    CompilationUnit ::= PackageDeclarationopt ImportDeclarationsopt TypeDeclarationsopt
-67   0     %accept ::= CompilationUnit
-68   493   Commaopt ::= COMMA
-69   492   Commaopt ::=
-70   505   Ellipsisopt ::= ELLIPSIS
-71   504   Ellipsisopt ::=
-72   117   FieldModifier ::= Annotation
-73   118   FieldModifier ::= public
-74   119   FieldModifier ::= protected
-75   120   FieldModifier ::= private
-76   121   FieldModifier ::= static
-77   122   FieldModifier ::= final
-78   123   FieldModifier ::= transient
-79   124   FieldModifier ::= volatile
-80   115   FieldModifiers ::= FieldModifier
-81   116   FieldModifiers ::= FieldModifiers FieldModifier
-82   513   FieldModifiersopt ::= FieldModifiers
-83   512   FieldModifiersopt ::=
-84   16    IntegralType ::= byte
-85   17    IntegralType ::= short
-86   18    IntegralType ::= int
-87   19    IntegralType ::= long
-88   20    IntegralType ::= char
-89   21    FloatingPointType ::= float
-90   22    FloatingPointType ::= double
-91   14    NumericType ::= IntegralType
-92   15    NumericType ::= FloatingPointType
-93   12    PrimitiveType ::= NumericType
-94   13    PrimitiveType ::= boolean
-95   3     identifier ::= IDENTIFIER
-96   29    TypeName ::= identifier
-97   30    TypeName ::= TypeName DOT identifier
-98   27    ClassType ::= TypeName TypeArgumentsopt
-99   26    ClassOrInterfaceType ::= ClassType
-100  32    TypeVariable ::= identifier
-101  33    ArrayType ::= Type LBRACKET RBRACKET
-102  23    ReferenceType ::= ClassOrInterfaceType
-103  24    ReferenceType ::= TypeVariable
-104  25    ReferenceType ::= ArrayType
-105  10    Type ::= PrimitiveType
-106  11    Type ::= ReferenceType
-107  106   FieldDeclaration ::= FieldModifiersopt Type VariableDeclarators SEMICOLON
-108  143   MethodModifier ::= Annotations
-109  144   MethodModifier ::= public
-110  145   MethodModifier ::= protected
-111  146   MethodModifier ::= private
-112  147   MethodModifier ::= abstract
-113  148   MethodModifier ::= static
-114  149   MethodModifier ::= final
-115  150   MethodModifier ::= synchronized
-116  151   MethodModifier ::= native
-117  152   MethodModifier ::= strictfp
-118  141   MethodModifiers ::= MethodModifier
-119  142   MethodModifiers ::= MethodModifiers MethodModifier
-120  511   MethodModifiersopt ::= MethodModifiers
-121  510   MethodModifiersopt ::=
-122  87    TypeParameters ::= LESS TypeParameterList GREATER
-123  521   TypeParametersopt ::= TypeParameters
-124  520   TypeParametersopt ::=
-125  127   ResultType ::= Type
-126  128   ResultType ::= void
-127  126   MethodHeader ::= MethodModifiersopt TypeParametersopt ResultType MethodDeclarator Throwsopt
-128  125   MethodDeclaration ::= MethodHeader MethodBody
-129  101   ClassMemberDeclaration ::= FieldDeclaration
-130  102   ClassMemberDeclaration ::= MethodDeclaration
-131  103   ClassMemberDeclaration ::= ClassDeclaration
-132  104   ClassMemberDeclaration ::= InterfaceDeclaration
-133  105   ClassMemberDeclaration ::= SEMICOLON
-134  250   Block ::= LBRACE BlockStatementsopt RBRACE
-135  160   InstanceInitializer ::= Block
-136  161   StaticInitializer ::= static Block
-137  167   ConstructorModifier ::= Annotations
-138  168   ConstructorModifier ::= public
-139  169   ConstructorModifier ::= protected
-140  170   ConstructorModifier ::= private
-141  165   ConstructorModifiers ::= ConstructorModifier
-142  166   ConstructorModifiers ::= ConstructorModifiers ConstructorModifier
-143  503   ConstructorModifiersopt ::= ConstructorModifiers
-144  502   ConstructorModifiersopt ::=
-145  164   SimpleTypeName ::= identifier
-146  163   ConstructorDeclarator ::= TypeParametersopt SimpleTypeName LPAREN FormalParameterListopt RPAREN
-147  162   ConstructorDeclaration ::= ConstructorModifiersopt ConstructorDeclarator Throwsopt ConstructorBody
-148  97    ClassBodyDeclaration ::= ClassMemberDeclaration
-149  98    ClassBodyDeclaration ::= InstanceInitializer
-150  99    ClassBodyDeclaration ::= StaticInitializer
-151  100   ClassBodyDeclaration ::= ConstructorDeclaration
-152  95    ClassBodyDeclarations ::= ClassBodyDeclaration
-153  96    ClassBodyDeclarations ::= ClassBodyDeclarations ClassBodyDeclaration
-154  515   ClassBodyDeclarationsopt ::= ClassBodyDeclarations
-155  514   ClassBodyDeclarationsopt ::=
-156  138   VariableModifier ::= final
-157  139   VariableModifier ::= Annotations
-158  136   VariableModifiers ::= VariableModifier
-159  137   VariableModifiers ::= VariableModifiers VariableModifier
-160  465   VariableModifiersopt ::= VariableModifiers
-161  464   VariableModifiersopt ::=
-162  257   LocalVariableDeclaration ::= VariableModifiersopt Type VariableDeclarators
-163  256   LocalVariableDeclarationStatement ::= LocalVariableDeclaration SEMICOLON
-164  284   EmptyStatement ::= SEMICOLON
-165  55    AmbiguousName ::= identifier
-166  56    AmbiguousName ::= AmbiguousName DOT identifier
-167  49    ExpressionName ::= identifier
-168  50    ExpressionName ::= AmbiguousName DOT identifier
-169  352   BooleanLiteral ::= true
-170  353   BooleanLiteral ::= false
-171  344   Literal ::= IntegerLiteral
-172  345   Literal ::= LongLiteral
-173  346   Literal ::= FloatingPointLiteral
-174  347   Literal ::= DoubleLiteral
-175  348   Literal ::= BooleanLiteral
-176  349   Literal ::= CharacterLiteral
-177  350   Literal ::= StringLiteral
-178  351   Literal ::= null
-179  31    ClassName ::= TypeName
-180  51    MethodName ::= identifier
-181  52    MethodName ::= AmbiguousName DOT identifier
-182  358   ArrayCreationExpression ::= new PrimitiveType DimExprs Dimsopt
-183  359   ArrayCreationExpression ::= new ClassOrInterfaceType DimExprs Dimsopt
-184  360   ArrayCreationExpression ::= new PrimitiveType Dims ArrayInitializer
-185  361   ArrayCreationExpression ::= new ClassOrInterfaceType Dims ArrayInitializer
-186  375   ArrayAccess ::= ExpressionName LBRACKET Expression RBRACKET
-187  376   ArrayAccess ::= PrimaryNoNewArray LBRACKET Expression RBRACKET
-188  370   MethodInvocation ::= MethodName LPAREN ArgumentListopt RPAREN
-189  371   MethodInvocation ::= Primary DOT TypeArgumentsopt identifier LPAREN ArgumentListopt RPAREN
-190  372   MethodInvocation ::= super DOT TypeArgumentsopt identifier LPAREN ArgumentListopt RPAREN
-191  373   MethodInvocation ::= ClassName DOT super DOT TypeArgumentsopt identifier LPAREN ArgumentListopt RPAREN
-192  374   MethodInvocation ::= TypeName DOT TypeArguments identifier LPAREN ArgumentListopt RPAREN
-193  354   ClassInstanceCreationExpression ::= new TypeArgumentsopt ClassOrInterfaceType TypeArgumentsopt LPAREN ArgumentListopt RPAREN ClassBodyopt
-194  355   ClassInstanceCreationExpression ::= Primary DOT new TypeArgumentsopt identifier TypeArgumentsopt LPAREN ArgumentListopt RPAREN ClassBodyopt
-195  334   PrimaryNoNewArray ::= Literal
-196  335   PrimaryNoNewArray ::= Type DOT class
-197  336   PrimaryNoNewArray ::= void DOT class
-198  337   PrimaryNoNewArray ::= this
-199  338   PrimaryNoNewArray ::= ClassName DOT this
-200  339   PrimaryNoNewArray ::= LPAREN Expression RPAREN
-201  340   PrimaryNoNewArray ::= ClassInstanceCreationExpression
-202  341   PrimaryNoNewArray ::= FieldAccess
-203  342   PrimaryNoNewArray ::= MethodInvocation
-204  343   PrimaryNoNewArray ::= ArrayAccess
-205  332   Primary ::= PrimaryNoNewArray
-206  333   Primary ::= ArrayCreationExpression
-207  367   FieldAccess ::= Primary DOT identifier
-208  368   FieldAccess ::= super DOT identifier
-209  369   FieldAccess ::= ClassName DOT super DOT identifier
-210  431   LeftHandSide ::= ExpressionName
-211  432   LeftHandSide ::= FieldAccess
-212  433   LeftHandSide ::= ArrayAccess
-213  430   Assignment ::= LeftHandSide AssignmentOperator AssignmentExpression
-214  388   PreIncrementExpression ::= PLUS_PLUS UnaryExpression
-215  389   PreDecrementExpression ::= MINUS_MINUS UnaryExpression
-216  382   PostDecrementExpression ::= PostfixExpression MINUS_MINUS
-217  377   PostfixExpression ::= Primary
-218  378   PostfixExpression ::= ExpressionName
-219  379   PostfixExpression ::= PostIncrementExpression
-220  380   PostfixExpression ::= PostDecrementExpression
-221  381   PostIncrementExpression ::= PostfixExpression PLUS_PLUS
-222  288   StatementExpression ::= Assignment
-223  289   StatementExpression ::= PreIncrementExpression
-224  290   StatementExpression ::= PreDecrementExpression
-225  291   StatementExpression ::= PostIncrementExpression
-226  292   StatementExpression ::= PostDecrementExpression
-227  293   StatementExpression ::= MethodInvocation
-228  294   StatementExpression ::= ClassInstanceCreationExpression
-229  287   ExpressionStatement ::= StatementExpression SEMICOLON
-230  295   AssertStatement ::= assert Expression SEMICOLON
-231  296   AssertStatement ::= assert Expression COLON Expression SEMICOLON
-232  297   SwitchStatement ::= switch LPAREN Expression RPAREN SwitchBlock
-233  310   DoStatement ::= do Statement while LPAREN Expression RPAREN SEMICOLON
-234  321   BreakStatement ::= break identifieropt SEMICOLON
-235  322   ContinueStatement ::= continue identifieropt SEMICOLON
-236  323   ReturnStatement ::= return Expressionopt SEMICOLON
-237  325   SynchronizedStatement ::= synchronized LPAREN Expression RPAREN Block
-238  324   ThrowStatement ::= throw Expression SEMICOLON
-239  326   TryStatement ::= try Block Catches
-240  327   TryStatement ::= try Block Catchesopt Finally
-241  264   StatementWithoutTrailingSubstatement ::= Block
-242  265   StatementWithoutTrailingSubstatement ::= EmptyStatement
-243  266   StatementWithoutTrailingSubstatement ::= ExpressionStatement
-244  267   StatementWithoutTrailingSubstatement ::= AssertStatement
-245  268   StatementWithoutTrailingSubstatement ::= SwitchStatement
-246  269   StatementWithoutTrailingSubstatement ::= DoStatement
-247  270   StatementWithoutTrailingSubstatement ::= BreakStatement
-248  271   StatementWithoutTrailingSubstatement ::= ContinueStatement
-249  272   StatementWithoutTrailingSubstatement ::= ReturnStatement
-250  273   StatementWithoutTrailingSubstatement ::= SynchronizedStatement
-251  274   StatementWithoutTrailingSubstatement ::= ThrowStatement
-252  275   StatementWithoutTrailingSubstatement ::= TryStatement
-253  285   LabeledStatement ::= identifier COLON Statement
-254  281   IfThenStatement ::= if LPAREN Expression RPAREN Statement
-255  282   IfThenElseStatement ::= if LPAREN Expression RPAREN StatementNoShortIf else Statement
-256  308   WhileStatement ::= while LPAREN Expression RPAREN Statement
-257  313   BasicForStatement ::= for LPAREN ForInitopt SEMICOLON Expressionopt SEMICOLON ForUpdateopt RPAREN Statement
-258  320   EnhancedForStatement ::= for LPAREN FormalParameter COLON Expression RPAREN Statement
-259  311   ForStatement ::= BasicForStatement
-260  312   ForStatement ::= EnhancedForStatement
-261  258   Statement ::= StatementWithoutTrailingSubstatement
-262  259   Statement ::= LabeledStatement
-263  260   Statement ::= IfThenStatement
-264  261   Statement ::= IfThenElseStatement
-265  262   Statement ::= WhileStatement
-266  263   Statement ::= ForStatement
-267  253   BlockStatement ::= LocalVariableDeclarationStatement
-268  254   BlockStatement ::= ClassDeclaration
-269  255   BlockStatement ::= Statement
-270  251   BlockStatements ::= BlockStatement
-271  252   BlockStatements ::= BlockStatements BlockStatement
-272  499   BlockStatementsopt ::= BlockStatements
-273  498   BlockStatementsopt ::=
-274  5     LPGUserAction ::= BeginAction BlockStatementsopt EndAction
-275  6     LPGUserAction ::= BeginJava BlockStatementsopt EndJava
-276  7     LPGUserAction ::= NoAction
-277  8     LPGUserAction ::= NullAction
-278  9     LPGUserAction ::= BadAction
-279  4     LPGUserAction ::= BlockStatementsopt
-280  39    TypeArguments ::= LESS ActualTypeArgumentList GREATER
-281  539   TypeArgumentsopt ::= TypeArguments
-282  538   TypeArgumentsopt ::=
-283  28    InterfaceType ::= TypeName TypeArgumentsopt
-284  34    TypeParameter ::= TypeVariable TypeBoundopt
-285  35    TypeBound ::= extends ClassOrInterfaceType AdditionalBoundListopt
-286  537   TypeBoundopt ::= TypeBound
-287  536   TypeBoundopt ::=
-288  38    AdditionalBound ::= AND InterfaceType
-289  36    AdditionalBoundList ::= AdditionalBound
-290  37    AdditionalBoundList ::= AdditionalBoundList AdditionalBound
-291  535   AdditionalBoundListopt ::= AdditionalBoundList
-292  534   AdditionalBoundListopt ::=
-293  44    Wildcard ::= QUESTION WildcardBoundsOpt
-294  42    ActualTypeArgument ::= ReferenceType
-295  43    ActualTypeArgument ::= Wildcard
-296  40    ActualTypeArgumentList ::= ActualTypeArgument
-297  41    ActualTypeArgumentList ::= ActualTypeArgumentList COMMA ActualTypeArgument
-298  45    WildcardBounds ::= extends ReferenceType
-299  46    WildcardBounds ::= super ReferenceType
-300  533   WildcardBoundsOpt ::= WildcardBounds
-301  532   WildcardBoundsOpt ::=
-302  47    PackageName ::= identifier
-303  48    PackageName ::= PackageName DOT identifier
-304  53    PackageOrTypeName ::= identifier
-305  54    PackageOrTypeName ::= PackageOrTypeName DOT identifier
-306  90    Super ::= extends ClassType
-307  519   Superopt ::= Super
-308  518   Superopt ::=
-309  91    Interfaces ::= implements InterfaceTypeList
-310  517   Interfacesopt ::= Interfaces
-311  516   Interfacesopt ::=
-312  94    ClassBody ::= LBRACE ClassBodyDeclarationsopt RBRACE
-313  88    TypeParameterList ::= TypeParameter
-314  89    TypeParameterList ::= TypeParameterList COMMA TypeParameter
-315  92    InterfaceTypeList ::= InterfaceType
-316  93    InterfaceTypeList ::= InterfaceTypeList COMMA InterfaceType
-317  111   VariableDeclaratorId ::= identifier
-318  112   VariableDeclaratorId ::= VariableDeclaratorId LBRACKET RBRACKET
-319  109   VariableDeclarator ::= VariableDeclaratorId
-320  110   VariableDeclarator ::= VariableDeclaratorId EQUAL VariableInitializer
-321  107   VariableDeclarators ::= VariableDeclarator
-322  108   VariableDeclarators ::= VariableDeclarators COMMA VariableDeclarator
-323  394   CastExpression ::= LPAREN PrimitiveType Dimsopt RPAREN UnaryExpression
-324  395   CastExpression ::= LPAREN ReferenceType RPAREN UnaryExpressionNotPlusMinus
-325  390   UnaryExpressionNotPlusMinus ::= PostfixExpression
-326  391   UnaryExpressionNotPlusMinus ::= TWIDDLE UnaryExpression
-327  392   UnaryExpressionNotPlusMinus ::= NOT UnaryExpression
-328  393   UnaryExpressionNotPlusMinus ::= CastExpression
-329  383   UnaryExpression ::= PreIncrementExpression
-330  384   UnaryExpression ::= PreDecrementExpression
-331  385   UnaryExpression ::= PLUS UnaryExpression
-332  386   UnaryExpression ::= MINUS UnaryExpression
-333  387   UnaryExpression ::= UnaryExpressionNotPlusMinus
-334  396   MultiplicativeExpression ::= UnaryExpression
-335  397   MultiplicativeExpression ::= MultiplicativeExpression MULTIPLY UnaryExpression
-336  398   MultiplicativeExpression ::= MultiplicativeExpression DIVIDE UnaryExpression
-337  399   MultiplicativeExpression ::= MultiplicativeExpression REMAINDER UnaryExpression
-338  400   AdditiveExpression ::= MultiplicativeExpression
-339  401   AdditiveExpression ::= AdditiveExpression PLUS MultiplicativeExpression
-340  402   AdditiveExpression ::= AdditiveExpression MINUS MultiplicativeExpression
-341  403   ShiftExpression ::= AdditiveExpression
-342  404   ShiftExpression ::= ShiftExpression LEFT_SHIFT AdditiveExpression
-343  405   ShiftExpression ::= ShiftExpression GREATER GREATER AdditiveExpression
-344  406   ShiftExpression ::= ShiftExpression GREATER GREATER GREATER AdditiveExpression
-345  407   RelationalExpression ::= ShiftExpression
-346  408   RelationalExpression ::= RelationalExpression LESS ShiftExpression
-347  409   RelationalExpression ::= RelationalExpression GREATER ShiftExpression
-348  410   RelationalExpression ::= RelationalExpression LESS_EQUAL ShiftExpression
-349  411   RelationalExpression ::= RelationalExpression GREATER EQUAL ShiftExpression
-350  412   RelationalExpression ::= RelationalExpression instanceof ReferenceType
-351  413   EqualityExpression ::= RelationalExpression
-352  414   EqualityExpression ::= EqualityExpression EQUAL_EQUAL RelationalExpression
-353  415   EqualityExpression ::= EqualityExpression NOT_EQUAL RelationalExpression
-354  416   AndExpression ::= EqualityExpression
-355  417   AndExpression ::= AndExpression AND EqualityExpression
-356  418   ExclusiveOrExpression ::= AndExpression
-357  419   ExclusiveOrExpression ::= ExclusiveOrExpression XOR AndExpression
-358  420   InclusiveOrExpression ::= ExclusiveOrExpression
-359  421   InclusiveOrExpression ::= InclusiveOrExpression OR ExclusiveOrExpression
-360  422   ConditionalAndExpression ::= InclusiveOrExpression
-361  423   ConditionalAndExpression ::= ConditionalAndExpression AND_AND InclusiveOrExpression
-362  424   ConditionalOrExpression ::= ConditionalAndExpression
-363  425   ConditionalOrExpression ::= ConditionalOrExpression OR_OR ConditionalAndExpression
-364  426   ConditionalExpression ::= ConditionalOrExpression
-365  427   ConditionalExpression ::= ConditionalOrExpression QUESTION Expression COLON ConditionalExpression
-366  428   AssignmentExpression ::= ConditionalExpression
-367  429   AssignmentExpression ::= Assignment
-368  446   Expression ::= AssignmentExpression
-369  247   ArrayInitializer ::= LBRACE VariableInitializersopt Commaopt RBRACE
-370  113   VariableInitializer ::= Expression
-371  114   VariableInitializer ::= ArrayInitializer
-372  158   MethodBody ::= Block
-373  159   MethodBody ::= SEMICOLON
-374  129   MethodDeclarator ::= identifier LPAREN FormalParameterListopt RPAREN
-375  130   MethodDeclarator ::= MethodDeclarator LBRACKET RBRACKET
-376  153   Throws ::= throws ExceptionTypeList
-377  509   Throwsopt ::= Throws
-378  508   Throwsopt ::=
-379  140   LastFormalParameter ::= VariableModifiersopt Type Ellipsisopt VariableDeclaratorId
-380  135   FormalParameter ::= VariableModifiersopt Type VariableDeclaratorId
-381  133   FormalParameters ::= FormalParameter
-382  134   FormalParameters ::= FormalParameters COMMA FormalParameter
-383  131   FormalParameterList ::= LastFormalParameter
-384  132   FormalParameterList ::= FormalParameters COMMA LastFormalParameter
-385  507   FormalParameterListopt ::= FormalParameterList
-386  506   FormalParameterListopt ::=
-387  156   ExceptionType ::= ClassType
-388  157   ExceptionType ::= TypeVariable
-389  154   ExceptionTypeList ::= ExceptionType
-390  155   ExceptionTypeList ::= ExceptionTypeList COMMA ExceptionType
-391  171   ConstructorBody ::= LBRACE ExplicitConstructorInvocationopt BlockStatementsopt RBRACE
-392  172   ExplicitConstructorInvocation ::= TypeArgumentsopt this LPAREN ArgumentListopt RPAREN SEMICOLON
-393  173   ExplicitConstructorInvocation ::= TypeArgumentsopt super LPAREN ArgumentListopt RPAREN SEMICOLON
-394  174   ExplicitConstructorInvocation ::= Primary DOT TypeArgumentsopt super LPAREN ArgumentListopt RPAREN SEMICOLON
-395  501   ExplicitConstructorInvocationopt ::= ExplicitConstructorInvocation
-396  500   ExplicitConstructorInvocationopt ::=
-397  356   ArgumentList ::= Expression
-398  357   ArgumentList ::= ArgumentList COMMA Expression
-399  497   ArgumentListopt ::= ArgumentList
-400  496   ArgumentListopt ::=
-401  176   EnumBody ::= LBRACE EnumConstantsopt Commaopt EnumBodyDeclarationsopt RBRACE
-402  179   EnumConstant ::= Annotationsopt identifier Argumentsopt ClassBodyopt
-403  307   EnumConstant ::= identifier
-404  177   EnumConstants ::= EnumConstant
-405  178   EnumConstants ::= EnumConstants COMMA EnumConstant
-406  495   EnumConstantsopt ::= EnumConstants
-407  494   EnumConstantsopt ::=
-408  181   EnumBodyDeclarations ::= SEMICOLON ClassBodyDeclarationsopt
-409  491   EnumBodyDeclarationsopt ::= EnumBodyDeclarations
-410  490   EnumBodyDeclarationsopt ::=
-411  180   Arguments ::= LPAREN ArgumentListopt RPAREN
-412  489   Argumentsopt ::= Arguments
-413  488   Argumentsopt ::=
-414  487   ClassBodyopt ::= ClassBody
-415  486   ClassBodyopt ::=
-416  194   ExtendsInterfaces ::= extends InterfaceType
-417  195   ExtendsInterfaces ::= ExtendsInterfaces COMMA InterfaceType
-418  483   ExtendsInterfacesopt ::= ExtendsInterfaces
-419  482   ExtendsInterfacesopt ::=
-420  196   InterfaceBody ::= LBRACE InterfaceMemberDeclarationsopt RBRACE
-421  207   ConstantModifier ::= Annotation
-422  208   ConstantModifier ::= public
-423  209   ConstantModifier ::= static
-424  210   ConstantModifier ::= final
-425  205   ConstantModifiers ::= ConstantModifier
-426  206   ConstantModifiers ::= ConstantModifiers ConstantModifier
-427  479   ConstantModifiersopt ::= ConstantModifiers
-428  478   ConstantModifiersopt ::=
-429  204   ConstantDeclaration ::= ConstantModifiersopt Type VariableDeclarators
-430  214   AbstractMethodModifier ::= Annotations
-431  215   AbstractMethodModifier ::= public
-432  216   AbstractMethodModifier ::= abstract
-433  212   AbstractMethodModifiers ::= AbstractMethodModifier
-434  213   AbstractMethodModifiers ::= AbstractMethodModifiers AbstractMethodModifier
-435  477   AbstractMethodModifiersopt ::= AbstractMethodModifiers
-436  476   AbstractMethodModifiersopt ::=
-437  211   AbstractMethodDeclaration ::= AbstractMethodModifiersopt TypeParametersopt ResultType MethodDeclarator Throwsopt SEMICOLON
-438  199   InterfaceMemberDeclaration ::= ConstantDeclaration
-439  200   InterfaceMemberDeclaration ::= AbstractMethodDeclaration
-440  201   InterfaceMemberDeclaration ::= ClassDeclaration
-441  202   InterfaceMemberDeclaration ::= InterfaceDeclaration
-442  203   InterfaceMemberDeclaration ::= SEMICOLON
-443  197   InterfaceMemberDeclarations ::= InterfaceMemberDeclaration
-444  198   InterfaceMemberDeclarations ::= InterfaceMemberDeclarations InterfaceMemberDeclaration
-445  481   InterfaceMemberDeclarationsopt ::= InterfaceMemberDeclarations
-446  480   InterfaceMemberDeclarationsopt ::=
-447  218   AnnotationTypeBody ::= LBRACE AnnotationTypeElementDeclarationsopt RBRACE
-448  221   AnnotationTypeElementDeclaration ::= AbstractMethodModifiersopt Type identifier LPAREN RPAREN DefaultValueopt SEMICOLON
-449  222   AnnotationTypeElementDeclaration ::= ConstantDeclaration
-450  223   AnnotationTypeElementDeclaration ::= ClassDeclaration
-451  224   AnnotationTypeElementDeclaration ::= InterfaceDeclaration
-452  225   AnnotationTypeElementDeclaration ::= EnumDeclaration
-453  226   AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration
-454  227   AnnotationTypeElementDeclaration ::= SEMICOLON
-455  219   AnnotationTypeElementDeclarations ::= AnnotationTypeElementDeclaration
-456  220   AnnotationTypeElementDeclarations ::= AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
-457  475   AnnotationTypeElementDeclarationsopt ::= AnnotationTypeElementDeclarations
-458  474   AnnotationTypeElementDeclarationsopt ::=
-459  228   DefaultValue ::= default ElementValue
-460  473   DefaultValueopt ::= DefaultValue
-461  472   DefaultValueopt ::=
-462  242   ElementValueArrayInitializer ::= LBRACE ElementValuesopt Commaopt RBRACE
-463  239   ElementValue ::= ConditionalExpression
-464  240   ElementValue ::= Annotation
-465  241   ElementValue ::= ElementValueArrayInitializer
-466  238   SimpleName ::= identifier
-467  237   ElementValuePair ::= SimpleName EQUAL ElementValue
-468  235   ElementValuePairs ::= ElementValuePair
-469  236   ElementValuePairs ::= ElementValuePairs COMMA ElementValuePair
-470  471   ElementValuePairsopt ::= ElementValuePairs
-471  470   ElementValuePairsopt ::=
-472  243   ElementValues ::= ElementValue
-473  244   ElementValues ::= ElementValues COMMA ElementValue
-474  469   ElementValuesopt ::= ElementValues
-475  468   ElementValuesopt ::=
-476  248   VariableInitializers ::= VariableInitializer
-477  249   VariableInitializers ::= VariableInitializers COMMA VariableInitializer
-478  467   VariableInitializersopt ::= VariableInitializers
-479  466   VariableInitializersopt ::=
-480  286   LabeledStatementNoShortIf ::= identifier COLON StatementNoShortIf
-481  283   IfThenElseStatementNoShortIf ::= if LPAREN Expression RPAREN StatementNoShortIf else StatementNoShortIf
-482  309   WhileStatementNoShortIf ::= while LPAREN Expression RPAREN StatementNoShortIf
-483  314   ForStatementNoShortIf ::= for LPAREN ForInitopt SEMICOLON Expressionopt SEMICOLON ForUpdateopt RPAREN StatementNoShortIf
-484  276   StatementNoShortIf ::= StatementWithoutTrailingSubstatement
-485  277   StatementNoShortIf ::= LabeledStatementNoShortIf
-486  278   StatementNoShortIf ::= IfThenElseStatementNoShortIf
-487  279   StatementNoShortIf ::= WhileStatementNoShortIf
-488  280   StatementNoShortIf ::= ForStatementNoShortIf
-489  298   SwitchBlock ::= LBRACE SwitchBlockStatementGroupsopt SwitchLabelsopt RBRACE
-490  304   SwitchLabel ::= case ConstantExpression COLON
-491  305   SwitchLabel ::= case EnumConstant COLON
-492  306   SwitchLabel ::= default COLON
-493  302   SwitchLabels ::= SwitchLabel
-494  303   SwitchLabels ::= SwitchLabels SwitchLabel
-495  301   SwitchBlockStatementGroup ::= SwitchLabels BlockStatements
-496  299   SwitchBlockStatementGroups ::= SwitchBlockStatementGroup
-497  300   SwitchBlockStatementGroups ::= SwitchBlockStatementGroups SwitchBlockStatementGroup
-498  463   SwitchBlockStatementGroupsopt ::= SwitchBlockStatementGroups
-499  462   SwitchBlockStatementGroupsopt ::=
-500  461   SwitchLabelsopt ::= SwitchLabels
-501  460   SwitchLabelsopt ::=
-502  447   ConstantExpression ::= Expression
-503  318   StatementExpressionList ::= StatementExpression
-504  319   StatementExpressionList ::= StatementExpressionList COMMA StatementExpression
-505  315   ForInit ::= StatementExpressionList
-506  316   ForInit ::= LocalVariableDeclaration
-507  459   ForInitopt ::= ForInit
-508  458   ForInitopt ::=
-509  457   Expressionopt ::= Expression
-510  456   Expressionopt ::=
-511  317   ForUpdate ::= StatementExpressionList
-512  455   ForUpdateopt ::= ForUpdate
-513  454   ForUpdateopt ::=
-514  453   identifieropt ::= identifier
-515  452   identifieropt ::=
-516  330   CatchClause ::= catch LPAREN FormalParameter RPAREN Block
-517  328   Catches ::= CatchClause
-518  329   Catches ::= Catches CatchClause
-519  451   Catchesopt ::= Catches
-520  450   Catchesopt ::=
-521  331   Finally ::= finally Block
-522  364   DimExpr ::= LBRACKET Expression RBRACKET
-523  362   DimExprs ::= DimExpr
-524  363   DimExprs ::= DimExprs DimExpr
-525  365   Dims ::= LBRACKET RBRACKET
-526  366   Dims ::= Dims LBRACKET RBRACKET
-527  449   Dimsopt ::= Dims
-528  448   Dimsopt ::=
-529  434   AssignmentOperator ::= EQUAL
-530  435   AssignmentOperator ::= MULTIPLY_EQUAL
-531  436   AssignmentOperator ::= DIVIDE_EQUAL
-532  437   AssignmentOperator ::= REMAINDER_EQUAL
-533  438   AssignmentOperator ::= PLUS_EQUAL
-534  439   AssignmentOperator ::= MINUS_EQUAL
-535  440   AssignmentOperator ::= LEFT_SHIFT_EQUAL
-536  441   AssignmentOperator ::= GREATER GREATER EQUAL
-537  442   AssignmentOperator ::= GREATER GREATER GREATER EQUAL
-538  443   AssignmentOperator ::= AND_EQUAL
-539  444   AssignmentOperator ::= XOR_EQUAL
-540  445   AssignmentOperator ::= OR_EQUAL
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:150:5:150:17:4120:4132: Informative: The terminal GREATER_EQUAL is useless.
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:151:5:151:15:4158:4168: Informative: The terminal RIGHT_SHIFT is useless.
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:152:5:152:21:4196:4212: Informative: The terminal RIGHT_SHIFT_EQUAL is useless.
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:153:5:153:24:4236:4255: Informative: The terminal UNSIGNED_RIGHT_SHIFT is useless.
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:154:5:154:30:4275:4300: Informative: The terminal UNSIGNED_RIGHT_SHIFT_EQUAL is useless.
-e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:22:5:22:9:266:270: Informative: The terminal const is useless.
-e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:35:5:35:8:399:402: Informative: The terminal goto is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:146:5:146:17:3671:3683: Informative: The terminal GREATER_EQUAL is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:147:5:147:15:3709:3719: Informative: The terminal RIGHT_SHIFT is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:148:5:148:21:3747:3763: Informative: The terminal RIGHT_SHIFT_EQUAL is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:149:5:149:24:3787:3806: Informative: The terminal UNSIGNED_RIGHT_SHIFT is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:150:5:150:30:3826:3851: Informative: The terminal UNSIGNED_RIGHT_SHIFT_EQUAL is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:22:5:22:9:267:271: Informative: The terminal const is useless.
+e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:35:5:35:8:400:403: Informative: The terminal goto is useless.
 
 
  The LALR Parser Generator              2.1.01 (Aug 13 2021)
@@ -4601,7 +4043,7 @@ Annotationsopt ::= .Annotations
 PackageDeclarationopt ::= . (530)
 PackageDeclarationopt ::= .PackageDeclaration 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1080:27:1080:36:34308:34317: Warning: Shift/reduce conflict in state 1 on "AT" with rule 530
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1076:27:1076:36:33859:33868: Warning: Shift/reduce conflict in state 1 on "AT" with rule 530
 
 CompilationUnit ::= .PackageDeclarationopt ImportDeclarationsopt 
                     TypeDeclarationsopt 
@@ -4800,47 +4242,47 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 4 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 4 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -4953,13 +4395,13 @@ ClassBodyDeclarationsopt ::= .ClassBodyDeclarations
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 5 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 5 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "short" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "short" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -4968,7 +4410,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "long" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "long" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -4977,7 +4419,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "int" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "int" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -4986,7 +4428,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "float" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "float" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -4995,7 +4437,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "double" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "double" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5004,7 +4446,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "char" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "char" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5013,7 +4455,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "byte" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "byte" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5022,7 +4464,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "boolean" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "boolean" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5031,7 +4473,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5041,7 +4483,7 @@ ConstructorDeclaration ::= .ConstructorModifiersopt ConstructorDeclarator
                            Throwsopt ConstructorBody 
 ConstructorModifiersopt ::= . (502)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5050,7 +4492,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 5 on "LESS" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 5 on "LESS" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -5118,7 +4560,7 @@ ClassModifiersopt ::= .ClassModifiers
 TypeDeclarationsopt ::= . (526)
 TypeDeclarationsopt ::= .TypeDeclarations 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 9 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 9 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
@@ -5311,47 +4753,47 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 12 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 12 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -5543,47 +4985,47 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 13 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 13 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -5604,7 +5046,7 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:426:24:426:36:12172:12184: Warning: Shift/reduce conflict in state 15 on "AT" with rule 139
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:422:24:422:36:11723:11735: Warning: Shift/reduce conflict in state 15 on "AT" with rule 139
 
 VariableModifiers ::= .VariableModifiers VariableModifier 
 VariableModifiers ::= .VariableModifier 
@@ -5619,7 +5061,7 @@ STATE 18 -----------------------------------------------------------------------
 ClassModifier ::= final . (85)
 VariableModifier ::= final . (138)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 18 on "final" between rule 85 and rule 138 starting at line 425, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 18 on "final" between rule 85 and rule 138 starting at line 421, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -5629,7 +5071,7 @@ VariableModifiers ::= .VariableModifiers VariableModifier
 VariableModifiers ::= .VariableModifier 
 VariableModifier ::= final . (138)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 18 on "AT" between rule 85 and rule 138 starting at line 425, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 18 on "AT" between rule 85 and rule 138 starting at line 421, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -5648,7 +5090,7 @@ STATE 19 -----------------------------------------------------------------------
 ClassModifier ::= Annotation . (79)
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 19 on "final" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 19 on "final" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -5659,7 +5101,7 @@ VariableModifiers ::= .VariableModifier
 VariableModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 19 on "AT" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 19 on "AT" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -5858,47 +5300,47 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 25 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 25 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -5923,7 +5365,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 35 on "DOT" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 35 on "DOT" with rule 538
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -5932,7 +5374,7 @@ ClassOrInterfaceType ::= .ClassType
 ClassType ::= TypeName  .TypeArgumentsopt 
 TypeArgumentsopt ::= . (538)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:238:15:238:26:6536:6547: Warning: Shift/reduce conflict in state 35 on "DOT" with rule 31
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:234:15:234:26:6087:6098: Warning: Shift/reduce conflict in state 35 on "DOT" with rule 31
 
 PrimaryNoNewArray ::= .ClassName DOT this 
 ClassName ::= TypeName . (31)
@@ -5950,7 +5392,7 @@ MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 LabeledStatement ::= identifier  .COLON Statement 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 36 on "LBRACKET" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 36 on "LBRACKET" between rule 29 and rule 49 starting at line 275, column 20
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -5962,7 +5404,7 @@ TypeName ::= identifier . (29)
 ArrayAccess ::= .ExpressionName LBRACKET Expression RBRACKET 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 36 on "LBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 36 on "LBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -5976,7 +5418,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 36 on "DOT" between rule 29 and rule 55 starting at line 288, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 36 on "DOT" between rule 29 and rule 55 starting at line 284, column 19
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -5988,7 +5430,7 @@ TypeName ::= identifier . (29)
 ExpressionName ::= .AmbiguousName DOT identifier 
 AmbiguousName ::= identifier . (55)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 36 on "DOT" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 36 on "DOT" between rule 29 and rule 32 starting at line 236, column 18
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -6040,7 +5482,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 37 on "IDENTIFIER" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 37 on "IDENTIFIER" with rule 538
 
 ClassInstanceCreationExpression ::= new  .TypeArgumentsopt ClassOrInterfaceType 
                                     TypeArgumentsopt LPAREN ArgumentListopt 
@@ -6059,7 +5501,7 @@ STATE 39 -----------------------------------------------------------------------
 PrimaryNoNewArray ::= ArrayAccess . (343)
 LeftHandSide ::= ArrayAccess . (433)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:792:25:792:37:24727:24739: Warning: Reduce/reduce conflict in state 39 on "GREATER" between rule 343 and rule 433 starting at line 935, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:788:25:788:37:24278:24290: Warning: Reduce/reduce conflict in state 39 on "GREATER" between rule 343 and rule 433 starting at line 931, column 20
 
 ShiftExpression ::= .ShiftExpression GREATER GREATER AdditiveExpression 
 ShiftExpression ::= .AdditiveExpression 
@@ -6086,7 +5528,7 @@ STATE 40 -----------------------------------------------------------------------
 PrimaryNoNewArray ::= FieldAccess . (341)
 LeftHandSide ::= FieldAccess . (432)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:790:25:790:37:24646:24658: Warning: Reduce/reduce conflict in state 40 on "GREATER" between rule 341 and rule 432 starting at line 934, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:786:25:786:37:24197:24209: Warning: Reduce/reduce conflict in state 40 on "GREATER" between rule 341 and rule 432 starting at line 930, column 20
 
 ShiftExpression ::= .ShiftExpression GREATER GREATER AdditiveExpression 
 ShiftExpression ::= .AdditiveExpression 
@@ -6114,7 +5556,7 @@ ArrayAccess ::= ExpressionName  .LBRACKET Expression RBRACKET
 PostfixExpression ::= ExpressionName . (378)
 LeftHandSide ::= ExpressionName . (431)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:859:25:859:40:27319:27334: Warning: Reduce/reduce conflict in state 44 on "GREATER" between rule 378 and rule 431 starting at line 933, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:855:25:855:40:26870:26885: Warning: Reduce/reduce conflict in state 44 on "GREATER" between rule 378 and rule 431 starting at line 929, column 18
 
 ShiftExpression ::= .ShiftExpression GREATER GREATER AdditiveExpression 
 ShiftExpression ::= .AdditiveExpression 
@@ -6311,47 +5753,47 @@ VariableModifiersopt ::= .VariableModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 59 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 59 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -6373,19 +5815,19 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Shift/reduce conflict in state 65 on "AT" with rule 143
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Shift/reduce conflict in state 65 on "AT" with rule 143
 
 MethodModifiers ::= .MethodModifiers MethodModifier 
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= Annotations . (143)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:474:25:474:39:13578:13592: Warning: Shift/reduce conflict in state 65 on "AT" with rule 167
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:470:25:470:39:13129:13143: Warning: Shift/reduce conflict in state 65 on "AT" with rule 167
 
 ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier 
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= Annotations . (167)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Reduce/reduce conflict in state 65 on "IDENTIFIER" between rule 143 and rule 167 starting at line 474, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Reduce/reduce conflict in state 65 on "IDENTIFIER" between rule 143 and rule 167 starting at line 470, column 25
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -6399,7 +5841,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= Annotations . (167)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Reduce/reduce conflict in state 65 on "public" between rule 143 and rule 167 starting at line 474, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Reduce/reduce conflict in state 65 on "public" between rule 143 and rule 167 starting at line 470, column 25
 
 MethodModifiers ::= .MethodModifiers MethodModifier 
 MethodModifiers ::= .MethodModifier 
@@ -6409,7 +5851,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= Annotations . (167)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Reduce/reduce conflict in state 65 on "protected" between rule 143 and rule 167 starting at line 474, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Reduce/reduce conflict in state 65 on "protected" between rule 143 and rule 167 starting at line 470, column 25
 
 MethodModifiers ::= .MethodModifiers MethodModifier 
 MethodModifiers ::= .MethodModifier 
@@ -6419,7 +5861,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= Annotations . (167)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Reduce/reduce conflict in state 65 on "private" between rule 143 and rule 167 starting at line 474, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Reduce/reduce conflict in state 65 on "private" between rule 143 and rule 167 starting at line 470, column 25
 
 MethodModifiers ::= .MethodModifiers MethodModifier 
 MethodModifiers ::= .MethodModifier 
@@ -6429,7 +5871,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= Annotations . (167)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Reduce/reduce conflict in state 65 on "LESS" between rule 143 and rule 167 starting at line 474, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Reduce/reduce conflict in state 65 on "LESS" between rule 143 and rule 167 starting at line 470, column 25
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -6453,7 +5895,7 @@ ClassModifier ::= final . (85)
 FieldModifier ::= final . (122)
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "IDENTIFIER" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "IDENTIFIER" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6466,7 +5908,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "strictfp" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "strictfp" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6476,7 +5918,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "static" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "static" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6486,7 +5928,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "static" between rule 85 and rule 122 starting at line 399, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "static" between rule 85 and rule 122 starting at line 395, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6496,7 +5938,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= final . (122)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "short" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "short" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6509,7 +5951,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "public" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "public" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6519,7 +5961,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "public" between rule 85 and rule 122 starting at line 399, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "public" between rule 85 and rule 122 starting at line 395, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6529,7 +5971,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= final . (122)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "protected" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "protected" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6539,7 +5981,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "protected" between rule 85 and rule 122 starting at line 399, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "protected" between rule 85 and rule 122 starting at line 395, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6549,7 +5991,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= final . (122)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "private" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "private" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6559,7 +6001,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "private" between rule 85 and rule 122 starting at line 399, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "private" between rule 85 and rule 122 starting at line 395, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6569,7 +6011,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= final . (122)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "long" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "long" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6582,7 +6024,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "int" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "int" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6595,7 +6037,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "float" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "float" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6608,7 +6050,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "final" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "final" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6618,7 +6060,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "final" between rule 85 and rule 122 starting at line 399, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "final" between rule 85 and rule 122 starting at line 395, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6628,7 +6070,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= final . (122)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "double" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "double" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6641,7 +6083,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "char" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "char" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6654,7 +6096,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "byte" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "byte" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6667,7 +6109,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:399:21:399:27:11299:11305: Warning: Reduce/reduce conflict in state 68 on "boolean" between rule 122 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:27:10850:10856: Warning: Reduce/reduce conflict in state 68 on "boolean" between rule 122 and rule 149 starting at line 441, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6680,7 +6122,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "abstract" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "abstract" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6690,7 +6132,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "AT" between rule 85 and rule 149 starting at line 445, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "AT" between rule 85 and rule 149 starting at line 441, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6700,7 +6142,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= final . (149)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 68 on "AT" between rule 85 and rule 122 starting at line 399, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 68 on "AT" between rule 85 and rule 122 starting at line 395, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6720,7 +6162,7 @@ ClassModifier ::= strictfp . (86)
 MethodModifier ::= strictfp . (152)
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "final" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "final" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6730,7 +6172,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "strictfp" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "strictfp" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6740,7 +6182,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "strictfp" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "strictfp" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6750,7 +6192,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "static" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "static" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6760,7 +6202,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "static" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "static" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6770,7 +6212,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "public" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "public" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6780,7 +6222,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "public" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "public" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6790,7 +6232,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "protected" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "protected" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6800,7 +6242,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "protected" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "protected" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6810,7 +6252,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "private" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "private" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6820,7 +6262,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "private" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "private" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6830,7 +6272,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "abstract" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "abstract" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6840,7 +6282,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "abstract" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "abstract" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6850,7 +6292,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= strictfp . (152)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "AT" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "AT" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6860,7 +6302,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 69 on "AT" between rule 86 and rule 152 starting at line 448, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 69 on "AT" between rule 86 and rule 152 starting at line 444, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6884,7 +6326,7 @@ InterfaceModifier ::= static . (192)
 
 Block ::= .LBRACE BlockStatementsopt RBRACE 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "IDENTIFIER" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "IDENTIFIER" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6897,7 +6339,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "short" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "short" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6910,7 +6352,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "long" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "long" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6923,7 +6365,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "int" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "int" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6936,7 +6378,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "float" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "float" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6949,7 +6391,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "final" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "final" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6959,7 +6401,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "final" between rule 84 and rule 121 starting at line 398, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "final" between rule 84 and rule 121 starting at line 394, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -6969,7 +6411,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= static . (121)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "double" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "double" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6982,7 +6424,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "char" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "char" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -6995,7 +6437,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "byte" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "byte" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7008,7 +6450,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:398:21:398:28:11270:11277: Warning: Reduce/reduce conflict in state 70 on "boolean" between rule 121 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:21:394:28:10821:10828: Warning: Reduce/reduce conflict in state 70 on "boolean" between rule 121 and rule 148 starting at line 440, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7021,7 +6463,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "strictfp" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "strictfp" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7031,7 +6473,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "strictfp" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "strictfp" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7041,7 +6483,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "static" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "static" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7051,7 +6493,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "static" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "static" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7061,7 +6503,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "static" between rule 84 and rule 121 starting at line 398, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "static" between rule 84 and rule 121 starting at line 394, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7071,7 +6513,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= static . (121)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "public" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "public" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7081,7 +6523,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "public" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "public" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7091,7 +6533,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "public" between rule 84 and rule 121 starting at line 398, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "public" between rule 84 and rule 121 starting at line 394, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7101,7 +6543,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= static . (121)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "protected" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "protected" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7111,7 +6553,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "protected" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "protected" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7121,7 +6563,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "protected" between rule 84 and rule 121 starting at line 398, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "protected" between rule 84 and rule 121 starting at line 394, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7131,7 +6573,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= static . (121)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "private" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "private" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7141,7 +6583,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "private" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "private" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7151,7 +6593,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "private" between rule 84 and rule 121 starting at line 398, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "private" between rule 84 and rule 121 starting at line 394, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7161,7 +6603,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= static . (121)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "abstract" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "abstract" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7171,7 +6613,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "abstract" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "abstract" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7181,7 +6623,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "AT" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "AT" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7191,7 +6633,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "AT" between rule 84 and rule 148 starting at line 444, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "AT" between rule 84 and rule 148 starting at line 440, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7201,7 +6643,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= static . (148)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 70 on "AT" between rule 84 and rule 121 starting at line 398, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 70 on "AT" between rule 84 and rule 121 starting at line 394, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7221,7 +6663,7 @@ ClassModifier ::= abstract . (83)
 MethodModifier ::= abstract . (147)
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "final" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "final" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7231,7 +6673,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "strictfp" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "strictfp" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7241,7 +6683,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "strictfp" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "strictfp" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7251,7 +6693,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "static" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "static" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7261,7 +6703,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "static" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "static" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7271,7 +6713,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "public" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "public" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7281,7 +6723,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "public" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "public" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7291,7 +6733,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "protected" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "protected" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7301,7 +6743,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "protected" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "protected" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7311,7 +6753,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "private" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "private" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7321,7 +6763,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "private" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "private" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7331,7 +6773,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "abstract" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "abstract" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7341,7 +6783,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "abstract" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "abstract" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7351,7 +6793,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= abstract . (147)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "AT" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "AT" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7361,7 +6803,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 71 on "AT" between rule 83 and rule 147 starting at line 443, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 71 on "AT" between rule 83 and rule 147 starting at line 439, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7383,7 +6825,7 @@ MethodModifier ::= private . (146)
 ConstructorModifier ::= private . (170)
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "short" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "short" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7396,7 +6838,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "long" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "long" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7409,7 +6851,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "int" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "int" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7422,7 +6864,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "float" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "float" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7435,7 +6877,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "final" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "final" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7445,7 +6887,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "final" between rule 82 and rule 120 starting at line 397, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "final" between rule 82 and rule 120 starting at line 393, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7455,7 +6897,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= private . (120)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "double" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "double" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7468,7 +6910,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "char" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "char" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7481,7 +6923,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "byte" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "byte" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7494,7 +6936,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "boolean" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "boolean" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7507,7 +6949,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "IDENTIFIER" between rule 120 and rule 170 starting at line 477, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "IDENTIFIER" between rule 120 and rule 170 starting at line 473, column 27
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7520,7 +6962,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= private . (170)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:397:21:397:29:11240:11248: Warning: Reduce/reduce conflict in state 72 on "IDENTIFIER" between rule 120 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:393:21:393:29:10791:10799: Warning: Reduce/reduce conflict in state 72 on "IDENTIFIER" between rule 120 and rule 146 starting at line 438, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7533,7 +6975,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:442:22:442:30:12636:12644: Warning: Reduce/reduce conflict in state 72 on "LESS" between rule 146 and rule 170 starting at line 477, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:438:22:438:30:12187:12195: Warning: Reduce/reduce conflict in state 72 on "LESS" between rule 146 and rule 170 starting at line 473, column 27
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -7547,7 +6989,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= private . (170)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "strictfp" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "strictfp" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7557,7 +6999,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "strictfp" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "strictfp" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7567,7 +7009,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "static" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "static" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7577,7 +7019,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "static" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "static" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7587,7 +7029,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "static" between rule 82 and rule 120 starting at line 397, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "static" between rule 82 and rule 120 starting at line 393, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7597,7 +7039,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= private . (120)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7607,7 +7049,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 170 starting at line 477, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 170 starting at line 473, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7617,7 +7059,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= private . (170)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7627,7 +7069,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 120 starting at line 397, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "public" between rule 82 and rule 120 starting at line 393, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7637,7 +7079,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= private . (120)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7647,7 +7089,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 170 starting at line 477, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 170 starting at line 473, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7657,7 +7099,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= private . (170)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7667,7 +7109,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 120 starting at line 397, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "protected" between rule 82 and rule 120 starting at line 393, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7677,7 +7119,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= private . (120)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7687,7 +7129,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 170 starting at line 477, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 170 starting at line 473, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7697,7 +7139,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= private . (170)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7707,7 +7149,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 120 starting at line 397, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "private" between rule 82 and rule 120 starting at line 393, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7717,7 +7159,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= private . (120)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "abstract" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "abstract" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7727,7 +7169,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "abstract" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "abstract" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7737,7 +7179,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7747,7 +7189,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 170 starting at line 477, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 170 starting at line 473, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7757,7 +7199,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= private . (170)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 146 starting at line 442, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 146 starting at line 438, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7767,7 +7209,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= private . (146)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 120 starting at line 397, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 72 on "AT" between rule 82 and rule 120 starting at line 393, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7789,7 +7231,7 @@ MethodModifier ::= protected . (145)
 ConstructorModifier ::= protected . (169)
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "short" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "short" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7802,7 +7244,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "long" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "long" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7815,7 +7257,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "int" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "int" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7828,7 +7270,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "float" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "float" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7841,7 +7283,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "final" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "final" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7851,7 +7293,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "final" between rule 81 and rule 119 starting at line 396, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "final" between rule 81 and rule 119 starting at line 392, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7861,7 +7303,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= protected . (119)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "double" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "double" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7874,7 +7316,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "char" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "char" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7887,7 +7329,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "byte" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "byte" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7900,7 +7342,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "boolean" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "boolean" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7913,7 +7355,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "IDENTIFIER" between rule 119 and rule 169 starting at line 476, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "IDENTIFIER" between rule 119 and rule 169 starting at line 472, column 27
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7926,7 +7368,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= protected . (169)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:396:21:396:31:11208:11218: Warning: Reduce/reduce conflict in state 73 on "IDENTIFIER" between rule 119 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:392:21:392:31:10759:10769: Warning: Reduce/reduce conflict in state 73 on "IDENTIFIER" between rule 119 and rule 145 starting at line 437, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -7939,7 +7381,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:441:22:441:32:12603:12613: Warning: Reduce/reduce conflict in state 73 on "LESS" between rule 145 and rule 169 starting at line 476, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:437:22:437:32:12154:12164: Warning: Reduce/reduce conflict in state 73 on "LESS" between rule 145 and rule 169 starting at line 472, column 27
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -7953,7 +7395,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= protected . (169)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "strictfp" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "strictfp" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7963,7 +7405,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "strictfp" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "strictfp" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7973,7 +7415,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "static" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "static" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7983,7 +7425,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "static" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "static" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -7993,7 +7435,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "static" between rule 81 and rule 119 starting at line 396, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "static" between rule 81 and rule 119 starting at line 392, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8003,7 +7445,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= protected . (119)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8013,7 +7455,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 169 starting at line 476, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 169 starting at line 472, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8023,7 +7465,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= protected . (169)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8033,7 +7475,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 119 starting at line 396, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "public" between rule 81 and rule 119 starting at line 392, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8043,7 +7485,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= protected . (119)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8053,7 +7495,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 169 starting at line 476, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 169 starting at line 472, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8063,7 +7505,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= protected . (169)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8073,7 +7515,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 119 starting at line 396, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "protected" between rule 81 and rule 119 starting at line 392, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8083,7 +7525,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= protected . (119)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8093,7 +7535,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 169 starting at line 476, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 169 starting at line 472, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8103,7 +7545,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= protected . (169)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8113,7 +7555,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 119 starting at line 396, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "private" between rule 81 and rule 119 starting at line 392, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8123,7 +7565,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= protected . (119)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "abstract" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "abstract" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8133,7 +7575,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "abstract" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "abstract" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8143,7 +7585,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8153,7 +7595,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 169 starting at line 476, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 169 starting at line 472, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8163,7 +7605,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= protected . (169)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 145 starting at line 441, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 145 starting at line 437, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8173,7 +7615,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= protected . (145)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 119 starting at line 396, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 73 on "AT" between rule 81 and rule 119 starting at line 392, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8195,7 +7637,7 @@ MethodModifier ::= public . (144)
 ConstructorModifier ::= public . (168)
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "short" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "short" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8208,7 +7650,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "long" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "long" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8221,7 +7663,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "int" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "int" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8234,7 +7676,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "float" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "float" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8247,7 +7689,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "final" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "final" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8257,7 +7699,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "final" between rule 80 and rule 118 starting at line 395, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "final" between rule 80 and rule 118 starting at line 391, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8267,7 +7709,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= public . (118)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "double" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "double" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8280,7 +7722,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "char" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "char" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8293,7 +7735,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "byte" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "byte" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8306,7 +7748,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "boolean" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "boolean" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8319,7 +7761,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "IDENTIFIER" between rule 118 and rule 168 starting at line 475, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "IDENTIFIER" between rule 118 and rule 168 starting at line 471, column 27
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8332,7 +7774,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= public . (168)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:395:21:395:28:11179:11186: Warning: Reduce/reduce conflict in state 74 on "IDENTIFIER" between rule 118 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:391:21:391:28:10730:10737: Warning: Reduce/reduce conflict in state 74 on "IDENTIFIER" between rule 118 and rule 144 starting at line 436, column 22
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8345,7 +7787,7 @@ MethodModifiersopt ::= .MethodModifiers
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:440:22:440:29:12573:12580: Warning: Reduce/reduce conflict in state 74 on "LESS" between rule 144 and rule 168 starting at line 475, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:436:22:436:29:12124:12131: Warning: Reduce/reduce conflict in state 74 on "LESS" between rule 144 and rule 168 starting at line 471, column 27
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -8359,7 +7801,7 @@ ConstructorModifiersopt ::= .ConstructorModifiers
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= public . (168)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "strictfp" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "strictfp" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8369,7 +7811,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "strictfp" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "strictfp" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8379,7 +7821,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "static" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "static" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8389,7 +7831,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "static" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "static" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8399,7 +7841,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "static" between rule 80 and rule 118 starting at line 395, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "static" between rule 80 and rule 118 starting at line 391, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8409,7 +7851,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= public . (118)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8419,7 +7861,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 168 starting at line 475, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 168 starting at line 471, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8429,7 +7871,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= public . (168)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8439,7 +7881,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 118 starting at line 395, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "public" between rule 80 and rule 118 starting at line 391, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8449,7 +7891,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= public . (118)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8459,7 +7901,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 168 starting at line 475, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 168 starting at line 471, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8469,7 +7911,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= public . (168)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8479,7 +7921,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 118 starting at line 395, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "protected" between rule 80 and rule 118 starting at line 391, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8489,7 +7931,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= public . (118)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8499,7 +7941,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 168 starting at line 475, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 168 starting at line 471, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8509,7 +7951,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= public . (168)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8519,7 +7961,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 118 starting at line 395, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "private" between rule 80 and rule 118 starting at line 391, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8529,7 +7971,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= public . (118)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "abstract" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "abstract" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8539,7 +7981,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "abstract" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "abstract" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8549,7 +7991,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8559,7 +8001,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 168 starting at line 475, column 27
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 168 starting at line 471, column 27
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8569,7 +8011,7 @@ ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier
 ConstructorModifiers ::= .ConstructorModifier 
 ConstructorModifier ::= public . (168)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 144 starting at line 440, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 144 starting at line 436, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8579,7 +8021,7 @@ MethodModifiers ::= .MethodModifiers MethodModifier
 MethodModifiers ::= .MethodModifier 
 MethodModifier ::= public . (144)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 118 starting at line 395, column 21
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 74 on "AT" between rule 80 and rule 118 starting at line 391, column 21
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8600,7 +8042,7 @@ FieldModifier ::= Annotation . (117)
 InterfaceModifier ::= Annotation . (187)
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "IDENTIFIER" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "IDENTIFIER" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8614,7 +8056,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "strictfp" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "strictfp" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8625,7 +8067,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "strictfp" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "strictfp" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8635,7 +8077,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "static" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "static" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8646,7 +8088,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "static" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "static" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8656,7 +8098,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "static" between rule 79 and rule 117 starting at line 394, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "static" between rule 79 and rule 117 starting at line 390, column 19
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8666,7 +8108,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= Annotation . (117)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "short" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "short" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8680,7 +8122,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "public" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "public" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8691,7 +8133,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "public" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "public" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8701,7 +8143,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "public" between rule 79 and rule 117 starting at line 394, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "public" between rule 79 and rule 117 starting at line 390, column 19
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8711,7 +8153,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= Annotation . (117)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "protected" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "protected" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8722,7 +8164,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "protected" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "protected" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8732,7 +8174,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "protected" between rule 79 and rule 117 starting at line 394, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "protected" between rule 79 and rule 117 starting at line 390, column 19
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8742,7 +8184,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= Annotation . (117)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "private" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "private" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8753,7 +8195,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "private" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "private" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8763,7 +8205,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "private" between rule 79 and rule 117 starting at line 394, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "private" between rule 79 and rule 117 starting at line 390, column 19
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8773,7 +8215,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= Annotation . (117)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "long" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "long" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8787,7 +8229,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "int" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "int" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8801,7 +8243,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "float" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "float" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8815,7 +8257,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "final" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "final" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8826,7 +8268,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "final" between rule 79 and rule 117 starting at line 394, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "final" between rule 79 and rule 117 starting at line 390, column 19
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8836,7 +8278,7 @@ FieldModifiers ::= .FieldModifiers FieldModifier
 FieldModifiers ::= .FieldModifier 
 FieldModifier ::= Annotation . (117)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "double" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "double" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8850,7 +8292,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "char" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "char" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8864,7 +8306,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "byte" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "byte" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8878,7 +8320,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:394:19:394:32:11144:11157: Warning: Reduce/reduce conflict in state 75 on "boolean" between rule 117 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:390:19:390:32:10695:10708: Warning: Reduce/reduce conflict in state 75 on "boolean" between rule 117 and rule 229 starting at line 567, column 17
 
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= .FieldModifiers 
@@ -8892,7 +8334,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "abstract" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "abstract" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8903,7 +8345,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "abstract" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "abstract" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8913,7 +8355,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "AT" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "AT" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8924,7 +8366,7 @@ MethodModifiers ::= .MethodModifier
 MethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "AT" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "AT" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8934,7 +8376,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 75 on "AT" between rule 79 and rule 117 starting at line 394, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 75 on "AT" between rule 79 and rule 117 starting at line 390, column 19
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -8967,7 +8409,7 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1012:29:1012:48:32652:32671: Warning: Shift/reduce conflict in state 76 on "AT" with rule 485
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1008:29:1008:48:32203:32222: Warning: Shift/reduce conflict in state 76 on "AT" with rule 485
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
@@ -9078,13 +8520,13 @@ FieldModifiersopt ::= .FieldModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 78 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 78 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "short" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "short" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9093,7 +8535,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "long" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "long" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9102,7 +8544,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "int" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "int" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9111,7 +8553,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "float" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "float" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9120,7 +8562,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "double" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "double" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9129,7 +8571,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "char" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "char" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9138,7 +8580,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "byte" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "byte" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9147,7 +8589,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "boolean" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "boolean" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9156,7 +8598,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9166,7 +8608,7 @@ ConstructorDeclaration ::= .ConstructorModifiersopt ConstructorDeclarator
                            Throwsopt ConstructorBody 
 ConstructorModifiersopt ::= . (502)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9175,7 +8617,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 78 on "LESS" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 78 on "LESS" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -9194,7 +8636,7 @@ STATE 81 -----------------------------------------------------------------------
 ClassModifier ::= strictfp . (86)
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "strictfp" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "strictfp" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9204,7 +8646,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "static" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "static" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9214,7 +8656,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "public" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "public" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9224,7 +8666,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "protected" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "protected" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9234,7 +8676,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "private" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "private" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9244,7 +8686,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "abstract" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "abstract" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9254,7 +8696,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= strictfp . (193)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:337:21:337:30:9386:9395: Warning: Reduce/reduce conflict in state 81 on "AT" between rule 86 and rule 193 starting at line 514, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:30:8937:8946: Warning: Reduce/reduce conflict in state 81 on "AT" between rule 86 and rule 193 starting at line 510, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9273,7 +8715,7 @@ STATE 82 -----------------------------------------------------------------------
 ClassModifier ::= static . (84)
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "strictfp" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "strictfp" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9283,7 +8725,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "static" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "static" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9293,7 +8735,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "public" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "public" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9303,7 +8745,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "protected" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "protected" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9313,7 +8755,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "private" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "private" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9323,7 +8765,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "abstract" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "abstract" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9333,7 +8775,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 82 on "AT" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 82 on "AT" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9352,7 +8794,7 @@ STATE 83 -----------------------------------------------------------------------
 ClassModifier ::= abstract . (83)
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "strictfp" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "strictfp" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9362,7 +8804,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "static" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "static" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9372,7 +8814,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "public" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "public" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9382,7 +8824,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "protected" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "protected" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9392,7 +8834,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "private" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "private" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9402,7 +8844,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "abstract" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "abstract" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9412,7 +8854,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 83 on "AT" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 83 on "AT" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9431,7 +8873,7 @@ STATE 84 -----------------------------------------------------------------------
 ClassModifier ::= private . (82)
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "strictfp" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "strictfp" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9441,7 +8883,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "static" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "static" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9451,7 +8893,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "public" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "public" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9461,7 +8903,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "protected" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "protected" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9471,7 +8913,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "private" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "private" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9481,7 +8923,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "abstract" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "abstract" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9491,7 +8933,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= private . (190)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:333:21:333:29:9268:9276: Warning: Reduce/reduce conflict in state 84 on "AT" between rule 82 and rule 190 starting at line 511, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:329:21:329:29:8819:8827: Warning: Reduce/reduce conflict in state 84 on "AT" between rule 82 and rule 190 starting at line 507, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9510,7 +8952,7 @@ STATE 85 -----------------------------------------------------------------------
 ClassModifier ::= protected . (81)
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "strictfp" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "strictfp" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9520,7 +8962,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "static" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "static" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9530,7 +8972,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "public" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "public" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9540,7 +8982,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "protected" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "protected" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9550,7 +8992,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "private" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "private" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9560,7 +9002,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "abstract" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "abstract" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9570,7 +9012,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= protected . (189)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:31:9236:9246: Warning: Reduce/reduce conflict in state 85 on "AT" between rule 81 and rule 189 starting at line 510, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:328:21:328:31:8787:8797: Warning: Reduce/reduce conflict in state 85 on "AT" between rule 81 and rule 189 starting at line 506, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9589,7 +9031,7 @@ STATE 86 -----------------------------------------------------------------------
 ClassModifier ::= public . (80)
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "strictfp" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "strictfp" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9599,7 +9041,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "static" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "static" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9609,7 +9051,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "public" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "public" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9619,7 +9061,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "protected" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "protected" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9629,7 +9071,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "private" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "private" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9639,7 +9081,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "abstract" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "abstract" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9649,7 +9091,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 86 on "AT" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 86 on "AT" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9668,7 +9110,7 @@ STATE 87 -----------------------------------------------------------------------
 ClassModifier ::= Annotation . (79)
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "strictfp" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "strictfp" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9678,7 +9120,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "static" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "static" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9688,7 +9130,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "public" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "public" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9698,7 +9140,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "protected" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "protected" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9708,7 +9150,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "private" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "private" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9718,7 +9160,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "abstract" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "abstract" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9728,7 +9170,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 87 on "AT" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 87 on "AT" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -9792,7 +9234,7 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 88 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 88 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
@@ -9807,7 +9249,7 @@ STATE 92 -----------------------------------------------------------------------
 TypeName ::= identifier . (29)
 PackageOrTypeName ::= identifier . (53)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 92 on "DOT" between rule 29 and rule 53 starting at line 285, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 92 on "DOT" between rule 29 and rule 53 starting at line 281, column 23
 
 TypeName ::= .TypeName DOT identifier 
 TypeName ::= identifier . (29)
@@ -9828,7 +9270,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 95 on "LESS" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 95 on "LESS" with rule 538
 
 ClassInstanceCreationExpression ::= new TypeArgumentsopt  .ClassOrInterfaceType 
                                     TypeArgumentsopt LPAREN ArgumentListopt 
@@ -9846,7 +9288,7 @@ STATE 96 -----------------------------------------------------------------------
 TypeName ::= identifier . (29)
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "IDENTIFIER" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "IDENTIFIER" between rule 29 and rule 32 starting at line 236, column 18
 
 LocalVariableDeclaration ::= VariableModifiersopt  .Type VariableDeclarators 
 Type ::= .ReferenceType 
@@ -9860,7 +9302,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "void" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "void" between rule 29 and rule 32 starting at line 236, column 18
 
 InterfaceMemberDeclarations ::= .InterfaceMemberDeclarations 
                                 InterfaceMemberDeclaration 
@@ -9910,7 +9352,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "strictfp" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "strictfp" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -9960,7 +9402,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "static" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "static" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10010,7 +9452,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "short" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "short" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10060,7 +9502,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "public" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "public" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10110,7 +9552,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "protected" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "protected" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10160,7 +9602,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "private" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "private" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10210,7 +9652,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "long" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "long" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10260,7 +9702,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "interface" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "interface" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10310,7 +9752,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "int" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "int" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10360,7 +9802,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "instanceof" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "instanceof" between rule 29 and rule 32 starting at line 236, column 18
 
 RelationalExpression ::= .RelationalExpression instanceof ReferenceType 
 RelationalExpression ::= RelationalExpression instanceof  .ReferenceType 
@@ -10374,7 +9816,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "float" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "float" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10424,7 +9866,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "final" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "final" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10474,7 +9916,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "enum" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "enum" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10524,7 +9966,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "double" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "double" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10574,7 +10016,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "class" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "class" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10624,7 +10066,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "char" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "char" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10674,7 +10116,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "byte" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "byte" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10724,7 +10166,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "boolean" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "boolean" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10774,7 +10216,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "abstract" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "abstract" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -10824,7 +10266,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "ELLIPSIS" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "ELLIPSIS" between rule 29 and rule 32 starting at line 236, column 18
 
 LastFormalParameter ::= VariableModifiersopt  .Type Ellipsisopt 
                         VariableDeclaratorId 
@@ -10840,7 +10282,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "GREATER" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "GREATER" between rule 29 and rule 32 starting at line 236, column 18
 
 TypeArguments ::= LESS  .ActualTypeArgumentList GREATER 
 ActualTypeArgumentList ::= .ActualTypeArgument 
@@ -10856,7 +10298,7 @@ ActualTypeArgument ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "EQUAL_EQUAL" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "EQUAL_EQUAL" between rule 29 and rule 32 starting at line 236, column 18
 
 EqualityExpression ::= .EqualityExpression EQUAL_EQUAL RelationalExpression 
 EqualityExpression ::= .RelationalExpression 
@@ -10872,7 +10314,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "LESS_EQUAL" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "LESS_EQUAL" between rule 29 and rule 32 starting at line 236, column 18
 
 RelationalExpression ::= .RelationalExpression LESS_EQUAL ShiftExpression 
 RelationalExpression ::= RelationalExpression instanceof  .ReferenceType 
@@ -10886,7 +10328,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "LESS" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "LESS" between rule 29 and rule 32 starting at line 236, column 18
 
 ClassType ::= .TypeName TypeArgumentsopt 
 TypeName ::= identifier . (29)
@@ -10896,7 +10338,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "RBRACE" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "RBRACE" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeBody ::= LBRACE  .AnnotationTypeElementDeclarationsopt RBRACE 
 AnnotationTypeElementDeclarationsopt ::= .AnnotationTypeElementDeclarations 
@@ -10946,7 +10388,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "OR_OR" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "OR_OR" between rule 29 and rule 32 starting at line 236, column 18
 
 ConditionalOrExpression ::= .ConditionalOrExpression OR_OR 
                             ConditionalAndExpression 
@@ -10974,7 +10416,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "LBRACE" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "LBRACE" between rule 29 and rule 32 starting at line 236, column 18
 
 ConstructorDeclaration ::= ConstructorModifiersopt ConstructorDeclarator  .
                            Throwsopt ConstructorBody 
@@ -10993,7 +10435,7 @@ ExceptionTypeList ::= .ExceptionType
 ExceptionType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "XOR" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "XOR" between rule 29 and rule 32 starting at line 236, column 18
 
 ExclusiveOrExpression ::= .ExclusiveOrExpression XOR AndExpression 
 ExclusiveOrExpression ::= .AndExpression 
@@ -11013,7 +10455,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "RBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "RBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayAccess ::= PrimaryNoNewArray LBRACKET  .Expression RBRACKET 
 Expression ::= .AssignmentExpression 
@@ -11049,7 +10491,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "LBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "LBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -11063,7 +10505,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "AT" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "AT" between rule 29 and rule 32 starting at line 236, column 18
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -11113,7 +10555,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "QUESTION" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "QUESTION" between rule 29 and rule 32 starting at line 236, column 18
 
 ConditionalExpression ::= .ConditionalOrExpression QUESTION Expression COLON 
                           ConditionalExpression 
@@ -11141,7 +10583,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "SEMICOLON" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "SEMICOLON" between rule 29 and rule 32 starting at line 236, column 18
 
 AssertStatement ::= assert  .Expression SEMICOLON 
 Expression ::= .AssignmentExpression 
@@ -11173,7 +10615,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "COLON" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "COLON" between rule 29 and rule 32 starting at line 236, column 18
 
 AssertStatement ::= assert  .Expression COLON Expression SEMICOLON 
 Expression ::= .AssignmentExpression 
@@ -11205,7 +10647,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "COMMA" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "COMMA" between rule 29 and rule 32 starting at line 236, column 18
 
 ActualTypeArgumentList ::= .ActualTypeArgumentList COMMA ActualTypeArgument 
 ActualTypeArgumentList ::= .ActualTypeArgument 
@@ -11221,7 +10663,7 @@ ActualTypeArgument ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "RPAREN" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "RPAREN" between rule 29 and rule 32 starting at line 236, column 18
 
 PrimaryNoNewArray ::= LPAREN  .Expression RPAREN 
 Expression ::= .AssignmentExpression 
@@ -11253,7 +10695,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "AND_AND" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "AND_AND" between rule 29 and rule 32 starting at line 236, column 18
 
 ConditionalAndExpression ::= .ConditionalAndExpression AND_AND 
                              InclusiveOrExpression 
@@ -11279,7 +10721,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "AND" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "AND" between rule 29 and rule 32 starting at line 236, column 18
 
 AndExpression ::= .AndExpression AND EqualityExpression 
 AndExpression ::= .EqualityExpression 
@@ -11297,7 +10739,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "NOT_EQUAL" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "NOT_EQUAL" between rule 29 and rule 32 starting at line 236, column 18
 
 EqualityExpression ::= .EqualityExpression NOT_EQUAL RelationalExpression 
 EqualityExpression ::= .RelationalExpression 
@@ -11313,7 +10755,7 @@ RelationalExpression ::= RelationalExpression instanceof  .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 96 on "OR" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 96 on "OR" between rule 29 and rule 32 starting at line 236, column 18
 
 InclusiveOrExpression ::= .InclusiveOrExpression OR ExclusiveOrExpression 
 InclusiveOrExpression ::= .ExclusiveOrExpression 
@@ -11464,47 +10906,47 @@ ForInitopt ::= .ForInit
 VariableModifiersopt ::= . (464)
 VariableModifiersopt ::= .VariableModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "IDENTIFIER" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "boolean" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "char" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "long" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "int" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "short" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "byte" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "double" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 100 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 100 on "float" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
@@ -11524,7 +10966,7 @@ ExpressionName ::= identifier . (49)
 MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "LESS" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "LESS" between rule 29 and rule 49 starting at line 275, column 20
 
 ClassType ::= .TypeName TypeArgumentsopt 
 TypeName ::= identifier . (29)
@@ -11539,7 +10981,7 @@ UnaryExpressionNotPlusMinus ::= .PostfixExpression
 PostfixExpression ::= .ExpressionName 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "LBRACKET" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "LBRACKET" between rule 29 and rule 49 starting at line 275, column 20
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -11551,7 +10993,7 @@ TypeName ::= identifier . (29)
 ArrayAccess ::= .ExpressionName LBRACKET Expression RBRACKET 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "LBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "LBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -11565,7 +11007,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "RPAREN" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "RPAREN" between rule 29 and rule 49 starting at line 275, column 20
 
 CastExpression ::= LPAREN  .ReferenceType RPAREN UnaryExpressionNotPlusMinus 
 ReferenceType ::= .ClassOrInterfaceType 
@@ -11592,7 +11034,7 @@ UnaryExpressionNotPlusMinus ::= .PostfixExpression
 PostfixExpression ::= .ExpressionName 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "RPAREN" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "RPAREN" between rule 29 and rule 32 starting at line 236, column 18
 
 CastExpression ::= LPAREN  .ReferenceType RPAREN UnaryExpressionNotPlusMinus 
 ReferenceType ::= .ClassOrInterfaceType 
@@ -11604,7 +11046,7 @@ CastExpression ::= LPAREN  .ReferenceType RPAREN UnaryExpressionNotPlusMinus
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "DOT" between rule 29 and rule 55 starting at line 288, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "DOT" between rule 29 and rule 55 starting at line 284, column 19
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -11616,7 +11058,7 @@ TypeName ::= identifier . (29)
 ExpressionName ::= .AmbiguousName DOT identifier 
 AmbiguousName ::= identifier . (55)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 109 on "DOT" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 109 on "DOT" between rule 29 and rule 32 starting at line 236, column 18
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -11645,7 +11087,7 @@ RelationalExpression ::= RelationalExpression  .GREATER EQUAL ShiftExpression
 RelationalExpression ::= RelationalExpression  .instanceof ReferenceType 
 EqualityExpression ::= RelationalExpression . (413)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:906:24:906:47:29411:29434: Warning: Shift/reduce conflict in state 116 on "LESS" with rule 413
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:902:24:902:47:28962:28985: Warning: Shift/reduce conflict in state 116 on "LESS" with rule 413
 
 InterfaceMemberDeclarations ::= .InterfaceMemberDeclarations 
                                 InterfaceMemberDeclaration 
@@ -11681,7 +11123,7 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
                     AdditiveExpression 
 RelationalExpression ::= ShiftExpression . (407)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:899:26:899:44:29013:29031: Warning: Shift/reduce conflict in state 117 on "GREATER" with rule 407
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:895:26:895:44:28564:28582: Warning: Shift/reduce conflict in state 117 on "GREATER" with rule 407
 
 RelationalExpression ::= .RelationalExpression GREATER ShiftExpression 
 RelationalExpression ::= ShiftExpression . (407)
@@ -11701,7 +11143,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 127 on "IDENTIFIER" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 127 on "IDENTIFIER" with rule 538
 
 MethodInvocation ::= super DOT  .TypeArgumentsopt identifier LPAREN 
                      ArgumentListopt RPAREN 
@@ -11725,7 +11167,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 140 on "IDENTIFIER" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 140 on "IDENTIFIER" with rule 538
 
 MethodInvocation ::= Primary DOT  .TypeArgumentsopt identifier LPAREN 
                      ArgumentListopt RPAREN 
@@ -11747,7 +11189,7 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:474:25:474:39:13578:13592: Warning: Shift/reduce conflict in state 150 on "AT" with rule 167
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:470:25:470:39:13129:13143: Warning: Shift/reduce conflict in state 150 on "AT" with rule 167
 
 ConstructorModifiers ::= .ConstructorModifiers ConstructorModifier 
 ConstructorModifiers ::= ConstructorModifiers  .ConstructorModifier 
@@ -11769,7 +11211,7 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:439:20:439:34:12536:12550: Warning: Shift/reduce conflict in state 155 on "AT" with rule 143
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:435:20:435:34:12087:12101: Warning: Shift/reduce conflict in state 155 on "AT" with rule 143
 
 MethodModifiers ::= .MethodModifiers MethodModifier 
 MethodModifiers ::= MethodModifiers  .MethodModifier 
@@ -11789,7 +11231,7 @@ Dims ::= .Dims LBRACKET RBRACKET
 Dimsopt ::= . (448)
 Dimsopt ::= .Dims 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:203:10:203:26:5735:5751: Warning: Shift/reduce conflict in state 176 on "LBRACKET" with rule 10
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:199:10:199:26:5286:5302: Warning: Shift/reduce conflict in state 176 on "LBRACKET" with rule 10
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= PrimitiveType . (10)
@@ -11807,7 +11249,7 @@ MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 SimpleName ::= identifier . (238)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 239 on "LESS" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 239 on "LESS" between rule 29 and rule 49 starting at line 275, column 20
 
 ClassType ::= .TypeName TypeArgumentsopt 
 TypeName ::= identifier . (29)
@@ -11822,7 +11264,7 @@ UnaryExpressionNotPlusMinus ::= .PostfixExpression
 PostfixExpression ::= .ExpressionName 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 239 on "LBRACKET" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 239 on "LBRACKET" between rule 29 and rule 49 starting at line 275, column 20
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -11834,7 +11276,7 @@ TypeName ::= identifier . (29)
 ArrayAccess ::= .ExpressionName LBRACKET Expression RBRACKET 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 239 on "LBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 239 on "LBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -11848,7 +11290,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 239 on "DOT" between rule 29 and rule 55 starting at line 288, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 239 on "DOT" between rule 29 and rule 55 starting at line 284, column 19
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -11860,7 +11302,7 @@ TypeName ::= identifier . (29)
 ExpressionName ::= .AmbiguousName DOT identifier 
 AmbiguousName ::= identifier . (55)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 239 on "DOT" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 239 on "DOT" between rule 29 and rule 32 starting at line 236, column 18
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -11887,7 +11329,7 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
 RelationalExpression ::= RelationalExpression LESS_EQUAL ShiftExpression .
                           (410)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:902:28:902:68:29196:29236: Warning: Shift/reduce conflict in state 262 on "GREATER" with rule 410
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:898:28:898:68:28747:28787: Warning: Shift/reduce conflict in state 262 on "GREATER" with rule 410
 
 RelationalExpression ::= .RelationalExpression GREATER ShiftExpression 
 RelationalExpression ::= RelationalExpression LESS_EQUAL ShiftExpression .
@@ -11905,7 +11347,7 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
                     AdditiveExpression 
 RelationalExpression ::= RelationalExpression GREATER ShiftExpression . (409)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:901:28:901:67:29128:29167: Warning: Shift/reduce conflict in state 264 on "GREATER" with rule 409
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:897:28:897:67:28679:28718: Warning: Shift/reduce conflict in state 264 on "GREATER" with rule 409
 
 RelationalExpression ::= .RelationalExpression GREATER ShiftExpression 
 RelationalExpression ::= RelationalExpression GREATER ShiftExpression . (409)
@@ -11922,7 +11364,7 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
                     AdditiveExpression 
 RelationalExpression ::= RelationalExpression LESS ShiftExpression . (408)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:900:28:900:67:29060:29099: Warning: Shift/reduce conflict in state 265 on "GREATER" with rule 408
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:896:28:896:67:28611:28650: Warning: Shift/reduce conflict in state 265 on "GREATER" with rule 408
 
 RelationalExpression ::= .RelationalExpression GREATER ShiftExpression 
 RelationalExpression ::= RelationalExpression LESS ShiftExpression . (408)
@@ -11941,7 +11383,7 @@ RelationalExpression ::= RelationalExpression  .instanceof ReferenceType
 EqualityExpression ::= EqualityExpression NOT_EQUAL RelationalExpression .
                         (415)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:908:26:908:69:29531:29574: Warning: Shift/reduce conflict in state 269 on "LESS" with rule 415
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:904:26:904:69:29082:29125: Warning: Shift/reduce conflict in state 269 on "LESS" with rule 415
 
 InterfaceMemberDeclarations ::= .InterfaceMemberDeclarations 
                                 InterfaceMemberDeclaration 
@@ -11978,7 +11420,7 @@ RelationalExpression ::= RelationalExpression  .instanceof ReferenceType
 EqualityExpression ::= EqualityExpression EQUAL_EQUAL RelationalExpression .
                         (414)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:907:26:907:69:29461:29504: Warning: Shift/reduce conflict in state 270 on "LESS" with rule 414
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:903:26:903:69:29012:29055: Warning: Shift/reduce conflict in state 270 on "LESS" with rule 414
 
 InterfaceMemberDeclarations ::= .InterfaceMemberDeclarations 
                                 InterfaceMemberDeclaration 
@@ -12016,7 +11458,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 276 on "IDENTIFIER" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 276 on "IDENTIFIER" with rule 538
 
 MethodInvocation ::= ClassName DOT super DOT  .TypeArgumentsopt identifier 
                      LPAREN ArgumentListopt RPAREN 
@@ -12119,151 +11561,151 @@ ExplicitConstructorInvocationopt ::= .ExplicitConstructorInvocation
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "null" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "null" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "StringLiteral" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "StringLiteral" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "CharacterLiteral" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "CharacterLiteral" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "DoubleLiteral" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "DoubleLiteral" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "FloatingPointLiteral" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "FloatingPointLiteral" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "LongLiteral" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "LongLiteral" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "IntegerLiteral" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "IntegerLiteral" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "false" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "false" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "true" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "true" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "IDENTIFIER" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "IDENTIFIER" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "double" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "double" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "float" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "float" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "char" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "char" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "long" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "long" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "int" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "int" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "short" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "short" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "byte" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "byte" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "boolean" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "boolean" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "new" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "new" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 295 on "super" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 295 on "super" with rule 538
 
 ExplicitConstructorInvocation ::= .TypeArgumentsopt super LPAREN 
                                   ArgumentListopt RPAREN SEMICOLON 
 TypeArgumentsopt ::= . (538)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "super" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "super" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "LPAREN" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "LPAREN" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 295 on "this" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 295 on "this" with rule 538
 
 ExplicitConstructorInvocation ::= .TypeArgumentsopt this LPAREN ArgumentListopt 
                                   RPAREN SEMICOLON 
 TypeArgumentsopt ::= . (538)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "this" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "this" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
 ExplicitConstructorInvocationopt ::= . (500)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1035:38:1035:47:33179:33188: Warning: Shift/reduce conflict in state 295 on "void" with rule 500
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1031:38:1031:47:32730:32739: Warning: Shift/reduce conflict in state 295 on "void" with rule 500
 
 ConstructorBody ::= LBRACE  .ExplicitConstructorInvocationopt 
                     BlockStatementsopt RBRACE 
@@ -12278,7 +11720,7 @@ STATE 307 ----------------------------------------------------------------------
 ElementValues ::= ElementValues  .COMMA ElementValue 
 ElementValuesopt ::= ElementValues . (469)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:988:24:988:38:31901:31915: Warning: Shift/reduce conflict in state 307 on "COMMA" with rule 469
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:984:24:984:38:31452:31466: Warning: Shift/reduce conflict in state 307 on "COMMA" with rule 469
 
 ElementValueArrayInitializer ::= LBRACE  .ElementValuesopt Commaopt RBRACE 
 ElementValuesopt ::= ElementValues . (469)
@@ -12309,7 +11751,7 @@ EnumConstantsopt ::= .EnumConstants
 Annotationsopt ::= . (524)
 Annotationsopt ::= .Annotations 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1071:20:1071:29:34067:34076: Warning: Shift/reduce conflict in state 310 on "IDENTIFIER" with rule 524
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1067:20:1067:29:33618:33627: Warning: Shift/reduce conflict in state 310 on "IDENTIFIER" with rule 524
 
 EnumConstant ::= .Annotationsopt identifier Argumentsopt ClassBodyopt 
 Annotationsopt ::= . (524)
@@ -12328,7 +11770,7 @@ AmbiguousName ::= identifier . (55)
 LabeledStatement ::= identifier  .COLON Statement 
 LabeledStatementNoShortIf ::= identifier  .COLON StatementNoShortIf 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 323 on "LBRACKET" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 323 on "LBRACKET" between rule 29 and rule 49 starting at line 275, column 20
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -12340,7 +11782,7 @@ TypeName ::= identifier . (29)
 ArrayAccess ::= .ExpressionName LBRACKET Expression RBRACKET 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 323 on "LBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 323 on "LBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -12354,7 +11796,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 323 on "DOT" between rule 29 and rule 55 starting at line 288, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 323 on "DOT" between rule 29 and rule 55 starting at line 284, column 19
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -12366,7 +11808,7 @@ TypeName ::= identifier . (29)
 ExpressionName ::= .AmbiguousName DOT identifier 
 AmbiguousName ::= identifier . (55)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 323 on "DOT" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 323 on "DOT" between rule 29 and rule 32 starting at line 236, column 18
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -12393,7 +11835,7 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
 RelationalExpression ::= RelationalExpression GREATER EQUAL ShiftExpression .
                           (411)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:903:28:903:69:29265:29306: Warning: Shift/reduce conflict in state 325 on "GREATER" with rule 411
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:899:28:899:69:28816:28857: Warning: Shift/reduce conflict in state 325 on "GREATER" with rule 411
 
 RelationalExpression ::= .RelationalExpression GREATER ShiftExpression 
 RelationalExpression ::= RelationalExpression GREATER EQUAL ShiftExpression .
@@ -12408,7 +11850,7 @@ STATE 335 ----------------------------------------------------------------------
 VariableInitializers ::= VariableInitializers  .COMMA VariableInitializer 
 VariableInitializersopt ::= VariableInitializers . (467)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:985:31:985:52:31822:31843: Warning: Shift/reduce conflict in state 335 on "COMMA" with rule 467
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:31:981:52:31373:31394: Warning: Shift/reduce conflict in state 335 on "COMMA" with rule 467
 
 ArrayInitializer ::= LBRACE  .VariableInitializersopt Commaopt RBRACE 
 VariableInitializersopt ::= VariableInitializers . (467)
@@ -12433,12 +11875,12 @@ SwitchLabel ::= .default COLON
 SwitchBlockStatementGroupsopt ::= . (462)
 SwitchBlockStatementGroupsopt ::= .SwitchBlockStatementGroups 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:978:35:978:44:31592:31601: Warning: Shift/reduce conflict in state 339 on "default" with rule 462
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:974:35:974:44:31143:31152: Warning: Shift/reduce conflict in state 339 on "default" with rule 462
 
 SwitchBlock ::= LBRACE  .SwitchBlockStatementGroupsopt SwitchLabelsopt RBRACE 
 SwitchBlockStatementGroupsopt ::= . (462)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:978:35:978:44:31592:31601: Warning: Shift/reduce conflict in state 339 on "case" with rule 462
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:974:35:974:44:31143:31152: Warning: Shift/reduce conflict in state 339 on "case" with rule 462
 
 SwitchBlock ::= LBRACE  .SwitchBlockStatementGroupsopt SwitchLabelsopt RBRACE 
 SwitchBlockStatementGroupsopt ::= . (462)
@@ -12631,47 +12073,47 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 343 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 343 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -12758,13 +12200,13 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 354 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 354 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "IDENTIFIER" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "IDENTIFIER" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12774,7 +12216,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "short" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "short" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12784,7 +12226,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "long" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "long" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12794,7 +12236,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "int" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "int" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12804,7 +12246,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "float" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "float" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12814,7 +12256,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "double" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "double" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12824,7 +12266,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "char" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "char" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12834,7 +12276,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "byte" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "byte" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12844,7 +12286,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 354 on "boolean" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 354 on "boolean" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -12863,7 +12305,7 @@ STATE 362 ----------------------------------------------------------------------
 EnumConstants ::= EnumConstants  .COMMA EnumConstant 
 EnumConstantsopt ::= EnumConstants . (495)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1027:24:1027:38:32978:32992: Warning: Shift/reduce conflict in state 362 on "COMMA" with rule 495
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1023:24:1023:38:32529:32543: Warning: Shift/reduce conflict in state 362 on "COMMA" with rule 495
 
 EnumBody ::= LBRACE  .EnumConstantsopt Commaopt EnumBodyDeclarationsopt RBRACE 
 EnumConstantsopt ::= EnumConstants . (495)
@@ -12999,47 +12441,47 @@ ForInitopt ::= .ForInit
 VariableModifiersopt ::= . (464)
 VariableModifiersopt ::= .VariableModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "IDENTIFIER" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "boolean" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "char" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "long" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "int" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "short" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "byte" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "double" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 368 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 368 on "float" with rule 464
 
 FormalParameter ::= .VariableModifiersopt Type VariableDeclaratorId 
 VariableModifiersopt ::= . (464)
@@ -13205,7 +12647,7 @@ ConstantExpression ::= .Expression
 Annotationsopt ::= . (524)
 Annotationsopt ::= .Annotations 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1071:20:1071:29:34067:34076: Warning: Shift/reduce conflict in state 383 on "IDENTIFIER" with rule 524
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1067:20:1067:29:33618:33627: Warning: Shift/reduce conflict in state 383 on "IDENTIFIER" with rule 524
 
 EnumConstant ::= .Annotationsopt identifier Argumentsopt ClassBodyopt 
 Annotationsopt ::= . (524)
@@ -13399,47 +12841,47 @@ VariableModifiersopt ::= .VariableModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 384 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 384 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -13461,12 +12903,12 @@ SwitchLabel ::= .case ConstantExpression COLON
 SwitchLabel ::= .case EnumConstant COLON 
 SwitchLabel ::= .default COLON 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:979:37:979:64:31639:31666: Warning: Shift/reduce conflict in state 385 on "default" with rule 463
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:975:37:975:64:31190:31217: Warning: Shift/reduce conflict in state 385 on "default" with rule 463
 
 SwitchBlock ::= LBRACE  .SwitchBlockStatementGroupsopt SwitchLabelsopt RBRACE 
 SwitchBlockStatementGroupsopt ::= SwitchBlockStatementGroups . (463)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:979:37:979:64:31639:31666: Warning: Shift/reduce conflict in state 385 on "case" with rule 463
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:975:37:975:64:31190:31217: Warning: Shift/reduce conflict in state 385 on "case" with rule 463
 
 SwitchBlock ::= LBRACE  .SwitchBlockStatementGroupsopt SwitchLabelsopt RBRACE 
 SwitchBlockStatementGroupsopt ::= SwitchBlockStatementGroups . (463)
@@ -13491,7 +12933,7 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1092:22:1092:31:34615:34624: Warning: Shift/reduce conflict in state 390 on "IDENTIFIER" with rule 538
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1088:22:1088:31:34166:34175: Warning: Shift/reduce conflict in state 390 on "IDENTIFIER" with rule 538
 
 MethodInvocation ::= Primary DOT  .TypeArgumentsopt identifier LPAREN 
                      ArgumentListopt RPAREN 
@@ -13514,7 +12956,7 @@ VariableDeclaratorId ::= .VariableDeclaratorId LBRACKET RBRACKET
 Ellipsisopt ::= . (504)
 Ellipsisopt ::= .ELLIPSIS 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1041:12:1041:21:33366:33375: Warning: Shift/reduce conflict in state 393 on "IDENTIFIER" with rule 504
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1037:12:1037:21:32917:32926: Warning: Shift/reduce conflict in state 393 on "IDENTIFIER" with rule 504
 
 LastFormalParameter ::= VariableModifiersopt Type  .Ellipsisopt 
                         VariableDeclaratorId 
@@ -13529,7 +12971,7 @@ STATE 400 ----------------------------------------------------------------------
 InterfaceDeclaration ::= AnnotationTypeDeclaration . (183)
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "IDENTIFIER" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "IDENTIFIER" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13542,7 +12984,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "strictfp" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "strictfp" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13555,7 +12997,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "static" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "static" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13568,7 +13010,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "short" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "short" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13581,7 +13023,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "public" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "public" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13594,7 +13036,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "protected" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "protected" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13607,7 +13049,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "private" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "private" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13620,7 +13062,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "long" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "long" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13633,7 +13075,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "interface" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "interface" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13646,7 +13088,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "int" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "int" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13659,7 +13101,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "float" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "float" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13672,7 +13114,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "final" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "final" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13685,7 +13127,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "enum" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "enum" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13698,7 +13140,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "double" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "double" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13711,7 +13153,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "class" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "class" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13724,7 +13166,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "char" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "char" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13737,7 +13179,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "byte" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "byte" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13750,7 +13192,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "boolean" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "boolean" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13763,7 +13205,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "abstract" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "abstract" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13776,7 +13218,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "RBRACE" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "RBRACE" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeBody ::= LBRACE  .AnnotationTypeElementDeclarationsopt RBRACE 
 AnnotationTypeElementDeclarationsopt ::= .AnnotationTypeElementDeclarations 
@@ -13789,7 +13231,7 @@ AnnotationTypeElementDeclarationsopt ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "AT" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "AT" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13802,7 +13244,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:501:28:501:54:14592:14618: Warning: Reduce/reduce conflict in state 400 on "SEMICOLON" between rule 183 and rule 226 starting at line 566, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:497:28:497:54:14143:14169: Warning: Reduce/reduce conflict in state 400 on "SEMICOLON" between rule 183 and rule 226 starting at line 562, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13824,7 +13266,7 @@ STATE 401 ----------------------------------------------------------------------
 ClassDeclaration ::= EnumDeclaration . (75)
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "IDENTIFIER" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "IDENTIFIER" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13837,7 +13279,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "strictfp" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "strictfp" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13850,7 +13292,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "static" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "static" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13863,7 +13305,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "short" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "short" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13876,7 +13318,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "public" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "public" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13889,7 +13331,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "protected" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "protected" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13902,7 +13344,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "private" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "private" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13915,7 +13357,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "long" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "long" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13928,7 +13370,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "interface" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "interface" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13941,7 +13383,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "int" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "int" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13954,7 +13396,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "float" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "float" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13967,7 +13409,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "final" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "final" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13980,7 +13422,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "enum" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "enum" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -13993,7 +13435,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "double" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "double" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14006,7 +13448,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "class" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "class" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14019,7 +13461,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "char" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "char" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14032,7 +13474,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "byte" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "byte" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14045,7 +13487,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "boolean" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "boolean" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14058,7 +13500,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "abstract" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "abstract" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14071,7 +13513,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "RBRACE" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "RBRACE" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeBody ::= LBRACE  .AnnotationTypeElementDeclarationsopt RBRACE 
 AnnotationTypeElementDeclarationsopt ::= .AnnotationTypeElementDeclarations 
@@ -14084,7 +13526,7 @@ AnnotationTypeElementDeclarationsopt ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "AT" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "AT" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14097,7 +13539,7 @@ AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclaration 
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:323:24:323:40:8927:8943: Warning: Reduce/reduce conflict in state 401 on "SEMICOLON" between rule 75 and rule 225 starting at line 565, column 40
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:319:24:319:40:8478:8494: Warning: Reduce/reduce conflict in state 401 on "SEMICOLON" between rule 75 and rule 225 starting at line 561, column 40
 
 AnnotationTypeElementDeclarations ::= .AnnotationTypeElementDeclarations 
                                       AnnotationTypeElementDeclaration 
@@ -14119,7 +13561,7 @@ STATE 402 ----------------------------------------------------------------------
 ClassModifier ::= final . (85)
 ConstantModifier ::= final . (210)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 402 on "static" between rule 85 and rule 210 starting at line 543, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 402 on "static" between rule 85 and rule 210 starting at line 539, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14129,7 +13571,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= final . (210)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 402 on "public" between rule 85 and rule 210 starting at line 543, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 402 on "public" between rule 85 and rule 210 starting at line 539, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14139,7 +13581,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= final . (210)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 402 on "final" between rule 85 and rule 210 starting at line 543, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 402 on "final" between rule 85 and rule 210 starting at line 539, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14149,7 +13591,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= final . (210)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:336:21:336:27:9358:9364: Warning: Reduce/reduce conflict in state 402 on "AT" between rule 85 and rule 210 starting at line 543, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:332:21:332:27:8909:8915: Warning: Reduce/reduce conflict in state 402 on "AT" between rule 85 and rule 210 starting at line 539, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14169,7 +13611,7 @@ ClassModifier ::= static . (84)
 InterfaceModifier ::= static . (192)
 ConstantModifier ::= static . (209)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "strictfp" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "strictfp" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14179,7 +13621,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "protected" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "protected" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14189,7 +13631,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "private" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "private" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14199,7 +13641,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "abstract" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "abstract" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14209,7 +13651,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "static" between rule 84 and rule 209 starting at line 542, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "static" between rule 84 and rule 209 starting at line 538, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14219,7 +13661,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= static . (209)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "static" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "static" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14229,7 +13671,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "public" between rule 84 and rule 209 starting at line 542, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "public" between rule 84 and rule 209 starting at line 538, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14239,7 +13681,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= static . (209)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "public" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "public" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14249,7 +13691,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= static . (192)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "final" between rule 84 and rule 209 starting at line 542, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "final" between rule 84 and rule 209 starting at line 538, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14259,7 +13701,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= static . (209)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "AT" between rule 84 and rule 209 starting at line 542, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "AT" between rule 84 and rule 209 starting at line 538, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14269,7 +13711,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= static . (209)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:335:21:335:28:9329:9336: Warning: Reduce/reduce conflict in state 403 on "AT" between rule 84 and rule 192 starting at line 513, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:8880:8887: Warning: Reduce/reduce conflict in state 403 on "AT" between rule 84 and rule 192 starting at line 509, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14290,7 +13732,7 @@ InterfaceModifier ::= Annotation . (187)
 ConstantModifier ::= Annotation . (207)
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "strictfp" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "strictfp" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14300,7 +13742,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "protected" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "protected" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14310,7 +13752,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "private" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "private" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14320,7 +13762,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "static" between rule 79 and rule 207 starting at line 540, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "static" between rule 79 and rule 207 starting at line 536, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14330,7 +13772,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= Annotation . (207)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "static" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "static" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14340,7 +13782,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "final" between rule 79 and rule 207 starting at line 540, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "final" between rule 79 and rule 207 starting at line 536, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14350,7 +13792,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= Annotation . (207)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "IDENTIFIER" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "IDENTIFIER" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14365,7 +13807,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "short" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "short" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14380,7 +13822,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "public" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "public" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14391,7 +13833,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "public" between rule 79 and rule 207 starting at line 540, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "public" between rule 79 and rule 207 starting at line 536, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14401,7 +13843,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= Annotation . (207)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "public" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "public" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14411,7 +13853,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "long" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "long" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14426,7 +13868,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "int" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "int" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14441,7 +13883,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "float" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "float" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14456,7 +13898,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "double" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "double" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14471,7 +13913,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "char" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "char" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14486,7 +13928,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "byte" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "byte" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14501,7 +13943,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:540:22:540:35:16022:16035: Warning: Reduce/reduce conflict in state 406 on "boolean" between rule 207 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:536:22:536:35:15573:15586: Warning: Reduce/reduce conflict in state 406 on "boolean" between rule 207 and rule 229 starting at line 567, column 17
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14516,7 +13958,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "abstract" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "abstract" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14527,7 +13969,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "abstract" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "abstract" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14537,7 +13979,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= Annotation . (187)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "AT" between rule 79 and rule 229 starting at line 571, column 17
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "AT" between rule 79 and rule 229 starting at line 567, column 17
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14548,7 +13990,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifier
 AbstractMethodModifier ::= .Annotations 
 Annotations ::= Annotation . (229)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "AT" between rule 79 and rule 207 starting at line 540, column 22
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "AT" between rule 79 and rule 207 starting at line 536, column 22
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14558,7 +14000,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= Annotation . (207)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:19:330:32:9172:9185: Warning: Reduce/reduce conflict in state 406 on "AT" between rule 79 and rule 187 starting at line 508, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:326:19:326:32:8723:8736: Warning: Reduce/reduce conflict in state 406 on "AT" between rule 79 and rule 187 starting at line 504, column 23
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14578,7 +14020,7 @@ ClassModifier ::= abstract . (83)
 InterfaceModifier ::= abstract . (191)
 AbstractMethodModifier ::= abstract . (216)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "strictfp" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "strictfp" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14588,7 +14030,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "static" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "static" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14598,7 +14040,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "protected" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "protected" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14608,7 +14050,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "private" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "private" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14618,7 +14060,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "public" between rule 83 and rule 216 starting at line 552, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "public" between rule 83 and rule 216 starting at line 548, column 30
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14628,7 +14070,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= abstract . (216)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "public" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "public" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14638,7 +14080,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "abstract" between rule 83 and rule 216 starting at line 552, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "abstract" between rule 83 and rule 216 starting at line 548, column 30
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14648,7 +14090,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= abstract . (216)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "abstract" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "abstract" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14658,7 +14100,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= abstract . (191)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "AT" between rule 83 and rule 216 starting at line 552, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "AT" between rule 83 and rule 216 starting at line 548, column 30
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14668,7 +14110,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= abstract . (216)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:334:21:334:30:9298:9307: Warning: Reduce/reduce conflict in state 407 on "AT" between rule 83 and rule 191 starting at line 512, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:330:21:330:30:8849:8858: Warning: Reduce/reduce conflict in state 407 on "AT" between rule 83 and rule 191 starting at line 508, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14689,7 +14131,7 @@ InterfaceModifier ::= public . (188)
 ConstantModifier ::= public . (208)
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "strictfp" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "strictfp" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14699,7 +14141,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "protected" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "protected" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14709,7 +14151,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "private" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "private" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14719,7 +14161,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "static" between rule 80 and rule 208 starting at line 541, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "static" between rule 80 and rule 208 starting at line 537, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14729,7 +14171,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= public . (208)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "static" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "static" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14739,7 +14181,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "final" between rule 80 and rule 208 starting at line 541, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "final" between rule 80 and rule 208 starting at line 537, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14749,7 +14191,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= public . (208)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "IDENTIFIER" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "IDENTIFIER" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14763,7 +14205,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "short" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "short" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14777,7 +14219,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "public" between rule 80 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "public" between rule 80 and rule 215 starting at line 547, column 30
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14787,7 +14229,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "public" between rule 80 and rule 208 starting at line 541, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "public" between rule 80 and rule 208 starting at line 537, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14797,7 +14239,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= public . (208)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "public" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "public" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14807,7 +14249,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "long" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "long" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14821,7 +14263,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "int" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "int" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14835,7 +14277,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "float" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "float" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14849,7 +14291,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "double" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "double" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14863,7 +14305,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "char" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "char" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14877,7 +14319,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "byte" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "byte" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14891,7 +14333,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:541:24:541:31:16060:16067: Warning: Reduce/reduce conflict in state 408 on "boolean" between rule 208 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:537:24:537:31:15611:15618: Warning: Reduce/reduce conflict in state 408 on "boolean" between rule 208 and rule 215 starting at line 547, column 30
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= .ConstantModifiers 
@@ -14905,7 +14347,7 @@ AbstractMethodModifiersopt ::= .AbstractMethodModifiers
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "abstract" between rule 80 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "abstract" between rule 80 and rule 215 starting at line 547, column 30
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14915,7 +14357,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "abstract" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "abstract" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14925,7 +14367,7 @@ InterfaceModifiers ::= .InterfaceModifiers InterfaceModifier
 InterfaceModifiers ::= .InterfaceModifier 
 InterfaceModifier ::= public . (188)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "AT" between rule 80 and rule 215 starting at line 551, column 30
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "AT" between rule 80 and rule 215 starting at line 547, column 30
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14935,7 +14377,7 @@ AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier
 AbstractMethodModifiers ::= .AbstractMethodModifier 
 AbstractMethodModifier ::= public . (215)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "AT" between rule 80 and rule 208 starting at line 541, column 24
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "AT" between rule 80 and rule 208 starting at line 537, column 24
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14945,7 +14387,7 @@ ConstantModifiers ::= .ConstantModifiers ConstantModifier
 ConstantModifiers ::= .ConstantModifier 
 ConstantModifier ::= public . (208)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:331:21:331:28:9207:9214: Warning: Reduce/reduce conflict in state 408 on "AT" between rule 80 and rule 188 starting at line 509, column 25
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:327:21:327:28:8758:8765: Warning: Reduce/reduce conflict in state 408 on "AT" between rule 80 and rule 188 starting at line 505, column 25
 
 ClassModifiers ::= .ClassModifiers ClassModifier 
 ClassModifiers ::= .ClassModifier 
@@ -14971,7 +14413,7 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:550:28:550:42:16427:16441: Warning: Shift/reduce conflict in state 409 on "AT" with rule 214
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:546:28:546:42:15978:15992: Warning: Shift/reduce conflict in state 409 on "AT" with rule 214
 
 AbstractMethodModifiers ::= .AbstractMethodModifiers AbstractMethodModifier 
 AbstractMethodModifiers ::= .AbstractMethodModifier 
@@ -15057,13 +14499,13 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 411 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 411 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "IDENTIFIER" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "IDENTIFIER" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15073,7 +14515,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "short" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "short" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15083,7 +14525,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "long" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "long" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15093,7 +14535,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "int" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "int" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15103,7 +14545,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "float" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "float" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15113,7 +14555,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "double" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "double" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15123,7 +14565,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "char" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "char" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15133,7 +14575,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "byte" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "byte" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15143,7 +14585,7 @@ AbstractMethodModifiersopt ::= . (476)
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:999:32:999:41:32234:32243: Warning: Reduce/reduce conflict in state 411 on "boolean" between rule 476 and rule 478 starting at line 1002, column 26
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:995:32:995:41:31785:31794: Warning: Reduce/reduce conflict in state 411 on "boolean" between rule 476 and rule 478 starting at line 998, column 26
 
 AnnotationTypeElementDeclaration ::= .AbstractMethodModifiersopt Type 
                                      identifier LPAREN RPAREN DefaultValueopt 
@@ -15233,13 +14675,13 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 412 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 412 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "IDENTIFIER" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "IDENTIFIER" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15248,7 +14690,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "short" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "short" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15257,7 +14699,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "long" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "long" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15266,7 +14708,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "int" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "int" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15275,7 +14717,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "float" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "float" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15284,7 +14726,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "double" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "double" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15293,7 +14735,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "char" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "char" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15302,7 +14744,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "byte" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "byte" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15311,7 +14753,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 412 on "boolean" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 412 on "boolean" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15342,7 +14784,7 @@ EnumConstant ::= .identifier
 Annotationsopt ::= . (524)
 Annotationsopt ::= .Annotations 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1071:20:1071:29:34067:34076: Warning: Shift/reduce conflict in state 416 on "IDENTIFIER" with rule 524
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1067:20:1067:29:33618:33627: Warning: Shift/reduce conflict in state 416 on "IDENTIFIER" with rule 524
 
 EnumConstant ::= .Annotationsopt identifier Argumentsopt ClassBodyopt 
 Annotationsopt ::= . (524)
@@ -15455,13 +14897,13 @@ ClassBodyDeclarationsopt ::= .ClassBodyDeclarations
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 417 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 417 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "short" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "short" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15470,7 +14912,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "long" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "long" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15479,7 +14921,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "int" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "int" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15488,7 +14930,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "float" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "float" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15497,7 +14939,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "double" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "double" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15506,7 +14948,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "char" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "char" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15515,7 +14957,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "byte" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "byte" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15524,7 +14966,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "boolean" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "boolean" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15533,7 +14975,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15543,7 +14985,7 @@ ConstructorDeclaration ::= .ConstructorModifiersopt ConstructorDeclarator
                            Throwsopt ConstructorBody 
 ConstructorModifiersopt ::= . (502)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15552,7 +14994,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 417 on "LESS" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 417 on "LESS" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -15575,7 +15017,7 @@ MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 EnumConstant ::= identifier . (307)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 430 on "LESS" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 430 on "LESS" between rule 29 and rule 49 starting at line 275, column 20
 
 ClassType ::= .TypeName TypeArgumentsopt 
 TypeName ::= identifier . (29)
@@ -15590,7 +15032,7 @@ UnaryExpressionNotPlusMinus ::= .PostfixExpression
 PostfixExpression ::= .ExpressionName 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 430 on "LBRACKET" between rule 29 and rule 49 starting at line 279, column 20
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 430 on "LBRACKET" between rule 29 and rule 49 starting at line 275, column 20
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -15602,7 +15044,7 @@ TypeName ::= identifier . (29)
 ArrayAccess ::= .ExpressionName LBRACKET Expression RBRACKET 
 ExpressionName ::= identifier . (49)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 430 on "LBRACKET" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 430 on "LBRACKET" between rule 29 and rule 32 starting at line 236, column 18
 
 ArrayType ::= .Type LBRACKET RBRACKET 
 Type ::= .ReferenceType 
@@ -15616,7 +15058,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 430 on "DOT" between rule 29 and rule 55 starting at line 288, column 19
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 430 on "DOT" between rule 29 and rule 55 starting at line 284, column 19
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -15628,7 +15070,7 @@ TypeName ::= identifier . (29)
 ExpressionName ::= .AmbiguousName DOT identifier 
 AmbiguousName ::= identifier . (55)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:235:14:235:27:6467:6480: Warning: Reduce/reduce conflict in state 430 on "DOT" between rule 29 and rule 32 starting at line 240, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:231:14:231:27:6018:6031: Warning: Reduce/reduce conflict in state 430 on "DOT" between rule 29 and rule 32 starting at line 236, column 18
 
 PrimaryNoNewArray ::= .Type DOT class 
 Type ::= .ReferenceType 
@@ -15642,7 +15084,7 @@ Type ::= .ReferenceType
 ReferenceType ::= .TypeVariable 
 TypeVariable ::= identifier . (32)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:279:20:279:33:7521:7534: Warning: Reduce/reduce conflict in state 430 on "COLON" between rule 49 and rule 307 starting at line 725, column 18
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:275:20:275:33:7072:7085: Warning: Reduce/reduce conflict in state 430 on "COLON" between rule 49 and rule 307 starting at line 721, column 18
 
 SwitchLabel ::= case  .ConstantExpression COLON 
 ConstantExpression ::= .Expression 
@@ -15851,47 +15293,47 @@ VariableModifiersopt ::= .VariableModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "double" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "double" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "float" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "float" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "char" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "char" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "long" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "long" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "int" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "int" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "short" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "short" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "byte" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "byte" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "boolean" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "boolean" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:981:26:981:35:31694:31703: Warning: Shift/reduce conflict in state 431 on "IDENTIFIER" with rule 464
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:977:26:977:35:31245:31254: Warning: Shift/reduce conflict in state 431 on "IDENTIFIER" with rule 464
 
 LocalVariableDeclaration ::= .VariableModifiersopt Type VariableDeclarators 
 VariableModifiersopt ::= . (464)
@@ -15973,13 +15415,13 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 441 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 441 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "IDENTIFIER" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "IDENTIFIER" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15988,7 +15430,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "short" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "short" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -15997,7 +15439,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "long" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "long" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16006,7 +15448,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "int" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "int" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16015,7 +15457,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "float" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "float" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16024,7 +15466,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "double" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "double" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16033,7 +15475,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "char" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "char" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16042,7 +15484,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "byte" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "byte" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16051,7 +15493,7 @@ AbstractMethodDeclaration ::= .AbstractMethodModifiersopt TypeParametersopt
                               ResultType MethodDeclarator Throwsopt SEMICOLON 
 AbstractMethodModifiersopt ::= . (476)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1002:26:1002:35:32330:32339: Warning: Reduce/reduce conflict in state 441 on "boolean" between rule 478 and rule 476 starting at line 999, column 32
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:998:26:998:35:31881:31890: Warning: Reduce/reduce conflict in state 441 on "boolean" between rule 478 and rule 476 starting at line 995, column 32
 
 ConstantDeclaration ::= .ConstantModifiersopt Type VariableDeclarators 
 ConstantModifiersopt ::= . (478)
@@ -16168,13 +15610,13 @@ ClassBodyDeclarationsopt ::= .ClassBodyDeclarations
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1011:27:1011:36:32613:32622: Warning: Shift/reduce conflict in state 443 on "AT" with rule 484
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1007:27:1007:36:32164:32173: Warning: Shift/reduce conflict in state 443 on "AT" with rule 484
 
 AnnotationTypeDeclaration ::= .InterfaceModifiersopt AT interface identifier 
                               AnnotationTypeBody 
 InterfaceModifiersopt ::= . (484)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "short" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "short" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16183,7 +15625,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "long" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "long" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16192,7 +15634,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "int" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "int" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16201,7 +15643,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "float" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "float" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16210,7 +15652,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "double" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "double" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16219,7 +15661,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "char" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "char" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16228,7 +15670,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "byte" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "byte" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16237,7 +15679,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "boolean" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "boolean" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16246,7 +15688,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "IDENTIFIER" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16256,7 +15698,7 @@ ConstructorDeclaration ::= .ConstructorModifiersopt ConstructorDeclarator
                            Throwsopt ConstructorBody 
 ConstructorModifiersopt ::= . (502)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1053, column 23
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "IDENTIFIER" between rule 510 and rule 512 starting at line 1049, column 23
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16265,7 +15707,7 @@ MethodModifiersopt ::= . (510)
 FieldDeclaration ::= .FieldModifiersopt Type VariableDeclarators SEMICOLON 
 FieldModifiersopt ::= . (512)
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1050:24:1050:33:33561:33570: Warning: Reduce/reduce conflict in state 443 on "LESS" between rule 510 and rule 502 starting at line 1038, column 29
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:1046:24:1046:33:33112:33121: Warning: Reduce/reduce conflict in state 443 on "LESS" between rule 510 and rule 502 starting at line 1034, column 29
 
 MethodHeader ::= .MethodModifiersopt TypeParametersopt ResultType 
                  MethodDeclarator Throwsopt 
@@ -16277,7 +15719,7 @@ ConstructorModifiersopt ::= . (502)
 
 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:167:5:167:19:4708:4722: Warning: Grammar is not LALR(1) - it contains 546 reduce/reduce conflicts and 161 shift/reduce conflicts.
+e:/LPG2-grammars-example/java-ts-version/GJavaParser.g:163:5:163:19:4259:4273: Warning: Grammar is not LALR(1) - it contains 546 reduce/reduce conflicts and 161 shift/reduce conflicts.
 
 Number of Terminals: 119
 Number of Nonterminals: 248
@@ -16289,7 +15731,7 @@ Number of Shift actions: 1508
 Number of Goto actions: 2215
 Number of Shift/Reduce actions: 2238
 Number of Goto/Reduce actions: 3193
-Number of Reduce actions: 3783
+Number of Reduce actions: 3076
 Number of Shift-Reduce conflicts: 161
 Number of Reduce-Reduce conflicts: 546
 Number of Keyword/Identifier Shift conflicts: 0
@@ -16325,10 +15767,9 @@ Annotationsopt ::= .Annotations
 PackageDeclarationopt ::= . (530)
 PackageDeclarationopt ::= .PackageDeclaration 
 
-AT                                Shift  7
-                                  Reduce 530
 LPGUserActionMarker               Shift  4
 ClassBodyDeclarationsoptMarker    Shift  5
+AT                                Shift  7
 
 CompilationUnit                   Goto   2
 PackageDeclarationopt             Goto   3
@@ -16605,24 +16046,6 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
 BadAction                               Sh/Rd  9
 NullAction                              Sh/Rd  8
 NoAction                                Sh/Rd  7
@@ -16641,10 +16064,19 @@ while                                   Shift  23
 if                                      Shift  24
 LBRACE                                  Shift  25
 SEMICOLON                               Sh/Rd  284
+IDENTIFIER                              Sh/Rd  3
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+boolean                                 Sh/Rd  13
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
 null                                    Sh/Rd  351
@@ -16854,30 +16286,8 @@ ClassBodyDeclarationsopt ::= .ClassBodyDeclarations
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                            Shift  7
-                              Reduce 484
-short                         Reduce 512
-                              Reduce 510
-long                          Reduce 512
-                              Reduce 510
-int                           Reduce 512
-                              Reduce 510
-float                         Reduce 512
-                              Reduce 510
-double                        Reduce 512
-                              Reduce 510
-char                          Reduce 512
-                              Reduce 510
-byte                          Reduce 512
-                              Reduce 510
-boolean                       Reduce 512
-                              Reduce 510
-IDENTIFIER                    Reduce 512
-                              Reduce 510
-                              Reduce 502
-LESS                          Reduce 510
-                              Reduce 502
 LBRACE                        Shift  25
+AT                            Shift  7
 volatile                      Sh/Rd  124
 transient                     Sh/Rd  123
 native                        Sh/Rd  151
@@ -16933,6 +16343,16 @@ interface                     Reduce 484
 enum                          Reduce 522
 class                         Reduce 522
 void                          Reduce 510
+short                         Reduce 510
+long                          Reduce 510
+int                           Reduce 510
+float                         Reduce 510
+double                        Reduce 510
+char                          Reduce 510
+byte                          Reduce 510
+boolean                       Reduce 510
+IDENTIFIER                    Reduce 510
+LESS                          Reduce 510
 EOF_TOKEN                     Reduce 514
 
 Default reduction to rule  510
@@ -17048,9 +16468,8 @@ ClassModifiersopt ::= .ClassModifiers
 TypeDeclarationsopt ::= . (526)
 TypeDeclarationsopt ::= .TypeDeclarations 
 
-AT                            Shift  7
-                              Reduce 484
 SEMICOLON                     Sh/Rd  73
+AT                            Shift  7
 strictfp                      Shift  81
 final                         Sh/Rd  85
 static                        Shift  82
@@ -17340,24 +16759,6 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
 try                                     Shift  58
 throw                                   Shift  57
 synchronized                            Shift  56
@@ -17378,11 +16779,20 @@ LongLiteral                             Sh/Rd  345
 IntegerLiteral                          Sh/Rd  344
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+boolean                                 Sh/Rd  13
 new                                     Shift  37
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+IDENTIFIER                              Sh/Rd  3
 SEMICOLON                               Sh/Rd  284
 LBRACE                                  Shift  25
 if                                      Shift  24
@@ -17662,24 +17072,6 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
 try                                     Shift  58
 throw                                   Shift  57
 synchronized                            Shift  56
@@ -17700,11 +17092,20 @@ LongLiteral                             Sh/Rd  345
 IntegerLiteral                          Sh/Rd  344
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+boolean                                 Sh/Rd  13
 new                                     Shift  37
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+IDENTIFIER                              Sh/Rd  3
 SEMICOLON                               Sh/Rd  284
 LBRACE                                  Shift  25
 if                                      Shift  24
@@ -17823,7 +17224,6 @@ MarkerAnnotation ::= .AT TypeName
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
 AT                         Shift  7
-                           Reduce 139
 
 Annotation                 Gt/Rd  230
 SingleElementAnnotation    Gt/Rd  233
@@ -17944,11 +17344,6 @@ STATE 18 -----------------------------------------------------------------------
 ClassModifier ::= final . (85)
 VariableModifier ::= final . (138)
 
-final         Reduce 85
-              Reduce 138
-AT            Reduce 85
-              Reduce 138
-
 strictfp      Reduce 85
 static        Reduce 85
 public        Reduce 85
@@ -17962,10 +17357,12 @@ short         Reduce 138
 long          Reduce 138
 int           Reduce 138
 float         Reduce 138
-boolean       Reduce 138
+final         Reduce 85
 double        Reduce 138
 char          Reduce 138
 byte          Reduce 138
+boolean       Reduce 138
+AT            Reduce 85
 
 Default reduction to rule  85
 
@@ -17975,11 +17372,6 @@ STATE 19 -----------------------------------------------------------------------
 
 ClassModifier ::= Annotation . (79)
 Annotations ::= Annotation . (229)
-
-final         Reduce 229
-              Reduce 79
-AT            Reduce 229
-              Reduce 79
 
 strictfp      Reduce 79
 static        Reduce 79
@@ -17994,10 +17386,12 @@ short         Reduce 229
 long          Reduce 229
 int           Reduce 229
 float         Reduce 229
-boolean       Reduce 229
+final         Reduce 79
 double        Reduce 229
 char          Reduce 229
 byte          Reduce 229
+boolean       Reduce 229
+AT            Reduce 79
 
 Default reduction to rule  79
 
@@ -18273,24 +17667,6 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
 try                                     Shift  58
 throw                                   Shift  57
 synchronized                            Shift  56
@@ -18311,11 +17687,20 @@ LongLiteral                             Sh/Rd  345
 IntegerLiteral                          Sh/Rd  344
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+boolean                                 Sh/Rd  13
 new                                     Shift  37
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+IDENTIFIER                              Sh/Rd  3
 SEMICOLON                               Sh/Rd  284
 LBRACE                                  Shift  25
 if                                      Shift  24
@@ -18788,8 +18173,6 @@ TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
 DOT                 Shift  131
-                    Reduce 31
-                    Reduce 538
 LESS                Shift  132
 
 TypeArgumentsopt    Gt/Rd  27
@@ -18811,12 +18194,6 @@ MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 LabeledStatement ::= identifier  .COLON Statement 
 
-LBRACKET            Reduce 29
-                    Reduce 32
-                    Reduce 49
-DOT                 Reduce 29
-                    Reduce 32
-                    Reduce 55
 COLON               Shift  133
 
 LESS                Reduce 29
@@ -18827,13 +18204,15 @@ PLUS_EQUAL          Reduce 49
 PLUS_PLUS           Reduce 49
 OR_EQUAL            Reduce 49
 XOR_EQUAL           Reduce 49
-LPAREN              Reduce 51
+LBRACKET            Reduce 29
 DIVIDE_EQUAL        Reduce 49
 MULTIPLY_EQUAL      Reduce 49
 AND_EQUAL           Reduce 49
 REMAINDER_EQUAL     Reduce 49
 MINUS_EQUAL         Reduce 49
 MINUS_MINUS         Reduce 49
+LPAREN              Reduce 51
+DOT                 Reduce 29
 
 Default reduction to rule  49
 
@@ -18873,8 +18252,6 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-IDENTIFIER              Sh/Rd  3
-                        Reduce 538
 LESS                    Shift  132
 boolean                 Sh/Rd  13
 char                    Sh/Rd  20
@@ -18884,6 +18261,7 @@ short                   Sh/Rd  17
 byte                    Sh/Rd  16
 double                  Sh/Rd  22
 float                   Sh/Rd  21
+IDENTIFIER              Sh/Rd  3
 
 ClassOrInterfaceType    Goto   134
 PrimitiveType           Goto   135
@@ -18971,9 +18349,6 @@ STATE 39 -----------------------------------------------------------------------
 PrimaryNoNewArray ::= ArrayAccess . (343)
 LeftHandSide ::= ArrayAccess . (433)
 
-GREATER             Reduce 343
-                    Reduce 433
-
 IDENTIFIER          Reduce 343
 void                Reduce 343
 strictfp            Reduce 343
@@ -19022,7 +18397,7 @@ NOT_EQUAL           Reduce 343
 MINUS               Reduce 343
 OR                  Reduce 343
 MINUS_MINUS         Reduce 343
-MINUS_EQUAL         Reduce 433
+GREATER             Reduce 343
 EQUAL               Reduce 433
 LEFT_SHIFT_EQUAL    Reduce 433
 PLUS_EQUAL          Reduce 433
@@ -19032,6 +18407,7 @@ DIVIDE_EQUAL        Reduce 433
 MULTIPLY_EQUAL      Reduce 433
 AND_EQUAL           Reduce 433
 REMAINDER_EQUAL     Reduce 433
+MINUS_EQUAL         Reduce 433
 
 Default reduction to rule  343
 
@@ -19044,9 +18420,6 @@ STATE 40 -----------------------------------------------------------------------
 
 PrimaryNoNewArray ::= FieldAccess . (341)
 LeftHandSide ::= FieldAccess . (432)
-
-GREATER             Reduce 341
-                    Reduce 432
 
 IDENTIFIER          Reduce 341
 void                Reduce 341
@@ -19096,7 +18469,7 @@ NOT_EQUAL           Reduce 341
 MINUS               Reduce 341
 OR                  Reduce 341
 MINUS_MINUS         Reduce 341
-MINUS_EQUAL         Reduce 432
+GREATER             Reduce 341
 EQUAL               Reduce 432
 LEFT_SHIFT_EQUAL    Reduce 432
 PLUS_EQUAL          Reduce 432
@@ -19106,6 +18479,7 @@ DIVIDE_EQUAL        Reduce 432
 MULTIPLY_EQUAL      Reduce 432
 AND_EQUAL           Reduce 432
 REMAINDER_EQUAL     Reduce 432
+MINUS_EQUAL         Reduce 432
 
 Default reduction to rule  341
 
@@ -19474,8 +18848,6 @@ ArrayAccess ::= ExpressionName  .LBRACKET Expression RBRACKET
 PostfixExpression ::= ExpressionName . (378)
 LeftHandSide ::= ExpressionName . (431)
 
-GREATER             Reduce 431
-                    Reduce 378
 LBRACKET            Shift  139
 
 IDENTIFIER          Reduce 378
@@ -19524,7 +18896,7 @@ NOT_EQUAL           Reduce 378
 MINUS               Reduce 378
 OR                  Reduce 378
 MINUS_MINUS         Reduce 378
-MINUS_EQUAL         Reduce 431
+GREATER             Reduce 378
 EQUAL               Reduce 431
 LEFT_SHIFT_EQUAL    Reduce 431
 PLUS_EQUAL          Reduce 431
@@ -19534,6 +18906,7 @@ DIVIDE_EQUAL        Reduce 431
 MULTIPLY_EQUAL      Reduce 431
 AND_EQUAL           Reduce 431
 REMAINDER_EQUAL     Reduce 431
+MINUS_EQUAL         Reduce 431
 
 Default reduction to rule  378
 
@@ -20848,24 +20221,6 @@ VariableModifiersopt ::= .VariableModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
 try                                     Shift  58
 throw                                   Shift  57
 synchronized                            Shift  56
@@ -20886,11 +20241,20 @@ LongLiteral                             Sh/Rd  345
 IntegerLiteral                          Sh/Rd  344
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+boolean                                 Sh/Rd  13
 new                                     Shift  37
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+IDENTIFIER                              Sh/Rd  3
 SEMICOLON                               Sh/Rd  284
 LBRACE                                  Shift  25
 if                                      Shift  24
@@ -21182,18 +20546,6 @@ MarkerAnnotation ::= .AT TypeName
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
 AT                         Shift  7
-                           Reduce 143
-                           Reduce 167
-IDENTIFIER                 Reduce 143
-                           Reduce 167
-public                     Reduce 143
-                           Reduce 167
-protected                  Reduce 143
-                           Reduce 167
-private                    Reduce 143
-                           Reduce 167
-LESS                       Reduce 143
-                           Reduce 167
 
 Annotation                 Gt/Rd  230
 SingleElementAnnotation    Gt/Rd  233
@@ -21215,6 +20567,11 @@ char                       Reduce 143
 byte                       Reduce 143
 boolean                    Reduce 143
 abstract                   Reduce 143
+IDENTIFIER                 Reduce 143
+public                     Reduce 143
+protected                  Reduce 143
+private                    Reduce 143
+LESS                       Reduce 143
 
 Default reduction to rule  143
 
@@ -21313,55 +20670,31 @@ ClassModifier ::= final . (85)
 FieldModifier ::= final . (122)
 MethodModifier ::= final . (149)
 
-IDENTIFIER      Reduce 122
-                Reduce 149
-strictfp        Reduce 85
-                Reduce 149
-static          Reduce 85
-                Reduce 122
-                Reduce 149
-short           Reduce 122
-                Reduce 149
-public          Reduce 85
-                Reduce 122
-                Reduce 149
-protected       Reduce 85
-                Reduce 122
-                Reduce 149
-private         Reduce 85
-                Reduce 122
-                Reduce 149
-long            Reduce 122
-                Reduce 149
-int             Reduce 122
-                Reduce 149
-float           Reduce 122
-                Reduce 149
-final           Reduce 85
-                Reduce 122
-                Reduce 149
-double          Reduce 122
-                Reduce 149
-char            Reduce 122
-                Reduce 149
-byte            Reduce 122
-                Reduce 149
-boolean         Reduce 122
-                Reduce 149
-abstract        Reduce 85
-                Reduce 149
-AT              Reduce 85
-                Reduce 122
-                Reduce 149
-
 enum            Reduce 85
 class           Reduce 85
 volatile        Reduce 122
 transient       Reduce 122
-native          Reduce 149
+IDENTIFIER      Reduce 122
 void            Reduce 149
 synchronized    Reduce 149
+strictfp        Reduce 85
+static          Reduce 85
+short           Reduce 122
+public          Reduce 85
+protected       Reduce 85
+private         Reduce 85
+native          Reduce 149
+long            Reduce 122
+int             Reduce 122
+float           Reduce 122
+final           Reduce 85
+double          Reduce 122
+char            Reduce 122
+byte            Reduce 122
+boolean         Reduce 122
+abstract        Reduce 85
 LESS            Reduce 149
+AT              Reduce 85
 
 Default reduction to rule  122
 
@@ -21373,30 +20706,6 @@ ClassModifier ::= strictfp . (86)
 MethodModifier ::= strictfp . (152)
 InterfaceModifier ::= strictfp . (193)
 
-final           Reduce 86
-                Reduce 152
-strictfp        Reduce 86
-                Reduce 193
-                Reduce 152
-static          Reduce 86
-                Reduce 193
-                Reduce 152
-public          Reduce 86
-                Reduce 193
-                Reduce 152
-protected       Reduce 86
-                Reduce 193
-                Reduce 152
-private         Reduce 86
-                Reduce 193
-                Reduce 152
-abstract        Reduce 86
-                Reduce 193
-                Reduce 152
-AT              Reduce 86
-                Reduce 193
-                Reduce 152
-
 enum            Reduce 86
 class           Reduce 86
 IDENTIFIER      Reduce 152
@@ -21407,12 +20716,20 @@ native          Reduce 152
 long            Reduce 152
 int             Reduce 152
 float           Reduce 152
-interface       Reduce 193
+final           Reduce 86
 double          Reduce 152
 char            Reduce 152
 byte            Reduce 152
 boolean         Reduce 152
 LESS            Reduce 152
+strictfp        Reduce 86
+static          Reduce 86
+public          Reduce 86
+protected       Reduce 86
+private         Reduce 86
+interface       Reduce 193
+abstract        Reduce 86
+AT              Reduce 86
 
 Default reduction to rule  152
 
@@ -21428,53 +20745,6 @@ InterfaceModifier ::= static . (192)
 
 Block ::= .LBRACE BlockStatementsopt RBRACE 
 
-IDENTIFIER      Reduce 121
-                Reduce 148
-short           Reduce 121
-                Reduce 148
-long            Reduce 121
-                Reduce 148
-int             Reduce 121
-                Reduce 148
-float           Reduce 121
-                Reduce 148
-final           Reduce 84
-                Reduce 121
-                Reduce 148
-double          Reduce 121
-                Reduce 148
-char            Reduce 121
-                Reduce 148
-byte            Reduce 121
-                Reduce 148
-boolean         Reduce 121
-                Reduce 148
-strictfp        Reduce 84
-                Reduce 192
-                Reduce 148
-static          Reduce 84
-                Reduce 192
-                Reduce 121
-                Reduce 148
-public          Reduce 84
-                Reduce 192
-                Reduce 121
-                Reduce 148
-protected       Reduce 84
-                Reduce 192
-                Reduce 121
-                Reduce 148
-private         Reduce 84
-                Reduce 192
-                Reduce 121
-                Reduce 148
-abstract        Reduce 84
-                Reduce 192
-                Reduce 148
-AT              Reduce 84
-                Reduce 192
-                Reduce 121
-                Reduce 148
 LBRACE          Shift  25
 
 Block           Gt/Rd  161
@@ -21483,11 +20753,28 @@ enum            Reduce 84
 class           Reduce 84
 volatile        Reduce 121
 transient       Reduce 121
-interface       Reduce 192
+IDENTIFIER      Reduce 121
 void            Reduce 148
 synchronized    Reduce 148
-LESS            Reduce 148
+short           Reduce 121
 native          Reduce 148
+long            Reduce 121
+int             Reduce 121
+float           Reduce 121
+final           Reduce 84
+double          Reduce 121
+char            Reduce 121
+byte            Reduce 121
+boolean         Reduce 121
+LESS            Reduce 148
+strictfp        Reduce 84
+static          Reduce 84
+public          Reduce 84
+protected       Reduce 84
+private         Reduce 84
+interface       Reduce 192
+abstract        Reduce 84
+AT              Reduce 84
 
 Default reduction to rule  121
 
@@ -21499,30 +20786,6 @@ ClassModifier ::= abstract . (83)
 MethodModifier ::= abstract . (147)
 InterfaceModifier ::= abstract . (191)
 
-final           Reduce 83
-                Reduce 147
-strictfp        Reduce 83
-                Reduce 191
-                Reduce 147
-static          Reduce 83
-                Reduce 191
-                Reduce 147
-public          Reduce 83
-                Reduce 191
-                Reduce 147
-protected       Reduce 83
-                Reduce 191
-                Reduce 147
-private         Reduce 83
-                Reduce 191
-                Reduce 147
-abstract        Reduce 83
-                Reduce 191
-                Reduce 147
-AT              Reduce 83
-                Reduce 191
-                Reduce 147
-
 enum            Reduce 83
 class           Reduce 83
 IDENTIFIER      Reduce 147
@@ -21533,12 +20796,20 @@ native          Reduce 147
 long            Reduce 147
 int             Reduce 147
 float           Reduce 147
-interface       Reduce 191
+final           Reduce 83
 double          Reduce 147
 char            Reduce 147
 byte            Reduce 147
 boolean         Reduce 147
 LESS            Reduce 147
+strictfp        Reduce 83
+static          Reduce 83
+public          Reduce 83
+protected       Reduce 83
+private         Reduce 83
+interface       Reduce 191
+abstract        Reduce 83
+AT              Reduce 83
 
 Default reduction to rule  147
 
@@ -21552,69 +20823,32 @@ MethodModifier ::= private . (146)
 ConstructorModifier ::= private . (170)
 InterfaceModifier ::= private . (190)
 
-short           Reduce 120
-                Reduce 146
-long            Reduce 120
-                Reduce 146
-int             Reduce 120
-                Reduce 146
-float           Reduce 120
-                Reduce 146
-final           Reduce 82
-                Reduce 120
-                Reduce 146
-double          Reduce 120
-                Reduce 146
-char            Reduce 120
-                Reduce 146
-byte            Reduce 120
-                Reduce 146
-boolean         Reduce 120
-                Reduce 146
-IDENTIFIER      Reduce 120
-                Reduce 146
-                Reduce 170
-LESS            Reduce 146
-                Reduce 170
-strictfp        Reduce 82
-                Reduce 190
-                Reduce 146
-static          Reduce 82
-                Reduce 190
-                Reduce 120
-                Reduce 146
-public          Reduce 82
-                Reduce 190
-                Reduce 120
-                Reduce 146
-                Reduce 170
-protected       Reduce 82
-                Reduce 190
-                Reduce 120
-                Reduce 146
-                Reduce 170
-private         Reduce 82
-                Reduce 190
-                Reduce 120
-                Reduce 146
-                Reduce 170
-abstract        Reduce 82
-                Reduce 190
-                Reduce 146
-AT              Reduce 82
-                Reduce 190
-                Reduce 120
-                Reduce 146
-                Reduce 170
-
 enum            Reduce 82
 class           Reduce 82
 volatile        Reduce 120
 transient       Reduce 120
 void            Reduce 146
 synchronized    Reduce 146
-interface       Reduce 190
+short           Reduce 120
 native          Reduce 146
+long            Reduce 120
+int             Reduce 120
+float           Reduce 120
+final           Reduce 82
+double          Reduce 120
+char            Reduce 120
+byte            Reduce 120
+boolean         Reduce 120
+IDENTIFIER      Reduce 120
+LESS            Reduce 146
+strictfp        Reduce 82
+static          Reduce 82
+public          Reduce 82
+protected       Reduce 82
+private         Reduce 82
+interface       Reduce 190
+abstract        Reduce 82
+AT              Reduce 82
 
 Default reduction to rule  120
 
@@ -21628,69 +20862,32 @@ MethodModifier ::= protected . (145)
 ConstructorModifier ::= protected . (169)
 InterfaceModifier ::= protected . (189)
 
-short           Reduce 119
-                Reduce 145
-long            Reduce 119
-                Reduce 145
-int             Reduce 119
-                Reduce 145
-float           Reduce 119
-                Reduce 145
-final           Reduce 81
-                Reduce 119
-                Reduce 145
-double          Reduce 119
-                Reduce 145
-char            Reduce 119
-                Reduce 145
-byte            Reduce 119
-                Reduce 145
-boolean         Reduce 119
-                Reduce 145
-IDENTIFIER      Reduce 119
-                Reduce 145
-                Reduce 169
-LESS            Reduce 145
-                Reduce 169
-strictfp        Reduce 81
-                Reduce 189
-                Reduce 145
-static          Reduce 81
-                Reduce 189
-                Reduce 119
-                Reduce 145
-public          Reduce 81
-                Reduce 189
-                Reduce 119
-                Reduce 145
-                Reduce 169
-protected       Reduce 81
-                Reduce 189
-                Reduce 119
-                Reduce 145
-                Reduce 169
-private         Reduce 81
-                Reduce 189
-                Reduce 119
-                Reduce 145
-                Reduce 169
-abstract        Reduce 81
-                Reduce 189
-                Reduce 145
-AT              Reduce 81
-                Reduce 189
-                Reduce 119
-                Reduce 145
-                Reduce 169
-
 enum            Reduce 81
 class           Reduce 81
 volatile        Reduce 119
 transient       Reduce 119
 void            Reduce 145
 synchronized    Reduce 145
-interface       Reduce 189
+short           Reduce 119
 native          Reduce 145
+long            Reduce 119
+int             Reduce 119
+float           Reduce 119
+final           Reduce 81
+double          Reduce 119
+char            Reduce 119
+byte            Reduce 119
+boolean         Reduce 119
+IDENTIFIER      Reduce 119
+LESS            Reduce 145
+strictfp        Reduce 81
+static          Reduce 81
+public          Reduce 81
+protected       Reduce 81
+private         Reduce 81
+interface       Reduce 189
+abstract        Reduce 81
+AT              Reduce 81
 
 Default reduction to rule  119
 
@@ -21704,69 +20901,32 @@ MethodModifier ::= public . (144)
 ConstructorModifier ::= public . (168)
 InterfaceModifier ::= public . (188)
 
-short           Reduce 118
-                Reduce 144
-long            Reduce 118
-                Reduce 144
-int             Reduce 118
-                Reduce 144
-float           Reduce 118
-                Reduce 144
-final           Reduce 80
-                Reduce 118
-                Reduce 144
-double          Reduce 118
-                Reduce 144
-char            Reduce 118
-                Reduce 144
-byte            Reduce 118
-                Reduce 144
-boolean         Reduce 118
-                Reduce 144
-IDENTIFIER      Reduce 118
-                Reduce 144
-                Reduce 168
-LESS            Reduce 144
-                Reduce 168
-strictfp        Reduce 80
-                Reduce 188
-                Reduce 144
-static          Reduce 80
-                Reduce 188
-                Reduce 118
-                Reduce 144
-public          Reduce 80
-                Reduce 188
-                Reduce 118
-                Reduce 144
-                Reduce 168
-protected       Reduce 80
-                Reduce 188
-                Reduce 118
-                Reduce 144
-                Reduce 168
-private         Reduce 80
-                Reduce 188
-                Reduce 118
-                Reduce 144
-                Reduce 168
-abstract        Reduce 80
-                Reduce 188
-                Reduce 144
-AT              Reduce 80
-                Reduce 188
-                Reduce 118
-                Reduce 144
-                Reduce 168
-
 enum            Reduce 80
 class           Reduce 80
 volatile        Reduce 118
 transient       Reduce 118
 void            Reduce 144
 synchronized    Reduce 144
-interface       Reduce 188
+short           Reduce 118
 native          Reduce 144
+long            Reduce 118
+int             Reduce 118
+float           Reduce 118
+final           Reduce 80
+double          Reduce 118
+char            Reduce 118
+byte            Reduce 118
+boolean         Reduce 118
+IDENTIFIER      Reduce 118
+LESS            Reduce 144
+strictfp        Reduce 80
+static          Reduce 80
+public          Reduce 80
+protected       Reduce 80
+private         Reduce 80
+interface       Reduce 188
+abstract        Reduce 80
+AT              Reduce 80
 
 Default reduction to rule  118
 
@@ -21779,63 +20939,32 @@ FieldModifier ::= Annotation . (117)
 InterfaceModifier ::= Annotation . (187)
 Annotations ::= Annotation . (229)
 
-IDENTIFIER      Reduce 229
-                Reduce 117
-strictfp        Reduce 229
-                Reduce 79
-                Reduce 187
-static          Reduce 229
-                Reduce 79
-                Reduce 187
-                Reduce 117
-short           Reduce 229
-                Reduce 117
-public          Reduce 229
-                Reduce 79
-                Reduce 187
-                Reduce 117
-protected       Reduce 229
-                Reduce 79
-                Reduce 187
-                Reduce 117
-private         Reduce 229
-                Reduce 79
-                Reduce 187
-                Reduce 117
-long            Reduce 229
-                Reduce 117
-int             Reduce 229
-                Reduce 117
-float           Reduce 229
-                Reduce 117
-final           Reduce 229
-                Reduce 79
-                Reduce 117
-double          Reduce 229
-                Reduce 117
-char            Reduce 229
-                Reduce 117
-byte            Reduce 229
-                Reduce 117
-boolean         Reduce 229
-                Reduce 117
-abstract        Reduce 229
-                Reduce 79
-                Reduce 187
-AT              Reduce 229
-                Reduce 79
-                Reduce 187
-                Reduce 117
-
 enum            Reduce 79
 class           Reduce 79
 volatile        Reduce 117
 transient       Reduce 117
 interface       Reduce 187
-native          Reduce 229
+IDENTIFIER      Reduce 117
 void            Reduce 229
 synchronized    Reduce 229
+strictfp        Reduce 79
+static          Reduce 79
+short           Reduce 117
+public          Reduce 79
+protected       Reduce 79
+private         Reduce 79
+native          Reduce 229
+long            Reduce 117
+int             Reduce 117
+float           Reduce 117
+final           Reduce 79
+double          Reduce 117
+char            Reduce 117
+byte            Reduce 117
+boolean         Reduce 117
+abstract        Reduce 79
 LESS            Reduce 229
+AT              Reduce 79
 
 Default reduction to rule  117
 
@@ -21860,14 +20989,13 @@ NormalAnnotation ::= .AT TypeName LPAREN ElementValuePairsopt RPAREN
 MarkerAnnotation ::= .AT TypeName 
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
-AT                         Shift  7
-                           Reduce 485
 strictfp                   Sh/Rd  193
 static                     Sh/Rd  192
 abstract                   Sh/Rd  191
 private                    Sh/Rd  190
 protected                  Sh/Rd  189
 public                     Sh/Rd  188
+AT                         Shift  7
 
 InterfaceModifier          Gt/Rd  186
 Annotation                 Gt/Rd  187
@@ -21996,30 +21124,8 @@ FieldModifiersopt ::= .FieldModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                            Shift  7
-                              Reduce 484
-short                         Reduce 512
-                              Reduce 510
-long                          Reduce 512
-                              Reduce 510
-int                           Reduce 512
-                              Reduce 510
-float                         Reduce 512
-                              Reduce 510
-double                        Reduce 512
-                              Reduce 510
-char                          Reduce 512
-                              Reduce 510
-byte                          Reduce 512
-                              Reduce 510
-boolean                       Reduce 512
-                              Reduce 510
-IDENTIFIER                    Reduce 512
-                              Reduce 510
-                              Reduce 502
-LESS                          Reduce 510
-                              Reduce 502
 LBRACE                        Shift  25
+AT                            Shift  7
 volatile                      Sh/Rd  124
 transient                     Sh/Rd  123
 native                        Sh/Rd  151
@@ -22073,8 +21179,18 @@ interface                     Reduce 484
 enum                          Reduce 522
 class                         Reduce 522
 void                          Reduce 510
-RBRACE                        Reduce 515
+short                         Reduce 510
+long                          Reduce 510
+int                           Reduce 510
+float                         Reduce 510
+double                        Reduce 510
+char                          Reduce 510
+byte                          Reduce 510
+boolean                       Reduce 510
+IDENTIFIER                    Reduce 510
+LESS                          Reduce 510
 EOF_TOKEN                     Reduce 515
+RBRACE                        Reduce 515
 
 Default reduction to rule  510
 
@@ -22147,25 +21263,17 @@ STATE 81 -----------------------------------------------------------------------
 ClassModifier ::= strictfp . (86)
 InterfaceModifier ::= strictfp . (193)
 
-strictfp     Reduce 86
-             Reduce 193
-static       Reduce 86
-             Reduce 193
-public       Reduce 86
-             Reduce 193
-protected    Reduce 86
-             Reduce 193
-private      Reduce 86
-             Reduce 193
-abstract     Reduce 86
-             Reduce 193
-AT           Reduce 86
-             Reduce 193
-
 final        Reduce 86
 enum         Reduce 86
 class        Reduce 86
+strictfp     Reduce 86
+static       Reduce 86
+public       Reduce 86
+protected    Reduce 86
+private      Reduce 86
 interface    Reduce 193
+abstract     Reduce 86
+AT           Reduce 86
 
 Default reduction to rule  86
 
@@ -22176,25 +21284,17 @@ STATE 82 -----------------------------------------------------------------------
 ClassModifier ::= static . (84)
 InterfaceModifier ::= static . (192)
 
-strictfp     Reduce 84
-             Reduce 192
-static       Reduce 84
-             Reduce 192
-public       Reduce 84
-             Reduce 192
-protected    Reduce 84
-             Reduce 192
-private      Reduce 84
-             Reduce 192
-abstract     Reduce 84
-             Reduce 192
-AT           Reduce 84
-             Reduce 192
-
 final        Reduce 84
 enum         Reduce 84
 class        Reduce 84
+strictfp     Reduce 84
+static       Reduce 84
+public       Reduce 84
+protected    Reduce 84
+private      Reduce 84
 interface    Reduce 192
+abstract     Reduce 84
+AT           Reduce 84
 
 Default reduction to rule  84
 
@@ -22205,25 +21305,17 @@ STATE 83 -----------------------------------------------------------------------
 ClassModifier ::= abstract . (83)
 InterfaceModifier ::= abstract . (191)
 
-strictfp     Reduce 83
-             Reduce 191
-static       Reduce 83
-             Reduce 191
-public       Reduce 83
-             Reduce 191
-protected    Reduce 83
-             Reduce 191
-private      Reduce 83
-             Reduce 191
-abstract     Reduce 83
-             Reduce 191
-AT           Reduce 83
-             Reduce 191
-
 final        Reduce 83
 enum         Reduce 83
 class        Reduce 83
+strictfp     Reduce 83
+static       Reduce 83
+public       Reduce 83
+protected    Reduce 83
+private      Reduce 83
 interface    Reduce 191
+abstract     Reduce 83
+AT           Reduce 83
 
 Default reduction to rule  83
 
@@ -22234,25 +21326,17 @@ STATE 84 -----------------------------------------------------------------------
 ClassModifier ::= private . (82)
 InterfaceModifier ::= private . (190)
 
-strictfp     Reduce 82
-             Reduce 190
-static       Reduce 82
-             Reduce 190
-public       Reduce 82
-             Reduce 190
-protected    Reduce 82
-             Reduce 190
-private      Reduce 82
-             Reduce 190
-abstract     Reduce 82
-             Reduce 190
-AT           Reduce 82
-             Reduce 190
-
 final        Reduce 82
 enum         Reduce 82
 class        Reduce 82
+strictfp     Reduce 82
+static       Reduce 82
+public       Reduce 82
+protected    Reduce 82
+private      Reduce 82
 interface    Reduce 190
+abstract     Reduce 82
+AT           Reduce 82
 
 Default reduction to rule  82
 
@@ -22263,25 +21347,17 @@ STATE 85 -----------------------------------------------------------------------
 ClassModifier ::= protected . (81)
 InterfaceModifier ::= protected . (189)
 
-strictfp     Reduce 81
-             Reduce 189
-static       Reduce 81
-             Reduce 189
-public       Reduce 81
-             Reduce 189
-protected    Reduce 81
-             Reduce 189
-private      Reduce 81
-             Reduce 189
-abstract     Reduce 81
-             Reduce 189
-AT           Reduce 81
-             Reduce 189
-
 final        Reduce 81
 enum         Reduce 81
 class        Reduce 81
+strictfp     Reduce 81
+static       Reduce 81
+public       Reduce 81
+protected    Reduce 81
+private      Reduce 81
 interface    Reduce 189
+abstract     Reduce 81
+AT           Reduce 81
 
 Default reduction to rule  81
 
@@ -22292,25 +21368,17 @@ STATE 86 -----------------------------------------------------------------------
 ClassModifier ::= public . (80)
 InterfaceModifier ::= public . (188)
 
-strictfp     Reduce 80
-             Reduce 188
-static       Reduce 80
-             Reduce 188
-public       Reduce 80
-             Reduce 188
-protected    Reduce 80
-             Reduce 188
-private      Reduce 80
-             Reduce 188
-abstract     Reduce 80
-             Reduce 188
-AT           Reduce 80
-             Reduce 188
-
 final        Reduce 80
 enum         Reduce 80
 class        Reduce 80
+strictfp     Reduce 80
+static       Reduce 80
+public       Reduce 80
+protected    Reduce 80
+private      Reduce 80
 interface    Reduce 188
+abstract     Reduce 80
+AT           Reduce 80
 
 Default reduction to rule  80
 
@@ -22321,25 +21389,17 @@ STATE 87 -----------------------------------------------------------------------
 ClassModifier ::= Annotation . (79)
 InterfaceModifier ::= Annotation . (187)
 
-strictfp     Reduce 79
-             Reduce 187
-static       Reduce 79
-             Reduce 187
-public       Reduce 79
-             Reduce 187
-protected    Reduce 79
-             Reduce 187
-private      Reduce 79
-             Reduce 187
-abstract     Reduce 79
-             Reduce 187
-AT           Reduce 79
-             Reduce 187
-
 final        Reduce 79
 enum         Reduce 79
 class        Reduce 79
+strictfp     Reduce 79
+static       Reduce 79
+public       Reduce 79
+protected    Reduce 79
+private      Reduce 79
 interface    Reduce 187
+abstract     Reduce 79
+AT           Reduce 79
 
 Default reduction to rule  79
 
@@ -22395,9 +21455,8 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                            Shift  7
-                              Reduce 484
 SEMICOLON                     Sh/Rd  73
+AT                            Shift  7
 strictfp                      Shift  81
 final                         Sh/Rd  85
 static                        Shift  82
@@ -22479,10 +21538,8 @@ STATE 92 -----------------------------------------------------------------------
 TypeName ::= identifier . (29)
 PackageOrTypeName ::= identifier . (53)
 
-DOT          Reduce 29
-             Reduce 53
-
 SEMICOLON    Reduce 29
+DOT          Reduce 29
 
 Default reduction to rule  29
 
@@ -22515,9 +21572,8 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-LESS                Shift  132
-                    Reduce 538
 DOT                 Shift  161
+LESS                Shift  132
 
 TypeArgumentsopt    Gt/Rd  27
 TypeArguments       Gt/Rd  539
@@ -22575,92 +21631,49 @@ STATE 96 -----------------------------------------------------------------------
 TypeName ::= identifier . (29)
 TypeVariable ::= identifier . (32)
 
-IDENTIFIER     Reduce 29
-               Reduce 32
-void           Reduce 29
-               Reduce 32
-strictfp       Reduce 29
-               Reduce 32
-static         Reduce 29
-               Reduce 32
-short          Reduce 29
-               Reduce 32
-public         Reduce 29
-               Reduce 32
-protected      Reduce 29
-               Reduce 32
-private        Reduce 29
-               Reduce 32
-long           Reduce 29
-               Reduce 32
-interface      Reduce 29
-               Reduce 32
-int            Reduce 29
-               Reduce 32
-instanceof     Reduce 29
-               Reduce 32
-float          Reduce 29
-               Reduce 32
-final          Reduce 29
-               Reduce 32
-enum           Reduce 29
-               Reduce 32
-double         Reduce 29
-               Reduce 32
-class          Reduce 29
-               Reduce 32
-char           Reduce 29
-               Reduce 32
-byte           Reduce 29
-               Reduce 32
-boolean        Reduce 29
-               Reduce 32
-abstract       Reduce 29
-               Reduce 32
-ELLIPSIS       Reduce 29
-               Reduce 32
-GREATER        Reduce 29
-               Reduce 32
-EQUAL_EQUAL    Reduce 29
-               Reduce 32
-LESS_EQUAL     Reduce 29
-               Reduce 32
-LESS           Reduce 29
-               Reduce 32
-RBRACE         Reduce 29
-               Reduce 32
-OR_OR          Reduce 29
-               Reduce 32
-LBRACE         Reduce 29
-               Reduce 32
-XOR            Reduce 29
-               Reduce 32
-RBRACKET       Reduce 29
-               Reduce 32
-LBRACKET       Reduce 29
-               Reduce 32
-AT             Reduce 29
-               Reduce 32
-QUESTION       Reduce 29
-               Reduce 32
-SEMICOLON      Reduce 29
-               Reduce 32
-COLON          Reduce 29
-               Reduce 32
-COMMA          Reduce 29
-               Reduce 32
-RPAREN         Reduce 29
-               Reduce 32
-AND_AND        Reduce 29
-               Reduce 32
-AND            Reduce 29
-               Reduce 32
-NOT_EQUAL      Reduce 29
-               Reduce 32
-OR             Reduce 29
-               Reduce 32
-
 DOT            Reduce 29
+IDENTIFIER     Reduce 29
+void           Reduce 29
+strictfp       Reduce 29
+static         Reduce 29
+short          Reduce 29
+public         Reduce 29
+protected      Reduce 29
+private        Reduce 29
+long           Reduce 29
+interface      Reduce 29
+int            Reduce 29
+instanceof     Reduce 29
+float          Reduce 29
+final          Reduce 29
+enum           Reduce 29
+double         Reduce 29
+class          Reduce 29
+char           Reduce 29
+byte           Reduce 29
+boolean        Reduce 29
+abstract       Reduce 29
+ELLIPSIS       Reduce 29
+GREATER        Reduce 29
+EQUAL_EQUAL    Reduce 29
+LESS_EQUAL     Reduce 29
+LESS           Reduce 29
+RBRACE         Reduce 29
+OR_OR          Reduce 29
+LBRACE         Reduce 29
+XOR            Reduce 29
+RBRACKET       Reduce 29
+LBRACKET       Reduce 29
+AT             Reduce 29
+QUESTION       Reduce 29
+SEMICOLON      Reduce 29
+COLON          Reduce 29
+COMMA          Reduce 29
+RPAREN         Reduce 29
+AND_AND        Reduce 29
+AND            Reduce 29
+NOT_EQUAL      Reduce 29
+OR             Reduce 29
 
 Default reduction to rule  29
 
@@ -22843,27 +21856,18 @@ VariableModifiersopt ::= . (464)
 VariableModifiersopt ::= .VariableModifiers 
 
 IDENTIFIER                         Sh/Rd  3
-                                   Reduce 464
-boolean                            Sh/Rd  13
-                                   Reduce 464
-char                               Sh/Rd  20
-                                   Reduce 464
-long                               Sh/Rd  19
-                                   Reduce 464
-int                                Sh/Rd  18
-                                   Reduce 464
-short                              Sh/Rd  17
-                                   Reduce 464
-byte                               Sh/Rd  16
-                                   Reduce 464
-double                             Sh/Rd  22
-                                   Reduce 464
-float                              Sh/Rd  21
-                                   Reduce 464
 LPAREN                             Shift  28
 this                               Sh/Rd  337
 void                               Shift  29
 super                              Shift  32
+boolean                            Sh/Rd  13
+char                               Sh/Rd  20
+long                               Sh/Rd  19
+int                                Sh/Rd  18
+short                              Sh/Rd  17
+byte                               Sh/Rd  16
+double                             Sh/Rd  22
+float                              Sh/Rd  21
 false                              Sh/Rd  353
 true                               Sh/Rd  352
 null                               Sh/Rd  351
@@ -23986,18 +22990,6 @@ ExpressionName ::= identifier . (49)
 MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 
-LESS                Reduce 29
-                    Reduce 49
-LBRACKET            Reduce 29
-                    Reduce 32
-                    Reduce 49
-RPAREN              Reduce 29
-                    Reduce 32
-                    Reduce 49
-DOT                 Reduce 29
-                    Reduce 32
-                    Reduce 55
-
 IDENTIFIER          Reduce 49
 void                Reduce 49
 strictfp            Reduce 49
@@ -24025,7 +23017,7 @@ EQUAL               Reduce 49
 LESS_EQUAL          Reduce 49
 LEFT_SHIFT_EQUAL    Reduce 49
 LEFT_SHIFT          Reduce 49
-OR                  Reduce 49
+LESS                Reduce 29
 PLUS_EQUAL          Reduce 49
 PLUS_PLUS           Reduce 49
 PLUS                Reduce 49
@@ -24035,7 +23027,7 @@ OR_OR               Reduce 49
 XOR_EQUAL           Reduce 49
 XOR                 Reduce 49
 RBRACKET            Reduce 49
-LPAREN              Reduce 51
+LBRACKET            Reduce 29
 AT                  Reduce 49
 QUESTION            Reduce 49
 SEMICOLON           Reduce 49
@@ -24045,7 +23037,7 @@ DIVIDE              Reduce 49
 COMMA               Reduce 49
 MULTIPLY_EQUAL      Reduce 49
 MULTIPLY            Reduce 49
-MINUS_MINUS         Reduce 49
+RPAREN              Reduce 29
 AND_EQUAL           Reduce 49
 AND_AND             Reduce 49
 AND                 Reduce 49
@@ -24054,6 +23046,10 @@ REMAINDER           Reduce 49
 NOT_EQUAL           Reduce 49
 MINUS_EQUAL         Reduce 49
 MINUS               Reduce 49
+OR                  Reduce 49
+MINUS_MINUS         Reduce 49
+LPAREN              Reduce 51
+DOT                 Reduce 29
 
 Default reduction to rule  49
 
@@ -24820,11 +23816,10 @@ RelationalExpression ::= RelationalExpression  .GREATER EQUAL ShiftExpression
 RelationalExpression ::= RelationalExpression  .instanceof ReferenceType 
 EqualityExpression ::= RelationalExpression . (413)
 
-LESS           Shift  185
-               Reduce 413
 instanceof     Shift  182
 LESS_EQUAL     Shift  183
 GREATER        Shift  184
+LESS           Shift  185
 
 IDENTIFIER     Reduce 413
 void           Reduce 413
@@ -24877,7 +23872,6 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
 RelationalExpression ::= ShiftExpression . (407)
 
 GREATER        Shift  186
-               Reduce 407
 LEFT_SHIFT     Shift  187
 
 IDENTIFIER     Reduce 407
@@ -25251,7 +24245,6 @@ TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
 IDENTIFIER          Sh/Rd  3
-                    Reduce 538
 LESS                Shift  132
 
 TypeArgumentsopt    Goto   198
@@ -26421,9 +25414,8 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-IDENTIFIER          Sh/Rd  3
-                    Reduce 538
 new                 Shift  215
+IDENTIFIER          Sh/Rd  3
 LESS                Shift  132
 
 TypeArgumentsopt    Goto   214
@@ -26975,7 +25967,6 @@ MarkerAnnotation ::= .AT TypeName
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
 AT                         Shift  7
-                           Reduce 167
 
 Annotation                 Gt/Rd  230
 SingleElementAnnotation    Gt/Rd  233
@@ -27085,7 +26076,6 @@ MarkerAnnotation ::= .AT TypeName
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
 AT                         Shift  7
-                           Reduce 143
 
 Annotation                 Gt/Rd  230
 SingleElementAnnotation    Gt/Rd  233
@@ -27738,7 +26728,6 @@ Dimsopt ::= . (448)
 Dimsopt ::= .Dims 
 
 LBRACKET    Shift  258
-            Reduce 10
 
 Dimsopt     Goto   256
 Dims        Goto   257
@@ -32460,26 +31449,17 @@ MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 SimpleName ::= identifier . (238)
 
-LESS           Reduce 29
-               Reduce 49
-LBRACKET       Reduce 29
-               Reduce 32
-               Reduce 49
-DOT            Reduce 29
-               Reduce 32
-               Reduce 55
-
 instanceof     Reduce 49
 GREATER        Reduce 49
 EQUAL_EQUAL    Reduce 49
 LESS_EQUAL     Reduce 49
 LEFT_SHIFT     Reduce 49
-EQUAL          Reduce 238
+LESS           Reduce 29
 PLUS_PLUS      Reduce 49
 PLUS           Reduce 49
 OR_OR          Reduce 49
 XOR            Reduce 49
-LPAREN         Reduce 51
+LBRACKET       Reduce 29
 QUESTION       Reduce 49
 DIVIDE         Reduce 49
 MULTIPLY       Reduce 49
@@ -32491,6 +31471,9 @@ NOT_EQUAL      Reduce 49
 MINUS          Reduce 49
 OR             Reduce 49
 MINUS_MINUS    Reduce 49
+LPAREN         Reduce 51
+DOT            Reduce 29
+EQUAL          Reduce 238
 
 Default reduction to rule  49
 
@@ -34405,7 +33388,6 @@ RelationalExpression ::= RelationalExpression LESS_EQUAL ShiftExpression .
                           (410)
 
 GREATER        Shift  186
-               Reduce 410
 LEFT_SHIFT     Shift  187
 
 IDENTIFIER     Reduce 410
@@ -34642,7 +33624,6 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
 RelationalExpression ::= RelationalExpression GREATER ShiftExpression . (409)
 
 GREATER        Shift  186
-               Reduce 409
 LEFT_SHIFT     Shift  187
 
 IDENTIFIER     Reduce 409
@@ -34697,7 +33678,6 @@ ShiftExpression ::= ShiftExpression  .GREATER GREATER GREATER
 RelationalExpression ::= RelationalExpression LESS ShiftExpression . (408)
 
 GREATER        Shift  186
-               Reduce 408
 LEFT_SHIFT     Shift  187
 
 IDENTIFIER     Reduce 408
@@ -35035,11 +34015,10 @@ RelationalExpression ::= RelationalExpression  .instanceof ReferenceType
 EqualityExpression ::= EqualityExpression NOT_EQUAL RelationalExpression .
                         (415)
 
-LESS           Shift  185
-               Reduce 415
 instanceof     Shift  182
 LESS_EQUAL     Shift  183
 GREATER        Shift  184
+LESS           Shift  185
 
 IDENTIFIER     Reduce 415
 void           Reduce 415
@@ -35091,11 +34070,10 @@ RelationalExpression ::= RelationalExpression  .instanceof ReferenceType
 EqualityExpression ::= EqualityExpression EQUAL_EQUAL RelationalExpression .
                         (414)
 
-LESS           Shift  185
-               Reduce 414
 instanceof     Shift  182
 LESS_EQUAL     Shift  183
 GREATER        Shift  184
+LESS           Shift  185
 
 IDENTIFIER     Reduce 414
 void           Reduce 414
@@ -35337,7 +34315,6 @@ TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
 IDENTIFIER          Sh/Rd  3
-                    Reduce 538
 LESS                Shift  132
 
 TypeArgumentsopt    Goto   329
@@ -36468,55 +35445,30 @@ ExplicitConstructorInvocationopt ::= .ExplicitConstructorInvocation
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-null                                Sh/Rd  351
-                                    Reduce 500
-StringLiteral                       Sh/Rd  350
-                                    Reduce 500
-CharacterLiteral                    Sh/Rd  349
-                                    Reduce 500
-DoubleLiteral                       Sh/Rd  347
-                                    Reduce 500
-FloatingPointLiteral                Sh/Rd  346
-                                    Reduce 500
-LongLiteral                         Sh/Rd  345
-                                    Reduce 500
-IntegerLiteral                      Sh/Rd  344
-                                    Reduce 500
-false                               Sh/Rd  353
-                                    Reduce 500
-true                                Sh/Rd  352
-                                    Reduce 500
-IDENTIFIER                          Sh/Rd  3
-                                    Reduce 500
-double                              Sh/Rd  22
-                                    Reduce 500
-float                               Sh/Rd  21
-                                    Reduce 500
-char                                Sh/Rd  20
-                                    Reduce 500
-long                                Sh/Rd  19
-                                    Reduce 500
-int                                 Sh/Rd  18
-                                    Reduce 500
-short                               Sh/Rd  17
-                                    Reduce 500
-byte                                Sh/Rd  16
-                                    Reduce 500
-boolean                             Sh/Rd  13
-                                    Reduce 500
-new                                 Shift  37
-                                    Reduce 500
-super                               Shift  32
-                                    Reduce 538
-                                    Reduce 500
-LPAREN                              Shift  28
-                                    Reduce 500
-this                                Sh/Rd  337
-                                    Reduce 538
-                                    Reduce 500
-void                                Shift  29
-                                    Reduce 500
 LESS                                Shift  132
+null                                Sh/Rd  351
+StringLiteral                       Sh/Rd  350
+CharacterLiteral                    Sh/Rd  349
+DoubleLiteral                       Sh/Rd  347
+FloatingPointLiteral                Sh/Rd  346
+LongLiteral                         Sh/Rd  345
+IntegerLiteral                      Sh/Rd  344
+false                               Sh/Rd  353
+true                                Sh/Rd  352
+IDENTIFIER                          Sh/Rd  3
+double                              Sh/Rd  22
+float                               Sh/Rd  21
+char                                Sh/Rd  20
+long                                Sh/Rd  19
+int                                 Sh/Rd  18
+short                               Sh/Rd  17
+byte                                Sh/Rd  16
+boolean                             Sh/Rd  13
+new                                 Shift  37
+super                               Shift  32
+LPAREN                              Shift  28
+this                                Sh/Rd  337
+void                                Shift  29
 
 ExplicitConstructorInvocationopt    Goto   343
 ExplicitConstructorInvocation       Gt/Rd  501
@@ -37032,7 +35984,6 @@ ElementValues ::= ElementValues  .COMMA ElementValue
 ElementValuesopt ::= ElementValues . (469)
 
 COMMA     Shift  359
-          Reduce 469
 
 RBRACE    Reduce 469
 
@@ -37087,7 +36038,6 @@ Annotationsopt ::= . (524)
 Annotationsopt ::= .Annotations 
 
 IDENTIFIER                 Sh/Rd  3
-                           Reduce 524
 AT                         Shift  7
 
 EnumConstantsopt           Goto   360
@@ -37345,12 +36295,6 @@ AmbiguousName ::= identifier . (55)
 LabeledStatement ::= identifier  .COLON Statement 
 LabeledStatementNoShortIf ::= identifier  .COLON StatementNoShortIf 
 
-LBRACKET            Reduce 29
-                    Reduce 32
-                    Reduce 49
-DOT                 Reduce 29
-                    Reduce 32
-                    Reduce 55
 COLON               Shift  371
 
 LESS                Reduce 29
@@ -37361,13 +36305,15 @@ PLUS_EQUAL          Reduce 49
 PLUS_PLUS           Reduce 49
 OR_EQUAL            Reduce 49
 XOR_EQUAL           Reduce 49
-LPAREN              Reduce 51
+LBRACKET            Reduce 29
 DIVIDE_EQUAL        Reduce 49
 MULTIPLY_EQUAL      Reduce 49
 AND_EQUAL           Reduce 49
 REMAINDER_EQUAL     Reduce 49
 MINUS_EQUAL         Reduce 49
 MINUS_MINUS         Reduce 49
+LPAREN              Reduce 51
+DOT                 Reduce 29
 
 Default reduction to rule  49
 
@@ -37550,7 +36496,6 @@ RelationalExpression ::= RelationalExpression GREATER EQUAL ShiftExpression .
                           (411)
 
 GREATER        Shift  186
-               Reduce 411
 LEFT_SHIFT     Shift  187
 
 IDENTIFIER     Reduce 411
@@ -38576,7 +37521,6 @@ VariableInitializers ::= VariableInitializers  .COMMA VariableInitializer
 VariableInitializersopt ::= VariableInitializers . (467)
 
 COMMA     Shift  377
-          Reduce 467
 
 RBRACE    Reduce 467
 
@@ -39094,9 +38038,7 @@ SwitchBlockStatementGroupsopt ::= . (462)
 SwitchBlockStatementGroupsopt ::= .SwitchBlockStatementGroups 
 
 default                          Shift  382
-                                 Reduce 462
 case                             Shift  383
-                                 Reduce 462
 
 SwitchBlockStatementGroupsopt    Goto   381
 SwitchLabels                     Goto   384
@@ -39366,24 +38308,6 @@ BlockStatementsopt ::= .BlockStatements
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
 try                                     Shift  58
 throw                                   Shift  57
 synchronized                            Shift  56
@@ -39404,11 +38328,20 @@ LongLiteral                             Sh/Rd  345
 IntegerLiteral                          Sh/Rd  344
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+boolean                                 Sh/Rd  13
 new                                     Shift  37
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+IDENTIFIER                              Sh/Rd  3
 SEMICOLON                               Sh/Rd  284
 LBRACE                                  Shift  25
 if                                      Shift  24
@@ -39812,32 +38745,13 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                                      Shift  7
-                                        Reduce 484
-IDENTIFIER                              Reduce 478
-                                        Reduce 476
-short                                   Reduce 478
-                                        Reduce 476
-long                                    Reduce 478
-                                        Reduce 476
-int                                     Reduce 478
-                                        Reduce 476
-float                                   Reduce 478
-                                        Reduce 476
-double                                  Reduce 478
-                                        Reduce 476
-char                                    Reduce 478
-                                        Reduce 476
-byte                                    Reduce 478
-                                        Reduce 476
-boolean                                 Reduce 478
-                                        Reduce 476
 SEMICOLON                               Sh/Rd  227
 strictfp                                Shift  81
 private                                 Shift  84
 protected                               Shift  85
 final                                   Shift  402
 static                                  Shift  403
+AT                                      Shift  7
 abstract                                Shift  407
 public                                  Shift  408
 
@@ -39869,10 +38783,19 @@ AbstractMethodModifiers                 Goto   410
 AnnotationTypeElementDeclarations       Goto   411
 AnnotationTypeElementDeclaration        Gt/Rd  219
 
-RBRACE                                  Reduce 474
-interface                               Reduce 484
-class                                   Reduce 522
+IDENTIFIER                              Reduce 476
+short                                   Reduce 476
+long                                    Reduce 476
+int                                     Reduce 476
+float                                   Reduce 476
+double                                  Reduce 476
+char                                    Reduce 476
+byte                                    Reduce 476
+boolean                                 Reduce 476
 enum                                    Reduce 522
+class                                   Reduce 522
+interface                               Reduce 484
+RBRACE                                  Reduce 474
 
 Default reduction to rule  476
 
@@ -40202,7 +39125,6 @@ EnumConstants ::= EnumConstants  .COMMA EnumConstant
 EnumConstantsopt ::= EnumConstants . (495)
 
 COMMA        Shift  416
-             Reduce 495
 
 RBRACE       Reduce 495
 SEMICOLON    Reduce 495
@@ -41030,27 +39952,18 @@ VariableModifiersopt ::= . (464)
 VariableModifiersopt ::= .VariableModifiers 
 
 IDENTIFIER                         Sh/Rd  3
-                                   Reduce 464
-boolean                            Sh/Rd  13
-                                   Reduce 464
-char                               Sh/Rd  20
-                                   Reduce 464
-long                               Sh/Rd  19
-                                   Reduce 464
-int                                Sh/Rd  18
-                                   Reduce 464
-short                              Sh/Rd  17
-                                   Reduce 464
-byte                               Sh/Rd  16
-                                   Reduce 464
-double                             Sh/Rd  22
-                                   Reduce 464
-float                              Sh/Rd  21
-                                   Reduce 464
 LPAREN                             Shift  28
 this                               Sh/Rd  337
 void                               Shift  29
 super                              Shift  32
+boolean                            Sh/Rd  13
+char                               Sh/Rd  20
+long                               Sh/Rd  19
+int                                Sh/Rd  18
+short                              Sh/Rd  17
+byte                               Sh/Rd  16
+double                             Sh/Rd  22
+float                              Sh/Rd  21
 false                              Sh/Rd  353
 true                               Sh/Rd  352
 null                               Sh/Rd  351
@@ -42381,8 +41294,6 @@ ConstantExpression ::= .Expression
 Annotationsopt ::= . (524)
 Annotationsopt ::= .Annotations 
 
-IDENTIFIER                         Sh/Rd  3
-                                   Reduce 524
 MINUS                              Shift  112
 PLUS                               Shift  113
 this                               Sh/Rd  337
@@ -42396,6 +41307,7 @@ short                              Sh/Rd  17
 byte                               Sh/Rd  16
 double                             Sh/Rd  22
 float                              Sh/Rd  21
+IDENTIFIER                         Sh/Rd  3
 false                              Sh/Rd  353
 true                               Sh/Rd  352
 null                               Sh/Rd  351
@@ -42658,24 +41570,6 @@ VariableModifiersopt ::= .VariableModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
 AT                                      Shift  7
 strictfp                                Sh/Rd  86
 final                                   Shift  18
@@ -42689,10 +41583,19 @@ while                                   Shift  23
 if                                      Shift  24
 LBRACE                                  Shift  25
 SEMICOLON                               Sh/Rd  284
+IDENTIFIER                              Sh/Rd  3
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+boolean                                 Sh/Rd  13
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
 null                                    Sh/Rd  351
@@ -42812,9 +41715,7 @@ SwitchLabel ::= .case EnumConstant COLON
 SwitchLabel ::= .default COLON 
 
 default                      Shift  382
-                             Reduce 463
 case                         Shift  383
-                             Reduce 463
 
 SwitchBlockStatementGroup    Gt/Rd  300
 SwitchLabels                 Goto   384
@@ -42892,9 +41793,8 @@ TypeArguments ::= .LESS ActualTypeArgumentList GREATER
 TypeArgumentsopt ::= . (538)
 TypeArgumentsopt ::= .TypeArguments 
 
-IDENTIFIER          Sh/Rd  3
-                    Reduce 538
 new                 Shift  215
+IDENTIFIER          Sh/Rd  3
 LESS                Shift  132
 
 identifier          Gt/Rd  367
@@ -42940,9 +41840,8 @@ VariableDeclaratorId ::= .VariableDeclaratorId LBRACKET RBRACKET
 Ellipsisopt ::= . (504)
 Ellipsisopt ::= .ELLIPSIS 
 
-IDENTIFIER              Sh/Rd  3
-                        Reduce 504
 LBRACKET                Shift  130
+IDENTIFIER              Sh/Rd  3
 ELLIPSIS                Sh/Rd  505
 
 Ellipsisopt             Goto   436
@@ -43119,50 +42018,27 @@ InterfaceDeclaration ::= AnnotationTypeDeclaration . (183)
 AnnotationTypeElementDeclaration ::= AnnotationTypeDeclaration . (226)
 
 IDENTIFIER    Reduce 183
-              Reduce 226
 strictfp      Reduce 183
-              Reduce 226
 static        Reduce 183
-              Reduce 226
 short         Reduce 183
-              Reduce 226
 public        Reduce 183
-              Reduce 226
 protected     Reduce 183
-              Reduce 226
 private       Reduce 183
-              Reduce 226
 long          Reduce 183
-              Reduce 226
 interface     Reduce 183
-              Reduce 226
 int           Reduce 183
-              Reduce 226
 float         Reduce 183
-              Reduce 226
 final         Reduce 183
-              Reduce 226
 enum          Reduce 183
-              Reduce 226
 double        Reduce 183
-              Reduce 226
 class         Reduce 183
-              Reduce 226
 char          Reduce 183
-              Reduce 226
 byte          Reduce 183
-              Reduce 226
 boolean       Reduce 183
-              Reduce 226
 abstract      Reduce 183
-              Reduce 226
 RBRACE        Reduce 183
-              Reduce 226
 AT            Reduce 183
-              Reduce 226
 SEMICOLON     Reduce 183
-              Reduce 226
-
 
 Default reduction to rule  183
 
@@ -43174,50 +42050,27 @@ ClassDeclaration ::= EnumDeclaration . (75)
 AnnotationTypeElementDeclaration ::= EnumDeclaration . (225)
 
 IDENTIFIER    Reduce 75
-              Reduce 225
 strictfp      Reduce 75
-              Reduce 225
 static        Reduce 75
-              Reduce 225
 short         Reduce 75
-              Reduce 225
 public        Reduce 75
-              Reduce 225
 protected     Reduce 75
-              Reduce 225
 private       Reduce 75
-              Reduce 225
 long          Reduce 75
-              Reduce 225
 interface     Reduce 75
-              Reduce 225
 int           Reduce 75
-              Reduce 225
 float         Reduce 75
-              Reduce 225
 final         Reduce 75
-              Reduce 225
 enum          Reduce 75
-              Reduce 225
 double        Reduce 75
-              Reduce 225
 class         Reduce 75
-              Reduce 225
 char          Reduce 75
-              Reduce 225
 byte          Reduce 75
-              Reduce 225
 boolean       Reduce 75
-              Reduce 225
 abstract      Reduce 75
-              Reduce 225
 RBRACE        Reduce 75
-              Reduce 225
 AT            Reduce 75
-              Reduce 225
 SEMICOLON     Reduce 75
-              Reduce 225
-
 
 Default reduction to rule  75
 
@@ -43228,15 +42081,6 @@ STATE 402 ----------------------------------------------------------------------
 ClassModifier ::= final . (85)
 ConstantModifier ::= final . (210)
 
-static        Reduce 85
-              Reduce 210
-public        Reduce 85
-              Reduce 210
-final         Reduce 85
-              Reduce 210
-AT            Reduce 85
-              Reduce 210
-
 strictfp      Reduce 85
 protected     Reduce 85
 private       Reduce 85
@@ -43244,14 +42088,18 @@ enum          Reduce 85
 class         Reduce 85
 abstract      Reduce 85
 IDENTIFIER    Reduce 210
-char          Reduce 210
+static        Reduce 85
 short         Reduce 210
-boolean       Reduce 210
+public        Reduce 85
 long          Reduce 210
 int           Reduce 210
 float         Reduce 210
-byte          Reduce 210
+final         Reduce 85
 double        Reduce 210
+char          Reduce 210
+byte          Reduce 210
+boolean       Reduce 210
+AT            Reduce 85
 
 Default reduction to rule  85
 
@@ -43263,38 +42111,26 @@ ClassModifier ::= static . (84)
 InterfaceModifier ::= static . (192)
 ConstantModifier ::= static . (209)
 
-strictfp      Reduce 84
-              Reduce 192
-protected     Reduce 84
-              Reduce 192
-private       Reduce 84
-              Reduce 192
-abstract      Reduce 84
-              Reduce 192
-static        Reduce 84
-              Reduce 192
-              Reduce 209
-public        Reduce 84
-              Reduce 192
-              Reduce 209
-final         Reduce 84
-              Reduce 209
-AT            Reduce 84
-              Reduce 192
-              Reduce 209
-
 enum          Reduce 84
 class         Reduce 84
-int           Reduce 209
-boolean       Reduce 209
-byte          Reduce 209
+strictfp      Reduce 84
+protected     Reduce 84
+private       Reduce 84
 interface     Reduce 192
-char          Reduce 209
+abstract      Reduce 84
 IDENTIFIER    Reduce 209
-double        Reduce 209
+static        Reduce 84
 short         Reduce 209
-float         Reduce 209
+public        Reduce 84
 long          Reduce 209
+int           Reduce 209
+float         Reduce 209
+final         Reduce 84
+double        Reduce 209
+char          Reduce 209
+byte          Reduce 209
+boolean       Reduce 209
+AT            Reduce 84
 
 Default reduction to rule  84
 
@@ -43402,52 +42238,28 @@ InterfaceModifier ::= Annotation . (187)
 ConstantModifier ::= Annotation . (207)
 Annotations ::= Annotation . (229)
 
-strictfp      Reduce 79
-              Reduce 187
-protected     Reduce 79
-              Reduce 187
-private       Reduce 79
-              Reduce 187
-static        Reduce 79
-              Reduce 187
-              Reduce 207
-final         Reduce 79
-              Reduce 207
-IDENTIFIER    Reduce 229
-              Reduce 207
-short         Reduce 229
-              Reduce 207
-public        Reduce 229
-              Reduce 79
-              Reduce 187
-              Reduce 207
-long          Reduce 229
-              Reduce 207
-int           Reduce 229
-              Reduce 207
-float         Reduce 229
-              Reduce 207
-double        Reduce 229
-              Reduce 207
-char          Reduce 229
-              Reduce 207
-byte          Reduce 229
-              Reduce 207
-boolean       Reduce 229
-              Reduce 207
-abstract      Reduce 229
-              Reduce 79
-              Reduce 187
-AT            Reduce 229
-              Reduce 79
-              Reduce 187
-              Reduce 207
-
 enum          Reduce 79
 class         Reduce 79
+strictfp      Reduce 79
+protected     Reduce 79
+private       Reduce 79
 interface     Reduce 187
-LESS          Reduce 229
+static        Reduce 79
+final         Reduce 79
+IDENTIFIER    Reduce 207
 void          Reduce 229
+short         Reduce 207
+public        Reduce 79
+long          Reduce 207
+int           Reduce 207
+float         Reduce 207
+double        Reduce 207
+char          Reduce 207
+byte          Reduce 207
+boolean       Reduce 207
+abstract      Reduce 79
+LESS          Reduce 229
+AT            Reduce 79
 
 Default reduction to rule  79
 
@@ -43459,39 +42271,28 @@ ClassModifier ::= abstract . (83)
 InterfaceModifier ::= abstract . (191)
 AbstractMethodModifier ::= abstract . (216)
 
-strictfp      Reduce 83
-              Reduce 191
-static        Reduce 83
-              Reduce 191
-protected     Reduce 83
-              Reduce 191
-private       Reduce 83
-              Reduce 191
-public        Reduce 83
-              Reduce 191
-              Reduce 216
-abstract      Reduce 83
-              Reduce 191
-              Reduce 216
-AT            Reduce 83
-              Reduce 191
-              Reduce 216
-
 final         Reduce 83
 enum          Reduce 83
 class         Reduce 83
-double        Reduce 216
-LESS          Reduce 216
-char          Reduce 216
-boolean       Reduce 216
+strictfp      Reduce 83
+static        Reduce 83
+protected     Reduce 83
+private       Reduce 83
 interface     Reduce 191
 IDENTIFIER    Reduce 216
 void          Reduce 216
 short         Reduce 216
-byte          Reduce 216
+public        Reduce 83
 long          Reduce 216
 int           Reduce 216
 float         Reduce 216
+double        Reduce 216
+char          Reduce 216
+byte          Reduce 216
+boolean       Reduce 216
+abstract      Reduce 83
+LESS          Reduce 216
+AT            Reduce 83
 
 Default reduction to rule  216
 
@@ -43504,52 +42305,28 @@ InterfaceModifier ::= public . (188)
 ConstantModifier ::= public . (208)
 AbstractMethodModifier ::= public . (215)
 
-strictfp      Reduce 80
-              Reduce 188
-protected     Reduce 80
-              Reduce 188
-private       Reduce 80
-              Reduce 188
-static        Reduce 80
-              Reduce 188
-              Reduce 208
-final         Reduce 80
-              Reduce 208
-IDENTIFIER    Reduce 208
-              Reduce 215
-short         Reduce 208
-              Reduce 215
-public        Reduce 80
-              Reduce 188
-              Reduce 208
-              Reduce 215
-long          Reduce 208
-              Reduce 215
-int           Reduce 208
-              Reduce 215
-float         Reduce 208
-              Reduce 215
-double        Reduce 208
-              Reduce 215
-char          Reduce 208
-              Reduce 215
-byte          Reduce 208
-              Reduce 215
-boolean       Reduce 208
-              Reduce 215
-abstract      Reduce 80
-              Reduce 188
-              Reduce 215
-AT            Reduce 80
-              Reduce 188
-              Reduce 208
-              Reduce 215
-
 enum          Reduce 80
 class         Reduce 80
+strictfp      Reduce 80
+protected     Reduce 80
+private       Reduce 80
 interface     Reduce 188
-LESS          Reduce 215
+static        Reduce 80
+final         Reduce 80
+IDENTIFIER    Reduce 208
 void          Reduce 215
+short         Reduce 208
+public        Reduce 80
+long          Reduce 208
+int           Reduce 208
+float         Reduce 208
+double        Reduce 208
+char          Reduce 208
+byte          Reduce 208
+boolean       Reduce 208
+abstract      Reduce 80
+LESS          Reduce 215
+AT            Reduce 80
 
 Default reduction to rule  80
 
@@ -43568,7 +42345,6 @@ MarkerAnnotation ::= .AT TypeName
 SingleElementAnnotation ::= .AT TypeName LPAREN ElementValue RPAREN 
 
 AT                         Shift  7
-                           Reduce 214
 
 Annotation                 Gt/Rd  230
 SingleElementAnnotation    Gt/Rd  233
@@ -43713,32 +42489,13 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                                  Shift  7
-                                    Reduce 484
-IDENTIFIER                          Reduce 478
-                                    Reduce 476
-short                               Reduce 478
-                                    Reduce 476
-long                                Reduce 478
-                                    Reduce 476
-int                                 Reduce 478
-                                    Reduce 476
-float                               Reduce 478
-                                    Reduce 476
-double                              Reduce 478
-                                    Reduce 476
-char                                Reduce 478
-                                    Reduce 476
-byte                                Reduce 478
-                                    Reduce 476
-boolean                             Reduce 478
-                                    Reduce 476
 SEMICOLON                           Sh/Rd  227
 strictfp                            Shift  81
 private                             Shift  84
 protected                           Shift  85
 final                               Shift  402
 static                              Shift  403
+AT                                  Shift  7
 abstract                            Shift  407
 public                              Shift  408
 
@@ -43768,10 +42525,19 @@ NormalAnnotation                    Gt/Rd  231
 Annotations                         Goto   409
 AbstractMethodModifiers             Goto   410
 
-RBRACE                              Reduce 475
-interface                           Reduce 484
-class                               Reduce 522
+IDENTIFIER                          Reduce 476
+short                               Reduce 476
+long                                Reduce 476
+int                                 Reduce 476
+float                               Reduce 476
+double                              Reduce 476
+char                                Reduce 476
+byte                                Reduce 476
+boolean                             Reduce 476
 enum                                Reduce 522
+class                               Reduce 522
+interface                           Reduce 484
+RBRACE                              Reduce 475
 
 Default reduction to rule  476
 
@@ -43853,26 +42619,6 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                                Shift  7
-                                  Reduce 484
-IDENTIFIER                        Reduce 478
-                                  Reduce 476
-short                             Reduce 478
-                                  Reduce 476
-long                              Reduce 478
-                                  Reduce 476
-int                               Reduce 478
-                                  Reduce 476
-float                             Reduce 478
-                                  Reduce 476
-double                            Reduce 478
-                                  Reduce 476
-char                              Reduce 478
-                                  Reduce 476
-byte                              Reduce 478
-                                  Reduce 476
-boolean                           Reduce 478
-                                  Reduce 476
 SEMICOLON                         Sh/Rd  203
 strictfp                          Shift  81
 private                           Shift  84
@@ -43881,6 +42627,7 @@ abstract                          Shift  407
 final                             Shift  402
 static                            Shift  403
 public                            Shift  408
+AT                                Shift  7
 
 InterfaceMemberDeclarationsopt    Goto   439
 InterfaceDeclaration              Gt/Rd  202
@@ -43911,12 +42658,21 @@ ConstantModifiersopt              Goto   405
 InterfaceMemberDeclarations       Goto   441
 InterfaceMemberDeclaration        Gt/Rd  197
 
-RBRACE                            Reduce 480
+IDENTIFIER                        Reduce 478
 void                              Reduce 476
-interface                         Reduce 484
-class                             Reduce 522
-enum                              Reduce 522
+short                             Reduce 478
+long                              Reduce 478
+int                               Reduce 478
+float                             Reduce 478
+double                            Reduce 478
+char                              Reduce 478
+byte                              Reduce 478
+boolean                           Reduce 478
 LESS                              Reduce 476
+enum                              Reduce 522
+class                             Reduce 522
+interface                         Reduce 484
+RBRACE                            Reduce 480
 
 Default reduction to rule  478
 
@@ -44001,7 +42757,6 @@ Annotationsopt ::= . (524)
 Annotationsopt ::= .Annotations 
 
 IDENTIFIER                 Sh/Rd  3
-                           Reduce 524
 AT                         Shift  7
 
 EnumConstant               Gt/Rd  178
@@ -44120,30 +42875,8 @@ ClassBodyDeclarationsopt ::= .ClassBodyDeclarations
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                            Shift  7
-                              Reduce 484
-short                         Reduce 512
-                              Reduce 510
-long                          Reduce 512
-                              Reduce 510
-int                           Reduce 512
-                              Reduce 510
-float                         Reduce 512
-                              Reduce 510
-double                        Reduce 512
-                              Reduce 510
-char                          Reduce 512
-                              Reduce 510
-byte                          Reduce 512
-                              Reduce 510
-boolean                       Reduce 512
-                              Reduce 510
-IDENTIFIER                    Reduce 512
-                              Reduce 510
-                              Reduce 502
-LESS                          Reduce 510
-                              Reduce 502
 LBRACE                        Shift  25
+AT                            Shift  7
 volatile                      Sh/Rd  124
 transient                     Sh/Rd  123
 native                        Sh/Rd  151
@@ -44199,6 +42932,16 @@ interface                     Reduce 484
 enum                          Reduce 522
 class                         Reduce 522
 void                          Reduce 510
+short                         Reduce 510
+long                          Reduce 510
+int                           Reduce 510
+float                         Reduce 510
+double                        Reduce 510
+char                          Reduce 510
+byte                          Reduce 510
+boolean                       Reduce 510
+IDENTIFIER                    Reduce 510
+LESS                          Reduce 510
 RBRACE                        Reduce 514
 
 Default reduction to rule  510
@@ -44860,17 +43603,6 @@ MethodName ::= identifier . (51)
 AmbiguousName ::= identifier . (55)
 EnumConstant ::= identifier . (307)
 
-LESS                Reduce 29
-                    Reduce 49
-LBRACKET            Reduce 29
-                    Reduce 32
-                    Reduce 49
-DOT                 Reduce 29
-                    Reduce 32
-                    Reduce 55
-COLON               Reduce 49
-                    Reduce 307
-
 instanceof          Reduce 49
 GREATER             Reduce 49
 EQUAL_EQUAL         Reduce 49
@@ -44878,7 +43610,7 @@ EQUAL               Reduce 49
 LESS_EQUAL          Reduce 49
 LEFT_SHIFT_EQUAL    Reduce 49
 LEFT_SHIFT          Reduce 49
-MINUS_MINUS         Reduce 49
+LESS                Reduce 29
 PLUS_EQUAL          Reduce 49
 PLUS_PLUS           Reduce 49
 PLUS                Reduce 49
@@ -44886,7 +43618,7 @@ OR_EQUAL            Reduce 49
 OR_OR               Reduce 49
 XOR_EQUAL           Reduce 49
 XOR                 Reduce 49
-LPAREN              Reduce 51
+LBRACKET            Reduce 29
 QUESTION            Reduce 49
 DIVIDE_EQUAL        Reduce 49
 DIVIDE              Reduce 49
@@ -44901,6 +43633,10 @@ NOT_EQUAL           Reduce 49
 MINUS_EQUAL         Reduce 49
 MINUS               Reduce 49
 OR                  Reduce 49
+MINUS_MINUS         Reduce 49
+LPAREN              Reduce 51
+DOT                 Reduce 29
+COLON               Reduce 49
 
 Default reduction to rule  49
 
@@ -45086,24 +43822,6 @@ VariableModifiersopt ::= .VariableModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-double                                  Sh/Rd  22
-                                        Reduce 464
-float                                   Sh/Rd  21
-                                        Reduce 464
-char                                    Sh/Rd  20
-                                        Reduce 464
-long                                    Sh/Rd  19
-                                        Reduce 464
-int                                     Sh/Rd  18
-                                        Reduce 464
-short                                   Sh/Rd  17
-                                        Reduce 464
-byte                                    Sh/Rd  16
-                                        Reduce 464
-boolean                                 Sh/Rd  13
-                                        Reduce 464
-IDENTIFIER                              Sh/Rd  3
-                                        Reduce 464
 try                                     Shift  58
 throw                                   Shift  57
 synchronized                            Shift  56
@@ -45124,11 +43842,20 @@ LongLiteral                             Sh/Rd  345
 IntegerLiteral                          Sh/Rd  344
 false                                   Sh/Rd  353
 true                                    Sh/Rd  352
+double                                  Sh/Rd  22
+float                                   Sh/Rd  21
+char                                    Sh/Rd  20
+long                                    Sh/Rd  19
+int                                     Sh/Rd  18
+short                                   Sh/Rd  17
+byte                                    Sh/Rd  16
+boolean                                 Sh/Rd  13
 new                                     Shift  37
 LPAREN                                  Shift  28
 this                                    Sh/Rd  337
 void                                    Shift  29
 super                                   Shift  32
+IDENTIFIER                              Sh/Rd  3
 SEMICOLON                               Sh/Rd  284
 LBRACE                                  Shift  25
 if                                      Shift  24
@@ -45895,26 +44622,6 @@ InterfaceModifiersopt ::= .InterfaceModifiers
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                            Shift  7
-                              Reduce 484
-IDENTIFIER                    Reduce 478
-                              Reduce 476
-short                         Reduce 478
-                              Reduce 476
-long                          Reduce 478
-                              Reduce 476
-int                           Reduce 478
-                              Reduce 476
-float                         Reduce 478
-                              Reduce 476
-double                        Reduce 478
-                              Reduce 476
-char                          Reduce 478
-                              Reduce 476
-byte                          Reduce 478
-                              Reduce 476
-boolean                       Reduce 478
-                              Reduce 476
 SEMICOLON                     Sh/Rd  203
 strictfp                      Shift  81
 private                       Shift  84
@@ -45923,6 +44630,7 @@ abstract                      Shift  407
 final                         Shift  402
 static                        Shift  403
 public                        Shift  408
+AT                            Shift  7
 
 InterfaceMemberDeclaration    Gt/Rd  198
 InterfaceDeclaration          Gt/Rd  202
@@ -45951,12 +44659,21 @@ ConstantModifiers             Goto   404
 ConstantModifier              Gt/Rd  205
 ConstantModifiersopt          Goto   405
 
-RBRACE                        Reduce 481
+IDENTIFIER                    Reduce 478
 void                          Reduce 476
-interface                     Reduce 484
-class                         Reduce 522
-enum                          Reduce 522
+short                         Reduce 478
+long                          Reduce 478
+int                           Reduce 478
+float                         Reduce 478
+double                        Reduce 478
+char                          Reduce 478
+byte                          Reduce 478
+boolean                       Reduce 478
 LESS                          Reduce 476
+enum                          Reduce 522
+class                         Reduce 522
+interface                     Reduce 484
+RBRACE                        Reduce 481
 
 Default reduction to rule  478
 
@@ -46075,30 +44792,8 @@ ClassBodyDeclarationsopt ::= .ClassBodyDeclarations
 ClassModifiersopt ::= . (522)
 ClassModifiersopt ::= .ClassModifiers 
 
-AT                            Shift  7
-                              Reduce 484
-short                         Reduce 512
-                              Reduce 510
-long                          Reduce 512
-                              Reduce 510
-int                           Reduce 512
-                              Reduce 510
-float                         Reduce 512
-                              Reduce 510
-double                        Reduce 512
-                              Reduce 510
-char                          Reduce 512
-                              Reduce 510
-byte                          Reduce 512
-                              Reduce 510
-boolean                       Reduce 512
-                              Reduce 510
-IDENTIFIER                    Reduce 512
-                              Reduce 510
-                              Reduce 502
-LESS                          Reduce 510
-                              Reduce 502
 LBRACE                        Shift  25
+AT                            Shift  7
 volatile                      Sh/Rd  124
 transient                     Sh/Rd  123
 native                        Sh/Rd  151
@@ -46154,6 +44849,16 @@ interface                     Reduce 484
 enum                          Reduce 522
 class                         Reduce 522
 void                          Reduce 510
+short                         Reduce 510
+long                          Reduce 510
+int                           Reduce 510
+float                         Reduce 510
+double                        Reduce 510
+char                          Reduce 510
+byte                          Reduce 510
+boolean                       Reduce 510
+IDENTIFIER                    Reduce 510
+LESS                          Reduce 510
 RBRACE                        Reduce 514
 
 Default reduction to rule  510
@@ -49002,14 +47707,14 @@ identifier                              Goto   323
 Number of entries in base Action Table: 5887
 Additional space required for compaction of Action Table: 16.7%
 
-Number of unique terminal states: 336
-Number of Shift actions saved by merging: 2370
-Number of Conflict points saved by merging: 39
-Number of Reduce actions saved by merging: 163
-Number of Reduce saved by default: 2328
+Number of unique terminal states: 329
+Number of Shift actions saved by merging: 2445
+Number of Conflict points saved by merging: 0
+Number of Reduce actions saved by merging: 249
+Number of Reduce saved by default: 2525
 
-Number of entries in Terminal Action Table: 2258
-Additional space required for compaction of Terminal Table: 8.0%
+Number of entries in Terminal Action Table: 1932
+Additional space required for compaction of Terminal Table: 6.6%
 
 
  The LALR Parser Generator              2.1.01 (Aug 13 2021)
@@ -49498,19 +48203,18 @@ Mapping of new state numbers into original numbers:
  7217  ==>>    394
 
 Actions in Compressed Tables:
-     Number of Shifts: 600
-     Number of Shift/Reduces: 619
-     Number of conflict points: 531
+     Number of Shifts: 618
+     Number of Shift/Reduces: 683
      Number of Gotos: 2215
      Number of Goto/Reduces: 3193
-     Number of Reduces: 172
-     Number of Defaults: 165
+     Number of Reduces: 302
+     Number of Defaults: 161
 
 Parsing Tables storage:
-    Storage required for BASE_CHECK: 14934 Bytes
-    Storage required for BASE_ACTION: 15746 Bytes
-    Storage required for TERM_CHECK: 2506 Bytes
-    Storage required for TERM_ACTION: 4880 Bytes
+    Storage required for BASE_CHECK: 14832 Bytes
+    Storage required for BASE_ACTION: 14834 Bytes
+    Storage required for TERM_CHECK: 2103 Bytes
+    Storage required for TERM_ACTION: 4122 Bytes
 
 Error maps storage:
     Storage required for ACTION_SYMBOLS_BASE map: 960 Bytes

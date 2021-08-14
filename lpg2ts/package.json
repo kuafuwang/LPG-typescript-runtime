@@ -1,8 +1,8 @@
 {
   "name": "lpg2ts",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "lpg2ts , Typescript runtime for LPG2 ",
-  "main": "src/index.js",
+  "main": "./dist/index.js",
   "author": {
     "name": "kuafuwang"
   },
@@ -27,7 +27,10 @@
     "@types/node": "^14.17.6",
     "@types/fs-extra": "^9.0.10",
     "fs-extra": "^9.0.1",
-    "typescript": "^4.0.5",
-    "unicode-11.0.0": "^0.7.8"
+    "typescript": "^4.0.5"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^9.0.10",
+    "fs-extra": "^9.0.1"
   }
 }

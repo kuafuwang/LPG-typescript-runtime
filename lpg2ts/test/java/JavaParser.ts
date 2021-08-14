@@ -14,60 +14,59 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-    //#line 153 "btParserTemplateF.gi
-
-
-
-    //#line 18 "GJavaParser.g
+    //#line 150 "dtParserTemplateF.gi
 
 import {BadParseException, RuleAction, PrsStream, ParseTable, BacktrackingParser, IToken, ErrorToken, ILexStream, NullExportedSymbolsException, 
 UnimplementedTerminalsException, Lpg, UndefinedEofSymbolException, NotBacktrackParseTableException, BadParseSymFileException, 
 IPrsStream, Monitor, DiagnoseParser, IAst, IAstVisitor, IAbstractArrayList, NotDeterministicParseTableException,
- DeterministicParser, NullTerminalSymbolsException } from "..\/..\/src";
-import { JavaParserprs } from "./JavaParserprs";
-import { JavaParsersym } from "./JavaParsersym";
+DeterministicParser, NullTerminalSymbolsException } from "../../src";
+import { JavaParserprs } from ".\/JavaParserprs";
+import { JavaParsersym } from ".\/JavaParsersym";
 
-    //#line 159 "btParserTemplateF.gi
+    //#line 18 "GJavaParser.g
+
+
+    //#line 161 "dtParserTemplateF.gi
 
 export class JavaParser extends Object implements RuleAction
 {
     private  prsStream  : PrsStream = new PrsStream();
     
-    private  unimplementedSymbolsWarning : boolean = false;
+    private  unimplementedSymbolsWarning : boolean= false;
 
-    private static  prsTable : ParseTable = new JavaParserprs();
-    public  getParseTable() : ParseTable { return JavaParser.prsTable; }
+    private static  prsTable  : ParseTable= new JavaParserprs();
+    public  getParseTable() : ParseTable{ return JavaParser.prsTable; }
 
-    private  btParser : BacktrackingParser ;
-    public  getParser() : BacktrackingParser{ return this.btParser; }
+    private  dtParser : DeterministicParser ;
+    public  getParser() : DeterministicParser{ return this.dtParser; }
 
-    private  setResult(object1 : any) : void{ this.btParser.setSym1(object1); }
-    public  getRhsSym(i : number) : any{ return this.btParser.getSym(i); }
+    private  setResult(object1 : any ) :void{ this.dtParser.setSym1(object1); }
+    public  getRhsSym(i : number) : any { return this.dtParser.getSym(i); }
 
-    public  getRhsTokenIndex(i : number) : number{ return this.btParser.getToken(i); }
+    public  getRhsTokenIndex(i : number) : number { return this.dtParser.getToken(i); }
     public  getRhsIToken(i : number) : IToken { return this.prsStream.getIToken(this.getRhsTokenIndex(i)); }
     
-    public  getRhsFirstTokenIndex(i : number) : number { return this.btParser.getFirstToken(i); }
-    public  getRhsFirstIToken(i : number) : IToken{ return this.prsStream.getIToken(this.getRhsFirstTokenIndex(i)); }
+    public  getRhsFirstTokenIndex(i : number) : number{ return this.dtParser.getFirstToken(i); }
+    public  getRhsFirstIToken(i : number)  : IToken{ return this.prsStream.getIToken(this.getRhsFirstTokenIndex(i)); }
 
-    public  getRhsLastTokenIndex(i : number):number { return this.btParser.getLastToken(i); }
-    public  getRhsLastIToken(i : number):IToken { return this.prsStream.getIToken(this.getRhsLastTokenIndex(i)); }
+    public  getRhsLastTokenIndex(i : number) : number{ return this.dtParser.getLastToken(i); }
+    public  getRhsLastIToken(i : number)  : IToken{ return this.prsStream.getIToken(this.getRhsLastTokenIndex(i)); }
 
-    public getLeftSpan() :number { return this.btParser.getFirstToken(); }
-    public  getLeftIToken() :IToken { return this.prsStream.getIToken(this.getLeftSpan()); }
+    public  getLeftSpan() : number{ return this.dtParser.getFirstToken(); }
+    public  getLeftIToken() : IToken { return this.prsStream.getIToken(this.getLeftSpan()); }
 
-    public getRightSpan() : number { return this.btParser.getLastToken(); }
+    public  getRightSpan() : number { return this.dtParser.getLastToken(); }
     public  getRightIToken() : IToken { return this.prsStream.getIToken(this.getRightSpan()); }
 
     public  getRhsErrorTokenIndex(i : number) : number
     {
-        let index = this.btParser.getToken(i);
+        let index = this.dtParser.getToken(i);
         let err = this.prsStream.getIToken(index);
         return (err instanceof ErrorToken ? index : 0);
     }
     public  getRhsErrorIToken(i : number) : ErrorToken
     {
-        let index = this.btParser.getToken(i);
+        let index = this.dtParser.getToken(i);
         let err = this.prsStream.getIToken(index);
         return <ErrorToken> (err instanceof ErrorToken ? err : null);
     }
@@ -75,52 +74,61 @@ export class JavaParser extends Object implements RuleAction
     public  reset(lexStream : ILexStream) : void
     {
         this.prsStream.resetLexStream(lexStream);
-        this.btParser.reset(this.prsStream);
+        this.dtParser.reset(this.prsStream);
 
         try
         {
             this.prsStream.remapTerminalSymbols(this.orderedTerminalSymbols(), JavaParser.prsTable.getEoftSymbol());
-        } 
-        catch (e)
-        {     
-            if( e instanceof NullExportedSymbolsException){
-                
+        }
+        catch(ex)
+        {
+            if( ex  instanceof NullExportedSymbolsException) {
             }
-            else if( e instanceof UnimplementedTerminalsException){
+            else if(ex  instanceof NullTerminalSymbolsException) {
+            }
+            else if(ex  instanceof UnimplementedTerminalsException)
+            {
                 if (this.unimplementedSymbolsWarning) {
+                    let e = <UnimplementedTerminalsException>(ex);
                     let unimplemented_symbols = e.getSymbols();
                     Lpg.Lang.System.Out.println("The Lexer will not scan the following token(s):");
                     for (let i : number = 0; i < unimplemented_symbols.size(); i++)
                     {
-                        let id = <number>unimplemented_symbols.get(i);
+                        let  id  : number = unimplemented_symbols.get(i);
                         Lpg.Lang.System.Out.println("    " + JavaParsersym.orderedTerminalSymbols[id]);               
                     }
                     Lpg.Lang.System.Out.println();
                 }
             }
-            else if( e instanceof UndefinedEofSymbolException){
-                throw  (new UndefinedEofSymbolException
-                    ("The Lexer does not implement the Eof symbol " +
-                    JavaParsersym.orderedTerminalSymbols[JavaParser.prsTable.getEoftSymbol()]));
+            else if(ex  instanceof UndefinedEofSymbolException )
+            {
+                throw (new UndefinedEofSymbolException
+                                    ("The Lexer does not implement the Eof symbol " +
+                                    JavaParsersym.orderedTerminalSymbols[JavaParser.prsTable.getEoftSymbol()]));
             }
-
+            else{
+                throw ex;
+            }
         }
+
+
     }
     
-    constructor(lexStream? :ILexStream)
+   constructor(lexStream? :ILexStream)
     {
         super();
+      
         try
         {
-            this.btParser = new BacktrackingParser(null, JavaParser.prsTable, <RuleAction> this);
+            this.dtParser = new DeterministicParser(null, JavaParser.prsTable, <RuleAction> this);
         }
         catch (e)
         {
-            if(e instanceof NotBacktrackParseTableException)
-            throw (new NotBacktrackParseTableException
-                                ("Regenerate JavaParserprs.ts with -BACKTRACK option"));
-            else if(e instanceof BadParseSymFileException){
-                throw (new BadParseSymFileException("Bad Parser Symbol File -- JavaParsersym.ts"));
+            if( e instanceof NotDeterministicParseTableException)
+            throw (new NotDeterministicParseTableException
+                                ("Regenerate JavaParserprs.ts with -NOBACKTRACK option"));
+            else if( e instanceof BadParseSymFileException){
+             throw (new BadParseSymFileException("Bad Parser Symbol File -- JavaParsersym.ts. Regenerate JavaParserprs.ts"));
             }
             else{
                 throw e;
@@ -130,12 +138,12 @@ export class JavaParser extends Object implements RuleAction
           this.reset(lexStream);
         }
     }
-    
-   
-    
-    public  numTokenKinds() :number { return JavaParsersym.numTokenKinds; }
+
+  
+
+    public  numTokenKinds() : number{ return JavaParsersym.numTokenKinds; }
     public  orderedTerminalSymbols()  : string[] { return JavaParsersym.orderedTerminalSymbols; }
-    public  getTokenKindName(kind : number ) : string { return JavaParsersym.orderedTerminalSymbols[kind]; }
+    public  getTokenKindName(kind : number ) : string{ return JavaParsersym.orderedTerminalSymbols[kind]; }            
     public  getEOFTokenKind() : number{ return JavaParser.prsTable.getEoftSymbol(); }
     public  getIPrsStream()  : IPrsStream{ return this.prsStream; }
 
@@ -143,28 +151,26 @@ export class JavaParser extends Object implements RuleAction
      * @deprecated replaced by {@link #getIPrsStream()}
      *
      */
-    public  getPrsStream()  : PrsStream{ return this.prsStream; }
+    public  getPrsStream() : PrsStream{ return this.prsStream; }
 
     /**
      * @deprecated replaced by {@link #getIPrsStream()}
      *
      */
-    public  getParseStream() : PrsStream { return this.prsStream; }
-
- 
+    public  getParseStream() : PrsStream{ return this.prsStream; }
 
     public parser(error_repair_count : number = 0 ,  monitor? : Monitor) :  Ast | null
     {
-        this.btParser.setMonitor(monitor);
-        
+        this.dtParser.setMonitor(monitor);
+
         try
         {
-            return <Ast> this.btParser.fuzzyParse(error_repair_count);
+            return <Ast> this.dtParser.parseEntry();
         }
-        catch (ex)
+        catch ( ex)
         {
-           if( ex instanceof BadParseException ){
-                 let e = <BadParseException>(ex);
+            if( ex instanceof BadParseException ){
+                let e = <BadParseException>(ex);
                 this.prsStream.reset(e.error_token); // point to error token
 
                 let diagnoseParser = new DiagnoseParser(this.prsStream, JavaParser.prsTable);
@@ -183,22 +189,28 @@ export class JavaParser extends Object implements RuleAction
     //
     
    
-    public  parseClassBodyDeclarationsopt(monitor? : Monitor, error_repair_count : number = 0) : Ast | null
+    public  resetParseClassBodyDeclarationsopt() : void
     {
-        this.btParser.setMonitor(monitor);
+        this.dtParser.resetParserEntry(JavaParsersym.TK_ClassBodyDeclarationsoptMarker);
+    }
+    
+    public  parseClassBodyDeclarationsopt(monitor? : Monitor | null, error_repair_count: number = 0) : Ast | null
+    {
+        if(monitor)
+            this.dtParser.setMonitor(monitor);
         
         try
         {
-            return <Ast> this.btParser.fuzzyParseEntry(JavaParsersym.TK_ClassBodyDeclarationsoptMarker, error_repair_count);
+            return <Ast> this.dtParser.parseEntry(JavaParsersym.TK_ClassBodyDeclarationsoptMarker);
         }
         catch (ex)
         {
             if( ex instanceof BadParseException ){
-                let e = <BadParseException>(ex);
+              let e = <BadParseException>(ex);
+              this.prsStream.reset(e.error_token); // point to error token
 
-                this.prsStream.reset(e.error_token); // point to error token
-                let diagnoseParser = new DiagnoseParser(this.prsStream, JavaParser.prsTable);
-                diagnoseParser.diagnoseEntry(JavaParsersym.TK_ClassBodyDeclarationsoptMarker, e.error_token);
+              let diagnoseParser = new DiagnoseParser(this.prsStream, JavaParser.prsTable);
+              diagnoseParser.diagnoseEntry(JavaParsersym.TK_ClassBodyDeclarationsoptMarker, e.error_token);
             }
             else{
                 throw ex;
@@ -209,22 +221,28 @@ export class JavaParser extends Object implements RuleAction
     }
 
    
-    public  parseLPGUserAction(monitor? : Monitor, error_repair_count : number = 0) : Ast | null
+    public  resetParseLPGUserAction() : void
     {
-        this.btParser.setMonitor(monitor);
+        this.dtParser.resetParserEntry(JavaParsersym.TK_LPGUserActionMarker);
+    }
+    
+    public  parseLPGUserAction(monitor? : Monitor | null, error_repair_count: number = 0) : Ast | null
+    {
+        if(monitor)
+            this.dtParser.setMonitor(monitor);
         
         try
         {
-            return <Ast> this.btParser.fuzzyParseEntry(JavaParsersym.TK_LPGUserActionMarker, error_repair_count);
+            return <Ast> this.dtParser.parseEntry(JavaParsersym.TK_LPGUserActionMarker);
         }
         catch (ex)
         {
             if( ex instanceof BadParseException ){
-                let e = <BadParseException>(ex);
+              let e = <BadParseException>(ex);
+              this.prsStream.reset(e.error_token); // point to error token
 
-                this.prsStream.reset(e.error_token); // point to error token
-                let diagnoseParser = new DiagnoseParser(this.prsStream, JavaParser.prsTable);
-                diagnoseParser.diagnoseEntry(JavaParsersym.TK_LPGUserActionMarker, e.error_token);
+              let diagnoseParser = new DiagnoseParser(this.prsStream, JavaParser.prsTable);
+              diagnoseParser.diagnoseEntry(JavaParsersym.TK_LPGUserActionMarker, e.error_token);
             }
             else{
                 throw ex;
@@ -235,27 +253,27 @@ export class JavaParser extends Object implements RuleAction
     }
 
 
-    //#line 189 "GJavaParser.g
+    //#line 185 "GJavaParser.g
 
 
     
-    //#line 318 "btParserTemplateF.gi
+    //#line 327 "dtParserTemplateF.gi
 
-    
-    public  ruleAction(ruleNumber : number) : void
+    public  ruleAction(ruleNumber : number ) : void
     {
         switch (ruleNumber)
         {
+            //#line 328 "dtParserTemplateF.gi"
 
             //
             // Rule 3:  identifier ::= IDENTIFIER
             //
             case 3: {
-               //#line 188 "GJavaParser.g"
+                //#line 184 "GJavaParser.g"
                 this.setResult(
-                    //#line 188 GJavaParser.g
+                    //#line 184 GJavaParser.g
                     new identifier(this, this.getRhsIToken(1))
-                //#line 188 GJavaParser.g
+                //#line 184 GJavaParser.g
                 );
             break;
             }
@@ -268,17 +286,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 5:  LPGUserAction ::= %BeginAction BlockStatementsopt %EndAction
             //
             case 5: {
-               //#line 194 "GJavaParser.g"
+                //#line 190 "GJavaParser.g"
                 this.setResult(
-                    //#line 194 GJavaParser.g
+                    //#line 190 GJavaParser.g
                     new LPGUserAction0(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 194 GJavaParser.g
+                                       //#line 190 GJavaParser.g
                                        new AstToken(this.getRhsIToken(1)),
-                                       //#line 194 GJavaParser.g
+                                       //#line 190 GJavaParser.g
                                        <IBlockStatementsopt>this.getRhsSym(2),
-                                       //#line 194 GJavaParser.g
+                                       //#line 190 GJavaParser.g
                                        new AstToken(this.getRhsIToken(3)))
-                //#line 194 GJavaParser.g
+                //#line 190 GJavaParser.g
                 );
             break;
             }
@@ -286,17 +304,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 6:  LPGUserAction ::= $BeginJava BlockStatementsopt $EndJava
             //
             case 6: {
-               //#line 195 "GJavaParser.g"
+                //#line 191 "GJavaParser.g"
                 this.setResult(
-                    //#line 195 GJavaParser.g
+                    //#line 191 GJavaParser.g
                     new LPGUserAction1(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 195 GJavaParser.g
+                                       //#line 191 GJavaParser.g
                                        new AstToken(this.getRhsIToken(1)),
-                                       //#line 195 GJavaParser.g
+                                       //#line 191 GJavaParser.g
                                        <IBlockStatementsopt>this.getRhsSym(2),
-                                       //#line 195 GJavaParser.g
+                                       //#line 191 GJavaParser.g
                                        new AstToken(this.getRhsIToken(3)))
-                //#line 195 GJavaParser.g
+                //#line 191 GJavaParser.g
                 );
             break;
             }
@@ -304,11 +322,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 7:  LPGUserAction ::= $NoAction
             //
             case 7: {
-               //#line 196 "GJavaParser.g"
+                //#line 192 "GJavaParser.g"
                 this.setResult(
-                    //#line 196 GJavaParser.g
+                    //#line 192 GJavaParser.g
                     new LPGUserAction2(this.getRhsIToken(1))
-                //#line 196 GJavaParser.g
+                //#line 192 GJavaParser.g
                 );
             break;
             }
@@ -316,11 +334,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 8:  LPGUserAction ::= $NullAction
             //
             case 8: {
-               //#line 197 "GJavaParser.g"
+                //#line 193 "GJavaParser.g"
                 this.setResult(
-                    //#line 197 GJavaParser.g
+                    //#line 193 GJavaParser.g
                     new LPGUserAction3(this.getRhsIToken(1))
-                //#line 197 GJavaParser.g
+                //#line 193 GJavaParser.g
                 );
             break;
             }
@@ -328,11 +346,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 9:  LPGUserAction ::= $BadAction
             //
             case 9: {
-               //#line 198 "GJavaParser.g"
+                //#line 194 "GJavaParser.g"
                 this.setResult(
-                    //#line 198 GJavaParser.g
+                    //#line 194 GJavaParser.g
                     new LPGUserAction4(this.getRhsIToken(1))
-                //#line 198 GJavaParser.g
+                //#line 194 GJavaParser.g
                 );
             break;
             }
@@ -355,11 +373,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 13:  PrimitiveType ::= boolean
             //
             case 13: {
-               //#line 207 "GJavaParser.g"
+                //#line 203 "GJavaParser.g"
                 this.setResult(
-                    //#line 207 GJavaParser.g
+                    //#line 203 GJavaParser.g
                     new PrimitiveType(this.getRhsIToken(1))
-                //#line 207 GJavaParser.g
+                //#line 203 GJavaParser.g
                 );
             break;
             }
@@ -377,11 +395,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 16:  IntegralType ::= byte
             //
             case 16: {
-               //#line 212 "GJavaParser.g"
+                //#line 208 "GJavaParser.g"
                 this.setResult(
-                    //#line 212 GJavaParser.g
+                    //#line 208 GJavaParser.g
                     new IntegralType0(this.getRhsIToken(1))
-                //#line 212 GJavaParser.g
+                //#line 208 GJavaParser.g
                 );
             break;
             }
@@ -389,11 +407,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 17:  IntegralType ::= short
             //
             case 17: {
-               //#line 213 "GJavaParser.g"
+                //#line 209 "GJavaParser.g"
                 this.setResult(
-                    //#line 213 GJavaParser.g
+                    //#line 209 GJavaParser.g
                     new IntegralType1(this.getRhsIToken(1))
-                //#line 213 GJavaParser.g
+                //#line 209 GJavaParser.g
                 );
             break;
             }
@@ -401,11 +419,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 18:  IntegralType ::= int
             //
             case 18: {
-               //#line 214 "GJavaParser.g"
+                //#line 210 "GJavaParser.g"
                 this.setResult(
-                    //#line 214 GJavaParser.g
+                    //#line 210 GJavaParser.g
                     new IntegralType2(this.getRhsIToken(1))
-                //#line 214 GJavaParser.g
+                //#line 210 GJavaParser.g
                 );
             break;
             }
@@ -413,11 +431,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 19:  IntegralType ::= long
             //
             case 19: {
-               //#line 215 "GJavaParser.g"
+                //#line 211 "GJavaParser.g"
                 this.setResult(
-                    //#line 215 GJavaParser.g
+                    //#line 211 GJavaParser.g
                     new IntegralType3(this.getRhsIToken(1))
-                //#line 215 GJavaParser.g
+                //#line 211 GJavaParser.g
                 );
             break;
             }
@@ -425,11 +443,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 20:  IntegralType ::= char
             //
             case 20: {
-               //#line 216 "GJavaParser.g"
+                //#line 212 "GJavaParser.g"
                 this.setResult(
-                    //#line 216 GJavaParser.g
+                    //#line 212 GJavaParser.g
                     new IntegralType4(this.getRhsIToken(1))
-                //#line 216 GJavaParser.g
+                //#line 212 GJavaParser.g
                 );
             break;
             }
@@ -437,11 +455,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 21:  FloatingPointType ::= float
             //
             case 21: {
-               //#line 218 "GJavaParser.g"
+                //#line 214 "GJavaParser.g"
                 this.setResult(
-                    //#line 218 GJavaParser.g
+                    //#line 214 GJavaParser.g
                     new FloatingPointType0(this.getRhsIToken(1))
-                //#line 218 GJavaParser.g
+                //#line 214 GJavaParser.g
                 );
             break;
             }
@@ -449,11 +467,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 22:  FloatingPointType ::= double
             //
             case 22: {
-               //#line 219 "GJavaParser.g"
+                //#line 215 "GJavaParser.g"
                 this.setResult(
-                    //#line 219 GJavaParser.g
+                    //#line 215 GJavaParser.g
                     new FloatingPointType1(this.getRhsIToken(1))
-                //#line 219 GJavaParser.g
+                //#line 215 GJavaParser.g
                 );
             break;
             }
@@ -481,15 +499,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 27:  ClassType ::= TypeName TypeArgumentsopt
             //
             case 27: {
-               //#line 231 "GJavaParser.g"
+                //#line 227 "GJavaParser.g"
                 this.setResult(
-                    //#line 231 GJavaParser.g
+                    //#line 227 GJavaParser.g
                     new ClassType(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 231 GJavaParser.g
+                                  //#line 227 GJavaParser.g
                                   <ITypeName>this.getRhsSym(1),
-                                  //#line 231 GJavaParser.g
+                                  //#line 227 GJavaParser.g
                                   <TypeArguments>this.getRhsSym(2))
-                //#line 231 GJavaParser.g
+                //#line 227 GJavaParser.g
                 );
             break;
             }
@@ -497,15 +515,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 28:  InterfaceType ::= TypeName TypeArgumentsopt
             //
             case 28: {
-               //#line 233 "GJavaParser.g"
+                //#line 229 "GJavaParser.g"
                 this.setResult(
-                    //#line 233 GJavaParser.g
+                    //#line 229 GJavaParser.g
                     new InterfaceType(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 233 GJavaParser.g
+                                      //#line 229 GJavaParser.g
                                       <ITypeName>this.getRhsSym(1),
-                                      //#line 233 GJavaParser.g
+                                      //#line 229 GJavaParser.g
                                       <TypeArguments>this.getRhsSym(2))
-                //#line 233 GJavaParser.g
+                //#line 229 GJavaParser.g
                 );
             break;
             }
@@ -518,17 +536,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 30:  TypeName ::= TypeName . identifier
             //
             case 30: {
-               //#line 236 "GJavaParser.g"
+                //#line 232 "GJavaParser.g"
                 this.setResult(
-                    //#line 236 GJavaParser.g
+                    //#line 232 GJavaParser.g
                     new TypeName(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 236 GJavaParser.g
+                                 //#line 232 GJavaParser.g
                                  <ITypeName>this.getRhsSym(1),
-                                 //#line 236 GJavaParser.g
+                                 //#line 232 GJavaParser.g
                                  new AstToken(this.getRhsIToken(2)),
-                                 //#line 236 GJavaParser.g
+                                 //#line 232 GJavaParser.g
                                  <identifier>this.getRhsSym(3))
-                //#line 236 GJavaParser.g
+                //#line 232 GJavaParser.g
                 );
             break;
             }
@@ -546,17 +564,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 33:  ArrayType ::= Type [ ]
             //
             case 33: {
-               //#line 242 "GJavaParser.g"
+                //#line 238 "GJavaParser.g"
                 this.setResult(
-                    //#line 242 GJavaParser.g
+                    //#line 238 GJavaParser.g
                     new ArrayType(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 242 GJavaParser.g
+                                  //#line 238 GJavaParser.g
                                   <IType>this.getRhsSym(1),
-                                  //#line 242 GJavaParser.g
+                                  //#line 238 GJavaParser.g
                                   new AstToken(this.getRhsIToken(2)),
-                                  //#line 242 GJavaParser.g
+                                  //#line 238 GJavaParser.g
                                   new AstToken(this.getRhsIToken(3)))
-                //#line 242 GJavaParser.g
+                //#line 238 GJavaParser.g
                 );
             break;
             }
@@ -564,15 +582,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 34:  TypeParameter ::= TypeVariable TypeBoundopt
             //
             case 34: {
-               //#line 244 "GJavaParser.g"
+                //#line 240 "GJavaParser.g"
                 this.setResult(
-                    //#line 244 GJavaParser.g
+                    //#line 240 GJavaParser.g
                     new TypeParameter(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 244 GJavaParser.g
+                                      //#line 240 GJavaParser.g
                                       <identifier>this.getRhsSym(1),
-                                      //#line 244 GJavaParser.g
+                                      //#line 240 GJavaParser.g
                                       <TypeBound>this.getRhsSym(2))
-                //#line 244 GJavaParser.g
+                //#line 240 GJavaParser.g
                 );
             break;
             }
@@ -580,17 +598,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 35:  TypeBound ::= extends ClassOrInterfaceType AdditionalBoundListopt
             //
             case 35: {
-               //#line 246 "GJavaParser.g"
+                //#line 242 "GJavaParser.g"
                 this.setResult(
-                    //#line 246 GJavaParser.g
+                    //#line 242 GJavaParser.g
                     new TypeBound(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 246 GJavaParser.g
+                                  //#line 242 GJavaParser.g
                                   new AstToken(this.getRhsIToken(1)),
-                                  //#line 246 GJavaParser.g
+                                  //#line 242 GJavaParser.g
                                   <ClassType>this.getRhsSym(2),
-                                  //#line 246 GJavaParser.g
+                                  //#line 242 GJavaParser.g
                                   <IAdditionalBoundListopt>this.getRhsSym(3))
-                //#line 246 GJavaParser.g
+                //#line 242 GJavaParser.g
                 );
             break;
             }
@@ -603,15 +621,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 37:  AdditionalBoundList ::= AdditionalBoundList AdditionalBound
             //
             case 37: {
-               //#line 249 "GJavaParser.g"
+                //#line 245 "GJavaParser.g"
                 this.setResult(
-                    //#line 249 GJavaParser.g
+                    //#line 245 GJavaParser.g
                     new AdditionalBoundList(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 249 GJavaParser.g
+                                            //#line 245 GJavaParser.g
                                             <IAdditionalBoundList>this.getRhsSym(1),
-                                            //#line 249 GJavaParser.g
+                                            //#line 245 GJavaParser.g
                                             <AdditionalBound>this.getRhsSym(2))
-                //#line 249 GJavaParser.g
+                //#line 245 GJavaParser.g
                 );
             break;
             }
@@ -619,15 +637,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 38:  AdditionalBound ::= & InterfaceType
             //
             case 38: {
-               //#line 251 "GJavaParser.g"
+                //#line 247 "GJavaParser.g"
                 this.setResult(
-                    //#line 251 GJavaParser.g
+                    //#line 247 GJavaParser.g
                     new AdditionalBound(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 251 GJavaParser.g
+                                        //#line 247 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 251 GJavaParser.g
+                                        //#line 247 GJavaParser.g
                                         <InterfaceType>this.getRhsSym(2))
-                //#line 251 GJavaParser.g
+                //#line 247 GJavaParser.g
                 );
             break;
             }
@@ -635,17 +653,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 39:  TypeArguments ::= < ActualTypeArgumentList >
             //
             case 39: {
-               //#line 253 "GJavaParser.g"
+                //#line 249 "GJavaParser.g"
                 this.setResult(
-                    //#line 253 GJavaParser.g
+                    //#line 249 GJavaParser.g
                     new TypeArguments(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 253 GJavaParser.g
+                                      //#line 249 GJavaParser.g
                                       new AstToken(this.getRhsIToken(1)),
-                                      //#line 253 GJavaParser.g
+                                      //#line 249 GJavaParser.g
                                       <IActualTypeArgumentList>this.getRhsSym(2),
-                                      //#line 253 GJavaParser.g
+                                      //#line 249 GJavaParser.g
                                       new AstToken(this.getRhsIToken(3)))
-                //#line 253 GJavaParser.g
+                //#line 249 GJavaParser.g
                 );
             break;
             }
@@ -658,17 +676,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 41:  ActualTypeArgumentList ::= ActualTypeArgumentList , ActualTypeArgument
             //
             case 41: {
-               //#line 256 "GJavaParser.g"
+                //#line 252 "GJavaParser.g"
                 this.setResult(
-                    //#line 256 GJavaParser.g
+                    //#line 252 GJavaParser.g
                     new ActualTypeArgumentList(this.getLeftIToken(), this.getRightIToken(),
-                                               //#line 256 GJavaParser.g
+                                               //#line 252 GJavaParser.g
                                                <IActualTypeArgumentList>this.getRhsSym(1),
-                                               //#line 256 GJavaParser.g
+                                               //#line 252 GJavaParser.g
                                                new AstToken(this.getRhsIToken(2)),
-                                               //#line 256 GJavaParser.g
+                                               //#line 252 GJavaParser.g
                                                <IActualTypeArgument>this.getRhsSym(3))
-                //#line 256 GJavaParser.g
+                //#line 252 GJavaParser.g
                 );
             break;
             }
@@ -686,15 +704,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 44:  Wildcard ::= ? WildcardBoundsOpt
             //
             case 44: {
-               //#line 261 "GJavaParser.g"
+                //#line 257 "GJavaParser.g"
                 this.setResult(
-                    //#line 261 GJavaParser.g
+                    //#line 257 GJavaParser.g
                     new Wildcard(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 261 GJavaParser.g
+                                 //#line 257 GJavaParser.g
                                  new AstToken(this.getRhsIToken(1)),
-                                 //#line 261 GJavaParser.g
+                                 //#line 257 GJavaParser.g
                                  <IWildcardBoundsOpt>this.getRhsSym(2))
-                //#line 261 GJavaParser.g
+                //#line 257 GJavaParser.g
                 );
             break;
             }
@@ -702,15 +720,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 45:  WildcardBounds ::= extends ReferenceType
             //
             case 45: {
-               //#line 263 "GJavaParser.g"
+                //#line 259 "GJavaParser.g"
                 this.setResult(
-                    //#line 263 GJavaParser.g
+                    //#line 259 GJavaParser.g
                     new WildcardBounds0(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 263 GJavaParser.g
+                                        //#line 259 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 263 GJavaParser.g
+                                        //#line 259 GJavaParser.g
                                         <IReferenceType>this.getRhsSym(2))
-                //#line 263 GJavaParser.g
+                //#line 259 GJavaParser.g
                 );
             break;
             }
@@ -718,15 +736,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 46:  WildcardBounds ::= super ReferenceType
             //
             case 46: {
-               //#line 264 "GJavaParser.g"
+                //#line 260 "GJavaParser.g"
                 this.setResult(
-                    //#line 264 GJavaParser.g
+                    //#line 260 GJavaParser.g
                     new WildcardBounds1(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 264 GJavaParser.g
+                                        //#line 260 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 264 GJavaParser.g
+                                        //#line 260 GJavaParser.g
                                         <IReferenceType>this.getRhsSym(2))
-                //#line 264 GJavaParser.g
+                //#line 260 GJavaParser.g
                 );
             break;
             }
@@ -739,17 +757,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 48:  PackageName ::= PackageName . identifier
             //
             case 48: {
-               //#line 271 "GJavaParser.g"
+                //#line 267 "GJavaParser.g"
                 this.setResult(
-                    //#line 271 GJavaParser.g
+                    //#line 267 GJavaParser.g
                     new PackageName(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 271 GJavaParser.g
+                                    //#line 267 GJavaParser.g
                                     <IPackageName>this.getRhsSym(1),
-                                    //#line 271 GJavaParser.g
+                                    //#line 267 GJavaParser.g
                                     new AstToken(this.getRhsIToken(2)),
-                                    //#line 271 GJavaParser.g
+                                    //#line 267 GJavaParser.g
                                     <identifier>this.getRhsSym(3))
-                //#line 271 GJavaParser.g
+                //#line 267 GJavaParser.g
                 );
             break;
             }
@@ -762,17 +780,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 50:  ExpressionName ::= AmbiguousName . identifier
             //
             case 50: {
-               //#line 280 "GJavaParser.g"
+                //#line 276 "GJavaParser.g"
                 this.setResult(
-                    //#line 280 GJavaParser.g
+                    //#line 276 GJavaParser.g
                     new ExpressionName(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 280 GJavaParser.g
+                                       //#line 276 GJavaParser.g
                                        <IAmbiguousName>this.getRhsSym(1),
-                                       //#line 280 GJavaParser.g
+                                       //#line 276 GJavaParser.g
                                        new AstToken(this.getRhsIToken(2)),
-                                       //#line 280 GJavaParser.g
+                                       //#line 276 GJavaParser.g
                                        <identifier>this.getRhsSym(3))
-                //#line 280 GJavaParser.g
+                //#line 276 GJavaParser.g
                 );
             break;
             }
@@ -785,17 +803,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 52:  MethodName ::= AmbiguousName . identifier
             //
             case 52: {
-               //#line 283 "GJavaParser.g"
+                //#line 279 "GJavaParser.g"
                 this.setResult(
-                    //#line 283 GJavaParser.g
+                    //#line 279 GJavaParser.g
                     new MethodName(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 283 GJavaParser.g
+                                   //#line 279 GJavaParser.g
                                    <IAmbiguousName>this.getRhsSym(1),
-                                   //#line 283 GJavaParser.g
+                                   //#line 279 GJavaParser.g
                                    new AstToken(this.getRhsIToken(2)),
-                                   //#line 283 GJavaParser.g
+                                   //#line 279 GJavaParser.g
                                    <identifier>this.getRhsSym(3))
-                //#line 283 GJavaParser.g
+                //#line 279 GJavaParser.g
                 );
             break;
             }
@@ -808,17 +826,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 54:  PackageOrTypeName ::= PackageOrTypeName . identifier
             //
             case 54: {
-               //#line 286 "GJavaParser.g"
+                //#line 282 "GJavaParser.g"
                 this.setResult(
-                    //#line 286 GJavaParser.g
+                    //#line 282 GJavaParser.g
                     new PackageOrTypeName(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 286 GJavaParser.g
+                                          //#line 282 GJavaParser.g
                                           <IPackageOrTypeName>this.getRhsSym(1),
-                                          //#line 286 GJavaParser.g
+                                          //#line 282 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 286 GJavaParser.g
+                                          //#line 282 GJavaParser.g
                                           <identifier>this.getRhsSym(3))
-                //#line 286 GJavaParser.g
+                //#line 282 GJavaParser.g
                 );
             break;
             }
@@ -831,17 +849,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 56:  AmbiguousName ::= AmbiguousName . identifier
             //
             case 56: {
-               //#line 289 "GJavaParser.g"
+                //#line 285 "GJavaParser.g"
                 this.setResult(
-                    //#line 289 GJavaParser.g
+                    //#line 285 GJavaParser.g
                     new AmbiguousName(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 289 GJavaParser.g
+                                      //#line 285 GJavaParser.g
                                       <IAmbiguousName>this.getRhsSym(1),
-                                      //#line 289 GJavaParser.g
+                                      //#line 285 GJavaParser.g
                                       new AstToken(this.getRhsIToken(2)),
-                                      //#line 289 GJavaParser.g
+                                      //#line 285 GJavaParser.g
                                       <identifier>this.getRhsSym(3))
-                //#line 289 GJavaParser.g
+                //#line 285 GJavaParser.g
                 );
             break;
             }
@@ -849,17 +867,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 57:  CompilationUnit ::= PackageDeclarationopt ImportDeclarationsopt TypeDeclarationsopt
             //
             case 57: {
-               //#line 293 "GJavaParser.g"
+                //#line 289 "GJavaParser.g"
                 this.setResult(
-                    //#line 293 GJavaParser.g
+                    //#line 289 GJavaParser.g
                     new CompilationUnit(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 293 GJavaParser.g
+                                        //#line 289 GJavaParser.g
                                         <PackageDeclaration>this.getRhsSym(1),
-                                        //#line 293 GJavaParser.g
+                                        //#line 289 GJavaParser.g
                                         <IImportDeclarationsopt>this.getRhsSym(2),
-                                        //#line 293 GJavaParser.g
+                                        //#line 289 GJavaParser.g
                                         <ITypeDeclarationsopt>this.getRhsSym(3))
-                //#line 293 GJavaParser.g
+                //#line 289 GJavaParser.g
                 );
             break;
             }
@@ -872,15 +890,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 59:  ImportDeclarations ::= ImportDeclarations ImportDeclaration
             //
             case 59: {
-               //#line 296 "GJavaParser.g"
+                //#line 292 "GJavaParser.g"
                 this.setResult(
-                    //#line 296 GJavaParser.g
+                    //#line 292 GJavaParser.g
                     new ImportDeclarations(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 296 GJavaParser.g
+                                           //#line 292 GJavaParser.g
                                            <IImportDeclarations>this.getRhsSym(1),
-                                           //#line 296 GJavaParser.g
+                                           //#line 292 GJavaParser.g
                                            <IImportDeclaration>this.getRhsSym(2))
-                //#line 296 GJavaParser.g
+                //#line 292 GJavaParser.g
                 );
             break;
             }
@@ -893,15 +911,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 61:  TypeDeclarations ::= TypeDeclarations TypeDeclaration
             //
             case 61: {
-               //#line 299 "GJavaParser.g"
+                //#line 295 "GJavaParser.g"
                 this.setResult(
-                    //#line 299 GJavaParser.g
+                    //#line 295 GJavaParser.g
                     new TypeDeclarations(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 299 GJavaParser.g
+                                         //#line 295 GJavaParser.g
                                          <ITypeDeclarations>this.getRhsSym(1),
-                                         //#line 299 GJavaParser.g
+                                         //#line 295 GJavaParser.g
                                          <ITypeDeclaration>this.getRhsSym(2))
-                //#line 299 GJavaParser.g
+                //#line 295 GJavaParser.g
                 );
             break;
             }
@@ -909,19 +927,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 62:  PackageDeclaration ::= Annotationsopt package PackageName ;
             //
             case 62: {
-               //#line 301 "GJavaParser.g"
+                //#line 297 "GJavaParser.g"
                 this.setResult(
-                    //#line 301 GJavaParser.g
+                    //#line 297 GJavaParser.g
                     new PackageDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 301 GJavaParser.g
+                                           //#line 297 GJavaParser.g
                                            <IAnnotationsopt>this.getRhsSym(1),
-                                           //#line 301 GJavaParser.g
+                                           //#line 297 GJavaParser.g
                                            new AstToken(this.getRhsIToken(2)),
-                                           //#line 301 GJavaParser.g
+                                           //#line 297 GJavaParser.g
                                            <IPackageName>this.getRhsSym(3),
-                                           //#line 301 GJavaParser.g
+                                           //#line 297 GJavaParser.g
                                            new AstToken(this.getRhsIToken(4)))
-                //#line 301 GJavaParser.g
+                //#line 297 GJavaParser.g
                 );
             break;
             }
@@ -949,17 +967,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 67:  SingleTypeImportDeclaration ::= import TypeName ;
             //
             case 67: {
-               //#line 308 "GJavaParser.g"
+                //#line 304 "GJavaParser.g"
                 this.setResult(
-                    //#line 308 GJavaParser.g
+                    //#line 304 GJavaParser.g
                     new SingleTypeImportDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                    //#line 308 GJavaParser.g
+                                                    //#line 304 GJavaParser.g
                                                     new AstToken(this.getRhsIToken(1)),
-                                                    //#line 308 GJavaParser.g
+                                                    //#line 304 GJavaParser.g
                                                     <ITypeName>this.getRhsSym(2),
-                                                    //#line 308 GJavaParser.g
+                                                    //#line 304 GJavaParser.g
                                                     new AstToken(this.getRhsIToken(3)))
-                //#line 308 GJavaParser.g
+                //#line 304 GJavaParser.g
                 );
             break;
             }
@@ -967,21 +985,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 68:  TypeImportOnDemandDeclaration ::= import PackageOrTypeName . * ;
             //
             case 68: {
-               //#line 310 "GJavaParser.g"
+                //#line 306 "GJavaParser.g"
                 this.setResult(
-                    //#line 310 GJavaParser.g
+                    //#line 306 GJavaParser.g
                     new TypeImportOnDemandDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                      //#line 310 GJavaParser.g
+                                                      //#line 306 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(1)),
-                                                      //#line 310 GJavaParser.g
+                                                      //#line 306 GJavaParser.g
                                                       <IPackageOrTypeName>this.getRhsSym(2),
-                                                      //#line 310 GJavaParser.g
+                                                      //#line 306 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(3)),
-                                                      //#line 310 GJavaParser.g
+                                                      //#line 306 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(4)),
-                                                      //#line 310 GJavaParser.g
+                                                      //#line 306 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(5)))
-                //#line 310 GJavaParser.g
+                //#line 306 GJavaParser.g
                 );
             break;
             }
@@ -989,23 +1007,23 @@ export class JavaParser extends Object implements RuleAction
             // Rule 69:  SingleStaticImportDeclaration ::= import static TypeName . identifier ;
             //
             case 69: {
-               //#line 312 "GJavaParser.g"
+                //#line 308 "GJavaParser.g"
                 this.setResult(
-                    //#line 312 GJavaParser.g
+                    //#line 308 GJavaParser.g
                     new SingleStaticImportDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                      //#line 312 GJavaParser.g
+                                                      //#line 308 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(1)),
-                                                      //#line 312 GJavaParser.g
+                                                      //#line 308 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(2)),
-                                                      //#line 312 GJavaParser.g
+                                                      //#line 308 GJavaParser.g
                                                       <ITypeName>this.getRhsSym(3),
-                                                      //#line 312 GJavaParser.g
+                                                      //#line 308 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(4)),
-                                                      //#line 312 GJavaParser.g
+                                                      //#line 308 GJavaParser.g
                                                       <identifier>this.getRhsSym(5),
-                                                      //#line 312 GJavaParser.g
+                                                      //#line 308 GJavaParser.g
                                                       new AstToken(this.getRhsIToken(6)))
-                //#line 312 GJavaParser.g
+                //#line 308 GJavaParser.g
                 );
             break;
             }
@@ -1013,23 +1031,23 @@ export class JavaParser extends Object implements RuleAction
             // Rule 70:  StaticImportOnDemandDeclaration ::= import static TypeName . * ;
             //
             case 70: {
-               //#line 314 "GJavaParser.g"
+                //#line 310 "GJavaParser.g"
                 this.setResult(
-                    //#line 314 GJavaParser.g
+                    //#line 310 GJavaParser.g
                     new StaticImportOnDemandDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                        //#line 314 GJavaParser.g
+                                                        //#line 310 GJavaParser.g
                                                         new AstToken(this.getRhsIToken(1)),
-                                                        //#line 314 GJavaParser.g
+                                                        //#line 310 GJavaParser.g
                                                         new AstToken(this.getRhsIToken(2)),
-                                                        //#line 314 GJavaParser.g
+                                                        //#line 310 GJavaParser.g
                                                         <ITypeName>this.getRhsSym(3),
-                                                        //#line 314 GJavaParser.g
+                                                        //#line 310 GJavaParser.g
                                                         new AstToken(this.getRhsIToken(4)),
-                                                        //#line 314 GJavaParser.g
+                                                        //#line 310 GJavaParser.g
                                                         new AstToken(this.getRhsIToken(5)),
-                                                        //#line 314 GJavaParser.g
+                                                        //#line 310 GJavaParser.g
                                                         new AstToken(this.getRhsIToken(6)))
-                //#line 314 GJavaParser.g
+                //#line 310 GJavaParser.g
                 );
             break;
             }
@@ -1047,11 +1065,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 73:  TypeDeclaration ::= ;
             //
             case 73: {
-               //#line 318 "GJavaParser.g"
+                //#line 314 "GJavaParser.g"
                 this.setResult(
-                    //#line 318 GJavaParser.g
+                    //#line 314 GJavaParser.g
                     new TypeDeclaration(this.getRhsIToken(1))
-                //#line 318 GJavaParser.g
+                //#line 314 GJavaParser.g
                 );
             break;
             }
@@ -1069,25 +1087,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 76:  NormalClassDeclaration ::= ClassModifiersopt class identifier TypeParametersopt Superopt Interfacesopt ClassBody
             //
             case 76: {
-               //#line 325 "GJavaParser.g"
+                //#line 321 "GJavaParser.g"
                 this.setResult(
-                    //#line 325 GJavaParser.g
+                    //#line 321 GJavaParser.g
                     new NormalClassDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                <IClassModifiersopt>this.getRhsSym(1),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                new AstToken(this.getRhsIToken(2)),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                <identifier>this.getRhsSym(3),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                <TypeParameters>this.getRhsSym(4),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                <Super>this.getRhsSym(5),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                <Interfaces>this.getRhsSym(6),
-                                               //#line 325 GJavaParser.g
+                                               //#line 321 GJavaParser.g
                                                <ClassBody>this.getRhsSym(7))
-                //#line 325 GJavaParser.g
+                //#line 321 GJavaParser.g
                 );
             break;
             }
@@ -1100,15 +1118,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 78:  ClassModifiers ::= ClassModifiers ClassModifier
             //
             case 78: {
-               //#line 328 "GJavaParser.g"
+                //#line 324 "GJavaParser.g"
                 this.setResult(
-                    //#line 328 GJavaParser.g
+                    //#line 324 GJavaParser.g
                     new ClassModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 328 GJavaParser.g
+                                       //#line 324 GJavaParser.g
                                        <IClassModifiers>this.getRhsSym(1),
-                                       //#line 328 GJavaParser.g
+                                       //#line 324 GJavaParser.g
                                        <IClassModifier>this.getRhsSym(2))
-                //#line 328 GJavaParser.g
+                //#line 324 GJavaParser.g
                 );
             break;
             }
@@ -1121,11 +1139,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 80:  ClassModifier ::= public
             //
             case 80: {
-               //#line 331 "GJavaParser.g"
+                //#line 327 "GJavaParser.g"
                 this.setResult(
-                    //#line 331 GJavaParser.g
+                    //#line 327 GJavaParser.g
                     new ClassModifier0(this.getRhsIToken(1))
-                //#line 331 GJavaParser.g
+                //#line 327 GJavaParser.g
                 );
             break;
             }
@@ -1133,11 +1151,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 81:  ClassModifier ::= protected
             //
             case 81: {
-               //#line 332 "GJavaParser.g"
+                //#line 328 "GJavaParser.g"
                 this.setResult(
-                    //#line 332 GJavaParser.g
+                    //#line 328 GJavaParser.g
                     new ClassModifier1(this.getRhsIToken(1))
-                //#line 332 GJavaParser.g
+                //#line 328 GJavaParser.g
                 );
             break;
             }
@@ -1145,11 +1163,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 82:  ClassModifier ::= private
             //
             case 82: {
-               //#line 333 "GJavaParser.g"
+                //#line 329 "GJavaParser.g"
                 this.setResult(
-                    //#line 333 GJavaParser.g
+                    //#line 329 GJavaParser.g
                     new ClassModifier2(this.getRhsIToken(1))
-                //#line 333 GJavaParser.g
+                //#line 329 GJavaParser.g
                 );
             break;
             }
@@ -1157,11 +1175,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 83:  ClassModifier ::= abstract
             //
             case 83: {
-               //#line 334 "GJavaParser.g"
+                //#line 330 "GJavaParser.g"
                 this.setResult(
-                    //#line 334 GJavaParser.g
+                    //#line 330 GJavaParser.g
                     new ClassModifier3(this.getRhsIToken(1))
-                //#line 334 GJavaParser.g
+                //#line 330 GJavaParser.g
                 );
             break;
             }
@@ -1169,11 +1187,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 84:  ClassModifier ::= static
             //
             case 84: {
-               //#line 335 "GJavaParser.g"
+                //#line 331 "GJavaParser.g"
                 this.setResult(
-                    //#line 335 GJavaParser.g
+                    //#line 331 GJavaParser.g
                     new ClassModifier4(this.getRhsIToken(1))
-                //#line 335 GJavaParser.g
+                //#line 331 GJavaParser.g
                 );
             break;
             }
@@ -1181,11 +1199,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 85:  ClassModifier ::= final
             //
             case 85: {
-               //#line 336 "GJavaParser.g"
+                //#line 332 "GJavaParser.g"
                 this.setResult(
-                    //#line 336 GJavaParser.g
+                    //#line 332 GJavaParser.g
                     new ClassModifier5(this.getRhsIToken(1))
-                //#line 336 GJavaParser.g
+                //#line 332 GJavaParser.g
                 );
             break;
             }
@@ -1193,11 +1211,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 86:  ClassModifier ::= strictfp
             //
             case 86: {
-               //#line 337 "GJavaParser.g"
+                //#line 333 "GJavaParser.g"
                 this.setResult(
-                    //#line 337 GJavaParser.g
+                    //#line 333 GJavaParser.g
                     new ClassModifier6(this.getRhsIToken(1))
-                //#line 337 GJavaParser.g
+                //#line 333 GJavaParser.g
                 );
             break;
             }
@@ -1205,17 +1223,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 87:  TypeParameters ::= < TypeParameterList >
             //
             case 87: {
-               //#line 339 "GJavaParser.g"
+                //#line 335 "GJavaParser.g"
                 this.setResult(
-                    //#line 339 GJavaParser.g
+                    //#line 335 GJavaParser.g
                     new TypeParameters(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 339 GJavaParser.g
+                                       //#line 335 GJavaParser.g
                                        new AstToken(this.getRhsIToken(1)),
-                                       //#line 339 GJavaParser.g
+                                       //#line 335 GJavaParser.g
                                        <ITypeParameterList>this.getRhsSym(2),
-                                       //#line 339 GJavaParser.g
+                                       //#line 335 GJavaParser.g
                                        new AstToken(this.getRhsIToken(3)))
-                //#line 339 GJavaParser.g
+                //#line 335 GJavaParser.g
                 );
             break;
             }
@@ -1228,17 +1246,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 89:  TypeParameterList ::= TypeParameterList , TypeParameter
             //
             case 89: {
-               //#line 342 "GJavaParser.g"
+                //#line 338 "GJavaParser.g"
                 this.setResult(
-                    //#line 342 GJavaParser.g
+                    //#line 338 GJavaParser.g
                     new TypeParameterList(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 342 GJavaParser.g
+                                          //#line 338 GJavaParser.g
                                           <ITypeParameterList>this.getRhsSym(1),
-                                          //#line 342 GJavaParser.g
+                                          //#line 338 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 342 GJavaParser.g
+                                          //#line 338 GJavaParser.g
                                           <TypeParameter>this.getRhsSym(3))
-                //#line 342 GJavaParser.g
+                //#line 338 GJavaParser.g
                 );
             break;
             }
@@ -1246,15 +1264,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 90:  Super ::= extends ClassType
             //
             case 90: {
-               //#line 344 "GJavaParser.g"
+                //#line 340 "GJavaParser.g"
                 this.setResult(
-                    //#line 344 GJavaParser.g
+                    //#line 340 GJavaParser.g
                     new Super(this.getLeftIToken(), this.getRightIToken(),
-                              //#line 344 GJavaParser.g
+                              //#line 340 GJavaParser.g
                               new AstToken(this.getRhsIToken(1)),
-                              //#line 344 GJavaParser.g
+                              //#line 340 GJavaParser.g
                               <ClassType>this.getRhsSym(2))
-                //#line 344 GJavaParser.g
+                //#line 340 GJavaParser.g
                 );
             break;
             }
@@ -1262,15 +1280,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 91:  Interfaces ::= implements InterfaceTypeList
             //
             case 91: {
-               //#line 351 "GJavaParser.g"
+                //#line 347 "GJavaParser.g"
                 this.setResult(
-                    //#line 351 GJavaParser.g
+                    //#line 347 GJavaParser.g
                     new Interfaces(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 351 GJavaParser.g
+                                   //#line 347 GJavaParser.g
                                    new AstToken(this.getRhsIToken(1)),
-                                   //#line 351 GJavaParser.g
+                                   //#line 347 GJavaParser.g
                                    <IInterfaceTypeList>this.getRhsSym(2))
-                //#line 351 GJavaParser.g
+                //#line 347 GJavaParser.g
                 );
             break;
             }
@@ -1283,17 +1301,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 93:  InterfaceTypeList ::= InterfaceTypeList , InterfaceType
             //
             case 93: {
-               //#line 354 "GJavaParser.g"
+                //#line 350 "GJavaParser.g"
                 this.setResult(
-                    //#line 354 GJavaParser.g
+                    //#line 350 GJavaParser.g
                     new InterfaceTypeList(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 354 GJavaParser.g
+                                          //#line 350 GJavaParser.g
                                           <IInterfaceTypeList>this.getRhsSym(1),
-                                          //#line 354 GJavaParser.g
+                                          //#line 350 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 354 GJavaParser.g
+                                          //#line 350 GJavaParser.g
                                           <InterfaceType>this.getRhsSym(3))
-                //#line 354 GJavaParser.g
+                //#line 350 GJavaParser.g
                 );
             break;
             }
@@ -1301,17 +1319,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 94:  ClassBody ::= { ClassBodyDeclarationsopt }
             //
             case 94: {
-               //#line 361 "GJavaParser.g"
+                //#line 357 "GJavaParser.g"
                 this.setResult(
-                    //#line 361 GJavaParser.g
+                    //#line 357 GJavaParser.g
                     new ClassBody(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 361 GJavaParser.g
+                                  //#line 357 GJavaParser.g
                                   new AstToken(this.getRhsIToken(1)),
-                                  //#line 361 GJavaParser.g
+                                  //#line 357 GJavaParser.g
                                   <IClassBodyDeclarationsopt>this.getRhsSym(2),
-                                  //#line 361 GJavaParser.g
+                                  //#line 357 GJavaParser.g
                                   new AstToken(this.getRhsIToken(3)))
-                //#line 361 GJavaParser.g
+                //#line 357 GJavaParser.g
                 );
             break;
             }
@@ -1324,15 +1342,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 96:  ClassBodyDeclarations ::= ClassBodyDeclarations ClassBodyDeclaration
             //
             case 96: {
-               //#line 364 "GJavaParser.g"
+                //#line 360 "GJavaParser.g"
                 this.setResult(
-                    //#line 364 GJavaParser.g
+                    //#line 360 GJavaParser.g
                     new ClassBodyDeclarations(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 364 GJavaParser.g
+                                              //#line 360 GJavaParser.g
                                               <IClassBodyDeclarations>this.getRhsSym(1),
-                                              //#line 364 GJavaParser.g
+                                              //#line 360 GJavaParser.g
                                               <IClassBodyDeclaration>this.getRhsSym(2))
-                //#line 364 GJavaParser.g
+                //#line 360 GJavaParser.g
                 );
             break;
             }
@@ -1380,11 +1398,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 105:  ClassMemberDeclaration ::= ;
             //
             case 105: {
-               //#line 375 "GJavaParser.g"
+                //#line 371 "GJavaParser.g"
                 this.setResult(
-                    //#line 375 GJavaParser.g
+                    //#line 371 GJavaParser.g
                     new ClassMemberDeclaration(this.getRhsIToken(1))
-                //#line 375 GJavaParser.g
+                //#line 371 GJavaParser.g
                 );
             break;
             }
@@ -1392,19 +1410,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 106:  FieldDeclaration ::= FieldModifiersopt Type VariableDeclarators ;
             //
             case 106: {
-               //#line 377 "GJavaParser.g"
+                //#line 373 "GJavaParser.g"
                 this.setResult(
-                    //#line 377 GJavaParser.g
+                    //#line 373 GJavaParser.g
                     new FieldDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 377 GJavaParser.g
+                                         //#line 373 GJavaParser.g
                                          <IFieldModifiersopt>this.getRhsSym(1),
-                                         //#line 377 GJavaParser.g
+                                         //#line 373 GJavaParser.g
                                          <IType>this.getRhsSym(2),
-                                         //#line 377 GJavaParser.g
+                                         //#line 373 GJavaParser.g
                                          <IVariableDeclarators>this.getRhsSym(3),
-                                         //#line 377 GJavaParser.g
+                                         //#line 373 GJavaParser.g
                                          new AstToken(this.getRhsIToken(4)))
-                //#line 377 GJavaParser.g
+                //#line 373 GJavaParser.g
                 );
             break;
             }
@@ -1417,17 +1435,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 108:  VariableDeclarators ::= VariableDeclarators , VariableDeclarator
             //
             case 108: {
-               //#line 380 "GJavaParser.g"
+                //#line 376 "GJavaParser.g"
                 this.setResult(
-                    //#line 380 GJavaParser.g
+                    //#line 376 GJavaParser.g
                     new VariableDeclarators(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 380 GJavaParser.g
+                                            //#line 376 GJavaParser.g
                                             <IVariableDeclarators>this.getRhsSym(1),
-                                            //#line 380 GJavaParser.g
+                                            //#line 376 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 380 GJavaParser.g
+                                            //#line 376 GJavaParser.g
                                             <IVariableDeclarator>this.getRhsSym(3))
-                //#line 380 GJavaParser.g
+                //#line 376 GJavaParser.g
                 );
             break;
             }
@@ -1440,17 +1458,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 110:  VariableDeclarator ::= VariableDeclaratorId = VariableInitializer
             //
             case 110: {
-               //#line 383 "GJavaParser.g"
+                //#line 379 "GJavaParser.g"
                 this.setResult(
-                    //#line 383 GJavaParser.g
+                    //#line 379 GJavaParser.g
                     new VariableDeclarator(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 383 GJavaParser.g
+                                           //#line 379 GJavaParser.g
                                            <IVariableDeclaratorId>this.getRhsSym(1),
-                                           //#line 383 GJavaParser.g
+                                           //#line 379 GJavaParser.g
                                            new AstToken(this.getRhsIToken(2)),
-                                           //#line 383 GJavaParser.g
+                                           //#line 379 GJavaParser.g
                                            <IVariableInitializer>this.getRhsSym(3))
-                //#line 383 GJavaParser.g
+                //#line 379 GJavaParser.g
                 );
             break;
             }
@@ -1463,17 +1481,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 112:  VariableDeclaratorId ::= VariableDeclaratorId [ ]
             //
             case 112: {
-               //#line 386 "GJavaParser.g"
+                //#line 382 "GJavaParser.g"
                 this.setResult(
-                    //#line 386 GJavaParser.g
+                    //#line 382 GJavaParser.g
                     new VariableDeclaratorId(this.getLeftIToken(), this.getRightIToken(),
-                                             //#line 386 GJavaParser.g
+                                             //#line 382 GJavaParser.g
                                              <IVariableDeclaratorId>this.getRhsSym(1),
-                                             //#line 386 GJavaParser.g
+                                             //#line 382 GJavaParser.g
                                              new AstToken(this.getRhsIToken(2)),
-                                             //#line 386 GJavaParser.g
+                                             //#line 382 GJavaParser.g
                                              new AstToken(this.getRhsIToken(3)))
-                //#line 386 GJavaParser.g
+                //#line 382 GJavaParser.g
                 );
             break;
             }
@@ -1496,15 +1514,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 116:  FieldModifiers ::= FieldModifiers FieldModifier
             //
             case 116: {
-               //#line 392 "GJavaParser.g"
+                //#line 388 "GJavaParser.g"
                 this.setResult(
-                    //#line 392 GJavaParser.g
+                    //#line 388 GJavaParser.g
                     new FieldModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 392 GJavaParser.g
+                                       //#line 388 GJavaParser.g
                                        <IFieldModifiers>this.getRhsSym(1),
-                                       //#line 392 GJavaParser.g
+                                       //#line 388 GJavaParser.g
                                        <IFieldModifier>this.getRhsSym(2))
-                //#line 392 GJavaParser.g
+                //#line 388 GJavaParser.g
                 );
             break;
             }
@@ -1517,11 +1535,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 118:  FieldModifier ::= public
             //
             case 118: {
-               //#line 395 "GJavaParser.g"
+                //#line 391 "GJavaParser.g"
                 this.setResult(
-                    //#line 395 GJavaParser.g
+                    //#line 391 GJavaParser.g
                     new FieldModifier0(this.getRhsIToken(1))
-                //#line 395 GJavaParser.g
+                //#line 391 GJavaParser.g
                 );
             break;
             }
@@ -1529,11 +1547,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 119:  FieldModifier ::= protected
             //
             case 119: {
-               //#line 396 "GJavaParser.g"
+                //#line 392 "GJavaParser.g"
                 this.setResult(
-                    //#line 396 GJavaParser.g
+                    //#line 392 GJavaParser.g
                     new FieldModifier1(this.getRhsIToken(1))
-                //#line 396 GJavaParser.g
+                //#line 392 GJavaParser.g
                 );
             break;
             }
@@ -1541,11 +1559,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 120:  FieldModifier ::= private
             //
             case 120: {
-               //#line 397 "GJavaParser.g"
+                //#line 393 "GJavaParser.g"
                 this.setResult(
-                    //#line 397 GJavaParser.g
+                    //#line 393 GJavaParser.g
                     new FieldModifier2(this.getRhsIToken(1))
-                //#line 397 GJavaParser.g
+                //#line 393 GJavaParser.g
                 );
             break;
             }
@@ -1553,11 +1571,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 121:  FieldModifier ::= static
             //
             case 121: {
-               //#line 398 "GJavaParser.g"
+                //#line 394 "GJavaParser.g"
                 this.setResult(
-                    //#line 398 GJavaParser.g
+                    //#line 394 GJavaParser.g
                     new FieldModifier3(this.getRhsIToken(1))
-                //#line 398 GJavaParser.g
+                //#line 394 GJavaParser.g
                 );
             break;
             }
@@ -1565,11 +1583,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 122:  FieldModifier ::= final
             //
             case 122: {
-               //#line 399 "GJavaParser.g"
+                //#line 395 "GJavaParser.g"
                 this.setResult(
-                    //#line 399 GJavaParser.g
+                    //#line 395 GJavaParser.g
                     new FieldModifier4(this.getRhsIToken(1))
-                //#line 399 GJavaParser.g
+                //#line 395 GJavaParser.g
                 );
             break;
             }
@@ -1577,11 +1595,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 123:  FieldModifier ::= transient
             //
             case 123: {
-               //#line 400 "GJavaParser.g"
+                //#line 396 "GJavaParser.g"
                 this.setResult(
-                    //#line 400 GJavaParser.g
+                    //#line 396 GJavaParser.g
                     new FieldModifier5(this.getRhsIToken(1))
-                //#line 400 GJavaParser.g
+                //#line 396 GJavaParser.g
                 );
             break;
             }
@@ -1589,11 +1607,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 124:  FieldModifier ::= volatile
             //
             case 124: {
-               //#line 401 "GJavaParser.g"
+                //#line 397 "GJavaParser.g"
                 this.setResult(
-                    //#line 401 GJavaParser.g
+                    //#line 397 GJavaParser.g
                     new FieldModifier6(this.getRhsIToken(1))
-                //#line 401 GJavaParser.g
+                //#line 397 GJavaParser.g
                 );
             break;
             }
@@ -1601,15 +1619,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 125:  MethodDeclaration ::= MethodHeader MethodBody
             //
             case 125: {
-               //#line 403 "GJavaParser.g"
+                //#line 399 "GJavaParser.g"
                 this.setResult(
-                    //#line 403 GJavaParser.g
+                    //#line 399 GJavaParser.g
                     new MethodDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 403 GJavaParser.g
+                                          //#line 399 GJavaParser.g
                                           <MethodHeader>this.getRhsSym(1),
-                                          //#line 403 GJavaParser.g
+                                          //#line 399 GJavaParser.g
                                           <IMethodBody>this.getRhsSym(2))
-                //#line 403 GJavaParser.g
+                //#line 399 GJavaParser.g
                 );
             break;
             }
@@ -1617,21 +1635,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 126:  MethodHeader ::= MethodModifiersopt TypeParametersopt ResultType MethodDeclarator Throwsopt
             //
             case 126: {
-               //#line 405 "GJavaParser.g"
+                //#line 401 "GJavaParser.g"
                 this.setResult(
-                    //#line 405 GJavaParser.g
+                    //#line 401 GJavaParser.g
                     new MethodHeader(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 405 GJavaParser.g
+                                     //#line 401 GJavaParser.g
                                      <IMethodModifiersopt>this.getRhsSym(1),
-                                     //#line 405 GJavaParser.g
+                                     //#line 401 GJavaParser.g
                                      <TypeParameters>this.getRhsSym(2),
-                                     //#line 405 GJavaParser.g
+                                     //#line 401 GJavaParser.g
                                      <IResultType>this.getRhsSym(3),
-                                     //#line 405 GJavaParser.g
+                                     //#line 401 GJavaParser.g
                                      <IMethodDeclarator>this.getRhsSym(4),
-                                     //#line 405 GJavaParser.g
+                                     //#line 401 GJavaParser.g
                                      <Throws>this.getRhsSym(5))
-                //#line 405 GJavaParser.g
+                //#line 401 GJavaParser.g
                 );
             break;
             }
@@ -1644,11 +1662,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 128:  ResultType ::= void
             //
             case 128: {
-               //#line 408 "GJavaParser.g"
+                //#line 404 "GJavaParser.g"
                 this.setResult(
-                    //#line 408 GJavaParser.g
+                    //#line 404 GJavaParser.g
                     new ResultType(this.getRhsIToken(1))
-                //#line 408 GJavaParser.g
+                //#line 404 GJavaParser.g
                 );
             break;
             }
@@ -1656,19 +1674,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 129:  MethodDeclarator ::= identifier ( FormalParameterListopt )
             //
             case 129: {
-               //#line 410 "GJavaParser.g"
+                //#line 406 "GJavaParser.g"
                 this.setResult(
-                    //#line 410 GJavaParser.g
+                    //#line 406 GJavaParser.g
                     new MethodDeclarator0(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 410 GJavaParser.g
+                                          //#line 406 GJavaParser.g
                                           <identifier>this.getRhsSym(1),
-                                          //#line 410 GJavaParser.g
+                                          //#line 406 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 410 GJavaParser.g
+                                          //#line 406 GJavaParser.g
                                           <IFormalParameterListopt>this.getRhsSym(3),
-                                          //#line 410 GJavaParser.g
+                                          //#line 406 GJavaParser.g
                                           new AstToken(this.getRhsIToken(4)))
-                //#line 410 GJavaParser.g
+                //#line 406 GJavaParser.g
                 );
             break;
             }
@@ -1676,17 +1694,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 130:  MethodDeclarator ::= MethodDeclarator [ ]
             //
             case 130: {
-               //#line 412 "GJavaParser.g"
+                //#line 408 "GJavaParser.g"
                 this.setResult(
-                    //#line 412 GJavaParser.g
+                    //#line 408 GJavaParser.g
                     new MethodDeclarator1(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 412 GJavaParser.g
+                                          //#line 408 GJavaParser.g
                                           <IMethodDeclarator>this.getRhsSym(1),
-                                          //#line 412 GJavaParser.g
+                                          //#line 408 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 412 GJavaParser.g
+                                          //#line 408 GJavaParser.g
                                           new AstToken(this.getRhsIToken(3)))
-                //#line 412 GJavaParser.g
+                //#line 408 GJavaParser.g
                 );
             break;
             }
@@ -1699,17 +1717,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 132:  FormalParameterList ::= FormalParameters , LastFormalParameter
             //
             case 132: {
-               //#line 415 "GJavaParser.g"
+                //#line 411 "GJavaParser.g"
                 this.setResult(
-                    //#line 415 GJavaParser.g
+                    //#line 411 GJavaParser.g
                     new FormalParameterList(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 415 GJavaParser.g
+                                            //#line 411 GJavaParser.g
                                             <IFormalParameters>this.getRhsSym(1),
-                                            //#line 415 GJavaParser.g
+                                            //#line 411 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 415 GJavaParser.g
+                                            //#line 411 GJavaParser.g
                                             <LastFormalParameter>this.getRhsSym(3))
-                //#line 415 GJavaParser.g
+                //#line 411 GJavaParser.g
                 );
             break;
             }
@@ -1722,17 +1740,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 134:  FormalParameters ::= FormalParameters , FormalParameter
             //
             case 134: {
-               //#line 418 "GJavaParser.g"
+                //#line 414 "GJavaParser.g"
                 this.setResult(
-                    //#line 418 GJavaParser.g
+                    //#line 414 GJavaParser.g
                     new FormalParameters(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 418 GJavaParser.g
+                                         //#line 414 GJavaParser.g
                                          <IFormalParameters>this.getRhsSym(1),
-                                         //#line 418 GJavaParser.g
+                                         //#line 414 GJavaParser.g
                                          new AstToken(this.getRhsIToken(2)),
-                                         //#line 418 GJavaParser.g
+                                         //#line 414 GJavaParser.g
                                          <FormalParameter>this.getRhsSym(3))
-                //#line 418 GJavaParser.g
+                //#line 414 GJavaParser.g
                 );
             break;
             }
@@ -1740,17 +1758,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 135:  FormalParameter ::= VariableModifiersopt Type VariableDeclaratorId
             //
             case 135: {
-               //#line 420 "GJavaParser.g"
+                //#line 416 "GJavaParser.g"
                 this.setResult(
-                    //#line 420 GJavaParser.g
+                    //#line 416 GJavaParser.g
                     new FormalParameter(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 420 GJavaParser.g
+                                        //#line 416 GJavaParser.g
                                         <IVariableModifiersopt>this.getRhsSym(1),
-                                        //#line 420 GJavaParser.g
+                                        //#line 416 GJavaParser.g
                                         <IType>this.getRhsSym(2),
-                                        //#line 420 GJavaParser.g
+                                        //#line 416 GJavaParser.g
                                         <IVariableDeclaratorId>this.getRhsSym(3))
-                //#line 420 GJavaParser.g
+                //#line 416 GJavaParser.g
                 );
             break;
             }
@@ -1763,15 +1781,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 137:  VariableModifiers ::= VariableModifiers VariableModifier
             //
             case 137: {
-               //#line 423 "GJavaParser.g"
+                //#line 419 "GJavaParser.g"
                 this.setResult(
-                    //#line 423 GJavaParser.g
+                    //#line 419 GJavaParser.g
                     new VariableModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 423 GJavaParser.g
+                                          //#line 419 GJavaParser.g
                                           <IVariableModifiers>this.getRhsSym(1),
-                                          //#line 423 GJavaParser.g
+                                          //#line 419 GJavaParser.g
                                           <IVariableModifier>this.getRhsSym(2))
-                //#line 423 GJavaParser.g
+                //#line 419 GJavaParser.g
                 );
             break;
             }
@@ -1779,11 +1797,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 138:  VariableModifier ::= final
             //
             case 138: {
-               //#line 425 "GJavaParser.g"
+                //#line 421 "GJavaParser.g"
                 this.setResult(
-                    //#line 425 GJavaParser.g
+                    //#line 421 GJavaParser.g
                     new VariableModifier(this.getRhsIToken(1))
-                //#line 425 GJavaParser.g
+                //#line 421 GJavaParser.g
                 );
             break;
             }
@@ -1796,19 +1814,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 140:  LastFormalParameter ::= VariableModifiersopt Type ...opt VariableDeclaratorId
             //
             case 140: {
-               //#line 428 "GJavaParser.g"
+                //#line 424 "GJavaParser.g"
                 this.setResult(
-                    //#line 428 GJavaParser.g
+                    //#line 424 GJavaParser.g
                     new LastFormalParameter(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 428 GJavaParser.g
+                                            //#line 424 GJavaParser.g
                                             <IVariableModifiersopt>this.getRhsSym(1),
-                                            //#line 428 GJavaParser.g
+                                            //#line 424 GJavaParser.g
                                             <IType>this.getRhsSym(2),
-                                            //#line 428 GJavaParser.g
+                                            //#line 424 GJavaParser.g
                                             <Ellipsisopt>this.getRhsSym(3),
-                                            //#line 428 GJavaParser.g
+                                            //#line 424 GJavaParser.g
                                             <IVariableDeclaratorId>this.getRhsSym(4))
-                //#line 428 GJavaParser.g
+                //#line 424 GJavaParser.g
                 );
             break;
             }
@@ -1821,15 +1839,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 142:  MethodModifiers ::= MethodModifiers MethodModifier
             //
             case 142: {
-               //#line 437 "GJavaParser.g"
+                //#line 433 "GJavaParser.g"
                 this.setResult(
-                    //#line 437 GJavaParser.g
+                    //#line 433 GJavaParser.g
                     new MethodModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 437 GJavaParser.g
+                                        //#line 433 GJavaParser.g
                                         <IMethodModifiers>this.getRhsSym(1),
-                                        //#line 437 GJavaParser.g
+                                        //#line 433 GJavaParser.g
                                         <IMethodModifier>this.getRhsSym(2))
-                //#line 437 GJavaParser.g
+                //#line 433 GJavaParser.g
                 );
             break;
             }
@@ -1842,11 +1860,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 144:  MethodModifier ::= public
             //
             case 144: {
-               //#line 440 "GJavaParser.g"
+                //#line 436 "GJavaParser.g"
                 this.setResult(
-                    //#line 440 GJavaParser.g
+                    //#line 436 GJavaParser.g
                     new MethodModifier0(this.getRhsIToken(1))
-                //#line 440 GJavaParser.g
+                //#line 436 GJavaParser.g
                 );
             break;
             }
@@ -1854,11 +1872,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 145:  MethodModifier ::= protected
             //
             case 145: {
-               //#line 441 "GJavaParser.g"
+                //#line 437 "GJavaParser.g"
                 this.setResult(
-                    //#line 441 GJavaParser.g
+                    //#line 437 GJavaParser.g
                     new MethodModifier1(this.getRhsIToken(1))
-                //#line 441 GJavaParser.g
+                //#line 437 GJavaParser.g
                 );
             break;
             }
@@ -1866,11 +1884,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 146:  MethodModifier ::= private
             //
             case 146: {
-               //#line 442 "GJavaParser.g"
+                //#line 438 "GJavaParser.g"
                 this.setResult(
-                    //#line 442 GJavaParser.g
+                    //#line 438 GJavaParser.g
                     new MethodModifier2(this.getRhsIToken(1))
-                //#line 442 GJavaParser.g
+                //#line 438 GJavaParser.g
                 );
             break;
             }
@@ -1878,11 +1896,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 147:  MethodModifier ::= abstract
             //
             case 147: {
-               //#line 443 "GJavaParser.g"
+                //#line 439 "GJavaParser.g"
                 this.setResult(
-                    //#line 443 GJavaParser.g
+                    //#line 439 GJavaParser.g
                     new MethodModifier3(this.getRhsIToken(1))
-                //#line 443 GJavaParser.g
+                //#line 439 GJavaParser.g
                 );
             break;
             }
@@ -1890,11 +1908,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 148:  MethodModifier ::= static
             //
             case 148: {
-               //#line 444 "GJavaParser.g"
+                //#line 440 "GJavaParser.g"
                 this.setResult(
-                    //#line 444 GJavaParser.g
+                    //#line 440 GJavaParser.g
                     new MethodModifier4(this.getRhsIToken(1))
-                //#line 444 GJavaParser.g
+                //#line 440 GJavaParser.g
                 );
             break;
             }
@@ -1902,11 +1920,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 149:  MethodModifier ::= final
             //
             case 149: {
-               //#line 445 "GJavaParser.g"
+                //#line 441 "GJavaParser.g"
                 this.setResult(
-                    //#line 445 GJavaParser.g
+                    //#line 441 GJavaParser.g
                     new MethodModifier5(this.getRhsIToken(1))
-                //#line 445 GJavaParser.g
+                //#line 441 GJavaParser.g
                 );
             break;
             }
@@ -1914,11 +1932,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 150:  MethodModifier ::= synchronized
             //
             case 150: {
-               //#line 446 "GJavaParser.g"
+                //#line 442 "GJavaParser.g"
                 this.setResult(
-                    //#line 446 GJavaParser.g
+                    //#line 442 GJavaParser.g
                     new MethodModifier6(this.getRhsIToken(1))
-                //#line 446 GJavaParser.g
+                //#line 442 GJavaParser.g
                 );
             break;
             }
@@ -1926,11 +1944,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 151:  MethodModifier ::= native
             //
             case 151: {
-               //#line 447 "GJavaParser.g"
+                //#line 443 "GJavaParser.g"
                 this.setResult(
-                    //#line 447 GJavaParser.g
+                    //#line 443 GJavaParser.g
                     new MethodModifier7(this.getRhsIToken(1))
-                //#line 447 GJavaParser.g
+                //#line 443 GJavaParser.g
                 );
             break;
             }
@@ -1938,11 +1956,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 152:  MethodModifier ::= strictfp
             //
             case 152: {
-               //#line 448 "GJavaParser.g"
+                //#line 444 "GJavaParser.g"
                 this.setResult(
-                    //#line 448 GJavaParser.g
+                    //#line 444 GJavaParser.g
                     new MethodModifier8(this.getRhsIToken(1))
-                //#line 448 GJavaParser.g
+                //#line 444 GJavaParser.g
                 );
             break;
             }
@@ -1950,15 +1968,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 153:  Throws ::= throws ExceptionTypeList
             //
             case 153: {
-               //#line 450 "GJavaParser.g"
+                //#line 446 "GJavaParser.g"
                 this.setResult(
-                    //#line 450 GJavaParser.g
+                    //#line 446 GJavaParser.g
                     new Throws(this.getLeftIToken(), this.getRightIToken(),
-                               //#line 450 GJavaParser.g
+                               //#line 446 GJavaParser.g
                                new AstToken(this.getRhsIToken(1)),
-                               //#line 450 GJavaParser.g
+                               //#line 446 GJavaParser.g
                                <IExceptionTypeList>this.getRhsSym(2))
-                //#line 450 GJavaParser.g
+                //#line 446 GJavaParser.g
                 );
             break;
             }
@@ -1971,17 +1989,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 155:  ExceptionTypeList ::= ExceptionTypeList , ExceptionType
             //
             case 155: {
-               //#line 453 "GJavaParser.g"
+                //#line 449 "GJavaParser.g"
                 this.setResult(
-                    //#line 453 GJavaParser.g
+                    //#line 449 GJavaParser.g
                     new ExceptionTypeList(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 453 GJavaParser.g
+                                          //#line 449 GJavaParser.g
                                           <IExceptionTypeList>this.getRhsSym(1),
-                                          //#line 453 GJavaParser.g
+                                          //#line 449 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 453 GJavaParser.g
+                                          //#line 449 GJavaParser.g
                                           <IExceptionType>this.getRhsSym(3))
-                //#line 453 GJavaParser.g
+                //#line 449 GJavaParser.g
                 );
             break;
             }
@@ -2004,11 +2022,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 159:  MethodBody ::= ;
             //
             case 159: {
-               //#line 459 "GJavaParser.g"
+                //#line 455 "GJavaParser.g"
                 this.setResult(
-                    //#line 459 GJavaParser.g
+                    //#line 455 GJavaParser.g
                     new MethodBody(this.getRhsIToken(1))
-                //#line 459 GJavaParser.g
+                //#line 455 GJavaParser.g
                 );
             break;
             }
@@ -2021,15 +2039,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 161:  StaticInitializer ::= static Block
             //
             case 161: {
-               //#line 463 "GJavaParser.g"
+                //#line 459 "GJavaParser.g"
                 this.setResult(
-                    //#line 463 GJavaParser.g
+                    //#line 459 GJavaParser.g
                     new StaticInitializer(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 463 GJavaParser.g
+                                          //#line 459 GJavaParser.g
                                           new AstToken(this.getRhsIToken(1)),
-                                          //#line 463 GJavaParser.g
+                                          //#line 459 GJavaParser.g
                                           <Block>this.getRhsSym(2))
-                //#line 463 GJavaParser.g
+                //#line 459 GJavaParser.g
                 );
             break;
             }
@@ -2037,19 +2055,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 162:  ConstructorDeclaration ::= ConstructorModifiersopt ConstructorDeclarator Throwsopt ConstructorBody
             //
             case 162: {
-               //#line 465 "GJavaParser.g"
+                //#line 461 "GJavaParser.g"
                 this.setResult(
-                    //#line 465 GJavaParser.g
+                    //#line 461 GJavaParser.g
                     new ConstructorDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                               //#line 465 GJavaParser.g
+                                               //#line 461 GJavaParser.g
                                                <IConstructorModifiersopt>this.getRhsSym(1),
-                                               //#line 465 GJavaParser.g
+                                               //#line 461 GJavaParser.g
                                                <ConstructorDeclarator>this.getRhsSym(2),
-                                               //#line 465 GJavaParser.g
+                                               //#line 461 GJavaParser.g
                                                <Throws>this.getRhsSym(3),
-                                               //#line 465 GJavaParser.g
+                                               //#line 461 GJavaParser.g
                                                <ConstructorBody>this.getRhsSym(4))
-                //#line 465 GJavaParser.g
+                //#line 461 GJavaParser.g
                 );
             break;
             }
@@ -2057,21 +2075,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 163:  ConstructorDeclarator ::= TypeParametersopt SimpleTypeName ( FormalParameterListopt )
             //
             case 163: {
-               //#line 467 "GJavaParser.g"
+                //#line 463 "GJavaParser.g"
                 this.setResult(
-                    //#line 467 GJavaParser.g
+                    //#line 463 GJavaParser.g
                     new ConstructorDeclarator(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 467 GJavaParser.g
+                                              //#line 463 GJavaParser.g
                                               <TypeParameters>this.getRhsSym(1),
-                                              //#line 467 GJavaParser.g
+                                              //#line 463 GJavaParser.g
                                               <identifier>this.getRhsSym(2),
-                                              //#line 467 GJavaParser.g
+                                              //#line 463 GJavaParser.g
                                               new AstToken(this.getRhsIToken(3)),
-                                              //#line 467 GJavaParser.g
+                                              //#line 463 GJavaParser.g
                                               <IFormalParameterListopt>this.getRhsSym(4),
-                                              //#line 467 GJavaParser.g
+                                              //#line 463 GJavaParser.g
                                               new AstToken(this.getRhsIToken(5)))
-                //#line 467 GJavaParser.g
+                //#line 463 GJavaParser.g
                 );
             break;
             }
@@ -2089,15 +2107,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 166:  ConstructorModifiers ::= ConstructorModifiers ConstructorModifier
             //
             case 166: {
-               //#line 472 "GJavaParser.g"
+                //#line 468 "GJavaParser.g"
                 this.setResult(
-                    //#line 472 GJavaParser.g
+                    //#line 468 GJavaParser.g
                     new ConstructorModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                             //#line 472 GJavaParser.g
+                                             //#line 468 GJavaParser.g
                                              <IConstructorModifiers>this.getRhsSym(1),
-                                             //#line 472 GJavaParser.g
+                                             //#line 468 GJavaParser.g
                                              <IConstructorModifier>this.getRhsSym(2))
-                //#line 472 GJavaParser.g
+                //#line 468 GJavaParser.g
                 );
             break;
             }
@@ -2110,11 +2128,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 168:  ConstructorModifier ::= public
             //
             case 168: {
-               //#line 475 "GJavaParser.g"
+                //#line 471 "GJavaParser.g"
                 this.setResult(
-                    //#line 475 GJavaParser.g
+                    //#line 471 GJavaParser.g
                     new ConstructorModifier0(this.getRhsIToken(1))
-                //#line 475 GJavaParser.g
+                //#line 471 GJavaParser.g
                 );
             break;
             }
@@ -2122,11 +2140,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 169:  ConstructorModifier ::= protected
             //
             case 169: {
-               //#line 476 "GJavaParser.g"
+                //#line 472 "GJavaParser.g"
                 this.setResult(
-                    //#line 476 GJavaParser.g
+                    //#line 472 GJavaParser.g
                     new ConstructorModifier1(this.getRhsIToken(1))
-                //#line 476 GJavaParser.g
+                //#line 472 GJavaParser.g
                 );
             break;
             }
@@ -2134,11 +2152,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 170:  ConstructorModifier ::= private
             //
             case 170: {
-               //#line 477 "GJavaParser.g"
+                //#line 473 "GJavaParser.g"
                 this.setResult(
-                    //#line 477 GJavaParser.g
+                    //#line 473 GJavaParser.g
                     new ConstructorModifier2(this.getRhsIToken(1))
-                //#line 477 GJavaParser.g
+                //#line 473 GJavaParser.g
                 );
             break;
             }
@@ -2146,19 +2164,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 171:  ConstructorBody ::= { ExplicitConstructorInvocationopt BlockStatementsopt }
             //
             case 171: {
-               //#line 479 "GJavaParser.g"
+                //#line 475 "GJavaParser.g"
                 this.setResult(
-                    //#line 479 GJavaParser.g
+                    //#line 475 GJavaParser.g
                     new ConstructorBody(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 479 GJavaParser.g
+                                        //#line 475 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 479 GJavaParser.g
+                                        //#line 475 GJavaParser.g
                                         <IExplicitConstructorInvocationopt>this.getRhsSym(2),
-                                        //#line 479 GJavaParser.g
+                                        //#line 475 GJavaParser.g
                                         <IBlockStatementsopt>this.getRhsSym(3),
-                                        //#line 479 GJavaParser.g
+                                        //#line 475 GJavaParser.g
                                         new AstToken(this.getRhsIToken(4)))
-                //#line 479 GJavaParser.g
+                //#line 475 GJavaParser.g
                 );
             break;
             }
@@ -2166,23 +2184,23 @@ export class JavaParser extends Object implements RuleAction
             // Rule 172:  ExplicitConstructorInvocation ::= TypeArgumentsopt this ( ArgumentListopt ) ;
             //
             case 172: {
-               //#line 481 "GJavaParser.g"
+                //#line 477 "GJavaParser.g"
                 this.setResult(
-                    //#line 481 GJavaParser.g
+                    //#line 477 GJavaParser.g
                     new ExplicitConstructorInvocation0(this.getLeftIToken(), this.getRightIToken(),
-                                                       //#line 481 GJavaParser.g
+                                                       //#line 477 GJavaParser.g
                                                        <TypeArguments>this.getRhsSym(1),
-                                                       //#line 481 GJavaParser.g
+                                                       //#line 477 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(2)),
-                                                       //#line 481 GJavaParser.g
+                                                       //#line 477 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(3)),
-                                                       //#line 481 GJavaParser.g
+                                                       //#line 477 GJavaParser.g
                                                        <IArgumentListopt>this.getRhsSym(4),
-                                                       //#line 481 GJavaParser.g
+                                                       //#line 477 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(5)),
-                                                       //#line 481 GJavaParser.g
+                                                       //#line 477 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(6)))
-                //#line 481 GJavaParser.g
+                //#line 477 GJavaParser.g
                 );
             break;
             }
@@ -2190,23 +2208,23 @@ export class JavaParser extends Object implements RuleAction
             // Rule 173:  ExplicitConstructorInvocation ::= TypeArgumentsopt super ( ArgumentListopt ) ;
             //
             case 173: {
-               //#line 482 "GJavaParser.g"
+                //#line 478 "GJavaParser.g"
                 this.setResult(
-                    //#line 482 GJavaParser.g
+                    //#line 478 GJavaParser.g
                     new ExplicitConstructorInvocation1(this.getLeftIToken(), this.getRightIToken(),
-                                                       //#line 482 GJavaParser.g
+                                                       //#line 478 GJavaParser.g
                                                        <TypeArguments>this.getRhsSym(1),
-                                                       //#line 482 GJavaParser.g
+                                                       //#line 478 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(2)),
-                                                       //#line 482 GJavaParser.g
+                                                       //#line 478 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(3)),
-                                                       //#line 482 GJavaParser.g
+                                                       //#line 478 GJavaParser.g
                                                        <IArgumentListopt>this.getRhsSym(4),
-                                                       //#line 482 GJavaParser.g
+                                                       //#line 478 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(5)),
-                                                       //#line 482 GJavaParser.g
+                                                       //#line 478 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(6)))
-                //#line 482 GJavaParser.g
+                //#line 478 GJavaParser.g
                 );
             break;
             }
@@ -2214,27 +2232,27 @@ export class JavaParser extends Object implements RuleAction
             // Rule 174:  ExplicitConstructorInvocation ::= Primary . TypeArgumentsopt super ( ArgumentListopt ) ;
             //
             case 174: {
-               //#line 483 "GJavaParser.g"
+                //#line 479 "GJavaParser.g"
                 this.setResult(
-                    //#line 483 GJavaParser.g
+                    //#line 479 GJavaParser.g
                     new ExplicitConstructorInvocation2(this.getLeftIToken(), this.getRightIToken(),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        <IPrimary>this.getRhsSym(1),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(2)),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        <TypeArguments>this.getRhsSym(3),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(4)),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(5)),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        <IArgumentListopt>this.getRhsSym(6),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(7)),
-                                                       //#line 483 GJavaParser.g
+                                                       //#line 479 GJavaParser.g
                                                        new AstToken(this.getRhsIToken(8)))
-                //#line 483 GJavaParser.g
+                //#line 479 GJavaParser.g
                 );
             break;
             }
@@ -2242,21 +2260,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 175:  EnumDeclaration ::= ClassModifiersopt enum identifier Interfacesopt EnumBody
             //
             case 175: {
-               //#line 485 "GJavaParser.g"
+                //#line 481 "GJavaParser.g"
                 this.setResult(
-                    //#line 485 GJavaParser.g
+                    //#line 481 GJavaParser.g
                     new EnumDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 485 GJavaParser.g
+                                        //#line 481 GJavaParser.g
                                         <IClassModifiersopt>this.getRhsSym(1),
-                                        //#line 485 GJavaParser.g
+                                        //#line 481 GJavaParser.g
                                         new AstToken(this.getRhsIToken(2)),
-                                        //#line 485 GJavaParser.g
+                                        //#line 481 GJavaParser.g
                                         <identifier>this.getRhsSym(3),
-                                        //#line 485 GJavaParser.g
+                                        //#line 481 GJavaParser.g
                                         <Interfaces>this.getRhsSym(4),
-                                        //#line 485 GJavaParser.g
+                                        //#line 481 GJavaParser.g
                                         <EnumBody>this.getRhsSym(5))
-                //#line 485 GJavaParser.g
+                //#line 481 GJavaParser.g
                 );
             break;
             }
@@ -2264,21 +2282,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 176:  EnumBody ::= { EnumConstantsopt ,opt EnumBodyDeclarationsopt }
             //
             case 176: {
-               //#line 487 "GJavaParser.g"
+                //#line 483 "GJavaParser.g"
                 this.setResult(
-                    //#line 487 GJavaParser.g
+                    //#line 483 GJavaParser.g
                     new EnumBody(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 487 GJavaParser.g
+                                 //#line 483 GJavaParser.g
                                  new AstToken(this.getRhsIToken(1)),
-                                 //#line 487 GJavaParser.g
+                                 //#line 483 GJavaParser.g
                                  <IEnumConstantsopt>this.getRhsSym(2),
-                                 //#line 487 GJavaParser.g
+                                 //#line 483 GJavaParser.g
                                  <Commaopt>this.getRhsSym(3),
-                                 //#line 487 GJavaParser.g
+                                 //#line 483 GJavaParser.g
                                  <EnumBodyDeclarations>this.getRhsSym(4),
-                                 //#line 487 GJavaParser.g
+                                 //#line 483 GJavaParser.g
                                  new AstToken(this.getRhsIToken(5)))
-                //#line 487 GJavaParser.g
+                //#line 483 GJavaParser.g
                 );
             break;
             }
@@ -2291,17 +2309,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 178:  EnumConstants ::= EnumConstants , EnumConstant
             //
             case 178: {
-               //#line 490 "GJavaParser.g"
+                //#line 486 "GJavaParser.g"
                 this.setResult(
-                    //#line 490 GJavaParser.g
+                    //#line 486 GJavaParser.g
                     new EnumConstants(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 490 GJavaParser.g
+                                      //#line 486 GJavaParser.g
                                       <IEnumConstants>this.getRhsSym(1),
-                                      //#line 490 GJavaParser.g
+                                      //#line 486 GJavaParser.g
                                       new AstToken(this.getRhsIToken(2)),
-                                      //#line 490 GJavaParser.g
+                                      //#line 486 GJavaParser.g
                                       <IEnumConstant>this.getRhsSym(3))
-                //#line 490 GJavaParser.g
+                //#line 486 GJavaParser.g
                 );
             break;
             }
@@ -2309,19 +2327,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 179:  EnumConstant ::= Annotationsopt identifier Argumentsopt ClassBodyopt
             //
             case 179: {
-               //#line 492 "GJavaParser.g"
+                //#line 488 "GJavaParser.g"
                 this.setResult(
-                    //#line 492 GJavaParser.g
+                    //#line 488 GJavaParser.g
                     new EnumConstant(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 492 GJavaParser.g
+                                     //#line 488 GJavaParser.g
                                      <IAnnotationsopt>this.getRhsSym(1),
-                                     //#line 492 GJavaParser.g
+                                     //#line 488 GJavaParser.g
                                      <identifier>this.getRhsSym(2),
-                                     //#line 492 GJavaParser.g
+                                     //#line 488 GJavaParser.g
                                      <Arguments>this.getRhsSym(3),
-                                     //#line 492 GJavaParser.g
+                                     //#line 488 GJavaParser.g
                                      <ClassBody>this.getRhsSym(4))
-                //#line 492 GJavaParser.g
+                //#line 488 GJavaParser.g
                 );
             break;
             }
@@ -2329,17 +2347,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 180:  Arguments ::= ( ArgumentListopt )
             //
             case 180: {
-               //#line 494 "GJavaParser.g"
+                //#line 490 "GJavaParser.g"
                 this.setResult(
-                    //#line 494 GJavaParser.g
+                    //#line 490 GJavaParser.g
                     new Arguments(this.getLeftIToken(), this.getRightIToken(),
-                                  //#line 494 GJavaParser.g
+                                  //#line 490 GJavaParser.g
                                   new AstToken(this.getRhsIToken(1)),
-                                  //#line 494 GJavaParser.g
+                                  //#line 490 GJavaParser.g
                                   <IArgumentListopt>this.getRhsSym(2),
-                                  //#line 494 GJavaParser.g
+                                  //#line 490 GJavaParser.g
                                   new AstToken(this.getRhsIToken(3)))
-                //#line 494 GJavaParser.g
+                //#line 490 GJavaParser.g
                 );
             break;
             }
@@ -2347,15 +2365,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 181:  EnumBodyDeclarations ::= ; ClassBodyDeclarationsopt
             //
             case 181: {
-               //#line 496 "GJavaParser.g"
+                //#line 492 "GJavaParser.g"
                 this.setResult(
-                    //#line 496 GJavaParser.g
+                    //#line 492 GJavaParser.g
                     new EnumBodyDeclarations(this.getLeftIToken(), this.getRightIToken(),
-                                             //#line 496 GJavaParser.g
+                                             //#line 492 GJavaParser.g
                                              new AstToken(this.getRhsIToken(1)),
-                                             //#line 496 GJavaParser.g
+                                             //#line 492 GJavaParser.g
                                              <IClassBodyDeclarationsopt>this.getRhsSym(2))
-                //#line 496 GJavaParser.g
+                //#line 492 GJavaParser.g
                 );
             break;
             }
@@ -2373,23 +2391,23 @@ export class JavaParser extends Object implements RuleAction
             // Rule 184:  NormalInterfaceDeclaration ::= InterfaceModifiersopt interface identifier TypeParametersopt ExtendsInterfacesopt InterfaceBody
             //
             case 184: {
-               //#line 503 "GJavaParser.g"
+                //#line 499 "GJavaParser.g"
                 this.setResult(
-                    //#line 503 GJavaParser.g
+                    //#line 499 GJavaParser.g
                     new NormalInterfaceDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                   //#line 503 GJavaParser.g
+                                                   //#line 499 GJavaParser.g
                                                    <IInterfaceModifiersopt>this.getRhsSym(1),
-                                                   //#line 503 GJavaParser.g
+                                                   //#line 499 GJavaParser.g
                                                    new AstToken(this.getRhsIToken(2)),
-                                                   //#line 503 GJavaParser.g
+                                                   //#line 499 GJavaParser.g
                                                    <identifier>this.getRhsSym(3),
-                                                   //#line 503 GJavaParser.g
+                                                   //#line 499 GJavaParser.g
                                                    <TypeParameters>this.getRhsSym(4),
-                                                   //#line 503 GJavaParser.g
+                                                   //#line 499 GJavaParser.g
                                                    <IExtendsInterfacesopt>this.getRhsSym(5),
-                                                   //#line 503 GJavaParser.g
+                                                   //#line 499 GJavaParser.g
                                                    <InterfaceBody>this.getRhsSym(6))
-                //#line 503 GJavaParser.g
+                //#line 499 GJavaParser.g
                 );
             break;
             }
@@ -2402,15 +2420,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 186:  InterfaceModifiers ::= InterfaceModifiers InterfaceModifier
             //
             case 186: {
-               //#line 506 "GJavaParser.g"
+                //#line 502 "GJavaParser.g"
                 this.setResult(
-                    //#line 506 GJavaParser.g
+                    //#line 502 GJavaParser.g
                     new InterfaceModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 506 GJavaParser.g
+                                           //#line 502 GJavaParser.g
                                            <IInterfaceModifiers>this.getRhsSym(1),
-                                           //#line 506 GJavaParser.g
+                                           //#line 502 GJavaParser.g
                                            <IInterfaceModifier>this.getRhsSym(2))
-                //#line 506 GJavaParser.g
+                //#line 502 GJavaParser.g
                 );
             break;
             }
@@ -2423,11 +2441,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 188:  InterfaceModifier ::= public
             //
             case 188: {
-               //#line 509 "GJavaParser.g"
+                //#line 505 "GJavaParser.g"
                 this.setResult(
-                    //#line 509 GJavaParser.g
+                    //#line 505 GJavaParser.g
                     new InterfaceModifier0(this.getRhsIToken(1))
-                //#line 509 GJavaParser.g
+                //#line 505 GJavaParser.g
                 );
             break;
             }
@@ -2435,11 +2453,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 189:  InterfaceModifier ::= protected
             //
             case 189: {
-               //#line 510 "GJavaParser.g"
+                //#line 506 "GJavaParser.g"
                 this.setResult(
-                    //#line 510 GJavaParser.g
+                    //#line 506 GJavaParser.g
                     new InterfaceModifier1(this.getRhsIToken(1))
-                //#line 510 GJavaParser.g
+                //#line 506 GJavaParser.g
                 );
             break;
             }
@@ -2447,11 +2465,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 190:  InterfaceModifier ::= private
             //
             case 190: {
-               //#line 511 "GJavaParser.g"
+                //#line 507 "GJavaParser.g"
                 this.setResult(
-                    //#line 511 GJavaParser.g
+                    //#line 507 GJavaParser.g
                     new InterfaceModifier2(this.getRhsIToken(1))
-                //#line 511 GJavaParser.g
+                //#line 507 GJavaParser.g
                 );
             break;
             }
@@ -2459,11 +2477,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 191:  InterfaceModifier ::= abstract
             //
             case 191: {
-               //#line 512 "GJavaParser.g"
+                //#line 508 "GJavaParser.g"
                 this.setResult(
-                    //#line 512 GJavaParser.g
+                    //#line 508 GJavaParser.g
                     new InterfaceModifier3(this.getRhsIToken(1))
-                //#line 512 GJavaParser.g
+                //#line 508 GJavaParser.g
                 );
             break;
             }
@@ -2471,11 +2489,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 192:  InterfaceModifier ::= static
             //
             case 192: {
-               //#line 513 "GJavaParser.g"
+                //#line 509 "GJavaParser.g"
                 this.setResult(
-                    //#line 513 GJavaParser.g
+                    //#line 509 GJavaParser.g
                     new InterfaceModifier4(this.getRhsIToken(1))
-                //#line 513 GJavaParser.g
+                //#line 509 GJavaParser.g
                 );
             break;
             }
@@ -2483,11 +2501,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 193:  InterfaceModifier ::= strictfp
             //
             case 193: {
-               //#line 514 "GJavaParser.g"
+                //#line 510 "GJavaParser.g"
                 this.setResult(
-                    //#line 514 GJavaParser.g
+                    //#line 510 GJavaParser.g
                     new InterfaceModifier5(this.getRhsIToken(1))
-                //#line 514 GJavaParser.g
+                //#line 510 GJavaParser.g
                 );
             break;
             }
@@ -2495,15 +2513,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 194:  ExtendsInterfaces ::= extends InterfaceType
             //
             case 194: {
-               //#line 516 "GJavaParser.g"
+                //#line 512 "GJavaParser.g"
                 this.setResult(
-                    //#line 516 GJavaParser.g
+                    //#line 512 GJavaParser.g
                     new ExtendsInterfaces0(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 516 GJavaParser.g
+                                           //#line 512 GJavaParser.g
                                            new AstToken(this.getRhsIToken(1)),
-                                           //#line 516 GJavaParser.g
+                                           //#line 512 GJavaParser.g
                                            <InterfaceType>this.getRhsSym(2))
-                //#line 516 GJavaParser.g
+                //#line 512 GJavaParser.g
                 );
             break;
             }
@@ -2511,17 +2529,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 195:  ExtendsInterfaces ::= ExtendsInterfaces , InterfaceType
             //
             case 195: {
-               //#line 517 "GJavaParser.g"
+                //#line 513 "GJavaParser.g"
                 this.setResult(
-                    //#line 517 GJavaParser.g
+                    //#line 513 GJavaParser.g
                     new ExtendsInterfaces1(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 517 GJavaParser.g
+                                           //#line 513 GJavaParser.g
                                            <IExtendsInterfaces>this.getRhsSym(1),
-                                           //#line 517 GJavaParser.g
+                                           //#line 513 GJavaParser.g
                                            new AstToken(this.getRhsIToken(2)),
-                                           //#line 517 GJavaParser.g
+                                           //#line 513 GJavaParser.g
                                            <InterfaceType>this.getRhsSym(3))
-                //#line 517 GJavaParser.g
+                //#line 513 GJavaParser.g
                 );
             break;
             }
@@ -2529,17 +2547,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 196:  InterfaceBody ::= { InterfaceMemberDeclarationsopt }
             //
             case 196: {
-               //#line 524 "GJavaParser.g"
+                //#line 520 "GJavaParser.g"
                 this.setResult(
-                    //#line 524 GJavaParser.g
+                    //#line 520 GJavaParser.g
                     new InterfaceBody(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 524 GJavaParser.g
+                                      //#line 520 GJavaParser.g
                                       new AstToken(this.getRhsIToken(1)),
-                                      //#line 524 GJavaParser.g
+                                      //#line 520 GJavaParser.g
                                       <IInterfaceMemberDeclarationsopt>this.getRhsSym(2),
-                                      //#line 524 GJavaParser.g
+                                      //#line 520 GJavaParser.g
                                       new AstToken(this.getRhsIToken(3)))
-                //#line 524 GJavaParser.g
+                //#line 520 GJavaParser.g
                 );
             break;
             }
@@ -2552,15 +2570,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 198:  InterfaceMemberDeclarations ::= InterfaceMemberDeclarations InterfaceMemberDeclaration
             //
             case 198: {
-               //#line 527 "GJavaParser.g"
+                //#line 523 "GJavaParser.g"
                 this.setResult(
-                    //#line 527 GJavaParser.g
+                    //#line 523 GJavaParser.g
                     new InterfaceMemberDeclarations(this.getLeftIToken(), this.getRightIToken(),
-                                                    //#line 527 GJavaParser.g
+                                                    //#line 523 GJavaParser.g
                                                     <IInterfaceMemberDeclarations>this.getRhsSym(1),
-                                                    //#line 527 GJavaParser.g
+                                                    //#line 523 GJavaParser.g
                                                     <IInterfaceMemberDeclaration>this.getRhsSym(2))
-                //#line 527 GJavaParser.g
+                //#line 523 GJavaParser.g
                 );
             break;
             }
@@ -2588,11 +2606,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 203:  InterfaceMemberDeclaration ::= ;
             //
             case 203: {
-               //#line 533 "GJavaParser.g"
+                //#line 529 "GJavaParser.g"
                 this.setResult(
-                    //#line 533 GJavaParser.g
+                    //#line 529 GJavaParser.g
                     new InterfaceMemberDeclaration(this.getRhsIToken(1))
-                //#line 533 GJavaParser.g
+                //#line 529 GJavaParser.g
                 );
             break;
             }
@@ -2600,17 +2618,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 204:  ConstantDeclaration ::= ConstantModifiersopt Type VariableDeclarators
             //
             case 204: {
-               //#line 535 "GJavaParser.g"
+                //#line 531 "GJavaParser.g"
                 this.setResult(
-                    //#line 535 GJavaParser.g
+                    //#line 531 GJavaParser.g
                     new ConstantDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 535 GJavaParser.g
+                                            //#line 531 GJavaParser.g
                                             <IConstantModifiersopt>this.getRhsSym(1),
-                                            //#line 535 GJavaParser.g
+                                            //#line 531 GJavaParser.g
                                             <IType>this.getRhsSym(2),
-                                            //#line 535 GJavaParser.g
+                                            //#line 531 GJavaParser.g
                                             <IVariableDeclarators>this.getRhsSym(3))
-                //#line 535 GJavaParser.g
+                //#line 531 GJavaParser.g
                 );
             break;
             }
@@ -2623,15 +2641,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 206:  ConstantModifiers ::= ConstantModifiers ConstantModifier
             //
             case 206: {
-               //#line 538 "GJavaParser.g"
+                //#line 534 "GJavaParser.g"
                 this.setResult(
-                    //#line 538 GJavaParser.g
+                    //#line 534 GJavaParser.g
                     new ConstantModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 538 GJavaParser.g
+                                          //#line 534 GJavaParser.g
                                           <IConstantModifiers>this.getRhsSym(1),
-                                          //#line 538 GJavaParser.g
+                                          //#line 534 GJavaParser.g
                                           <IConstantModifier>this.getRhsSym(2))
-                //#line 538 GJavaParser.g
+                //#line 534 GJavaParser.g
                 );
             break;
             }
@@ -2644,11 +2662,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 208:  ConstantModifier ::= public
             //
             case 208: {
-               //#line 541 "GJavaParser.g"
+                //#line 537 "GJavaParser.g"
                 this.setResult(
-                    //#line 541 GJavaParser.g
+                    //#line 537 GJavaParser.g
                     new ConstantModifier0(this.getRhsIToken(1))
-                //#line 541 GJavaParser.g
+                //#line 537 GJavaParser.g
                 );
             break;
             }
@@ -2656,11 +2674,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 209:  ConstantModifier ::= static
             //
             case 209: {
-               //#line 542 "GJavaParser.g"
+                //#line 538 "GJavaParser.g"
                 this.setResult(
-                    //#line 542 GJavaParser.g
+                    //#line 538 GJavaParser.g
                     new ConstantModifier1(this.getRhsIToken(1))
-                //#line 542 GJavaParser.g
+                //#line 538 GJavaParser.g
                 );
             break;
             }
@@ -2668,11 +2686,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 210:  ConstantModifier ::= final
             //
             case 210: {
-               //#line 543 "GJavaParser.g"
+                //#line 539 "GJavaParser.g"
                 this.setResult(
-                    //#line 543 GJavaParser.g
+                    //#line 539 GJavaParser.g
                     new ConstantModifier2(this.getRhsIToken(1))
-                //#line 543 GJavaParser.g
+                //#line 539 GJavaParser.g
                 );
             break;
             }
@@ -2680,23 +2698,23 @@ export class JavaParser extends Object implements RuleAction
             // Rule 211:  AbstractMethodDeclaration ::= AbstractMethodModifiersopt TypeParametersopt ResultType MethodDeclarator Throwsopt ;
             //
             case 211: {
-               //#line 545 "GJavaParser.g"
+                //#line 541 "GJavaParser.g"
                 this.setResult(
-                    //#line 545 GJavaParser.g
+                    //#line 541 GJavaParser.g
                     new AbstractMethodDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 545 GJavaParser.g
+                                                  //#line 541 GJavaParser.g
                                                   <IAbstractMethodModifiersopt>this.getRhsSym(1),
-                                                  //#line 545 GJavaParser.g
+                                                  //#line 541 GJavaParser.g
                                                   <TypeParameters>this.getRhsSym(2),
-                                                  //#line 545 GJavaParser.g
+                                                  //#line 541 GJavaParser.g
                                                   <IResultType>this.getRhsSym(3),
-                                                  //#line 545 GJavaParser.g
+                                                  //#line 541 GJavaParser.g
                                                   <IMethodDeclarator>this.getRhsSym(4),
-                                                  //#line 545 GJavaParser.g
+                                                  //#line 541 GJavaParser.g
                                                   <Throws>this.getRhsSym(5),
-                                                  //#line 545 GJavaParser.g
+                                                  //#line 541 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(6)))
-                //#line 545 GJavaParser.g
+                //#line 541 GJavaParser.g
                 );
             break;
             }
@@ -2709,15 +2727,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 213:  AbstractMethodModifiers ::= AbstractMethodModifiers AbstractMethodModifier
             //
             case 213: {
-               //#line 548 "GJavaParser.g"
+                //#line 544 "GJavaParser.g"
                 this.setResult(
-                    //#line 548 GJavaParser.g
+                    //#line 544 GJavaParser.g
                     new AbstractMethodModifiers(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 548 GJavaParser.g
+                                                //#line 544 GJavaParser.g
                                                 <IAbstractMethodModifiers>this.getRhsSym(1),
-                                                //#line 548 GJavaParser.g
+                                                //#line 544 GJavaParser.g
                                                 <IAbstractMethodModifier>this.getRhsSym(2))
-                //#line 548 GJavaParser.g
+                //#line 544 GJavaParser.g
                 );
             break;
             }
@@ -2730,11 +2748,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 215:  AbstractMethodModifier ::= public
             //
             case 215: {
-               //#line 551 "GJavaParser.g"
+                //#line 547 "GJavaParser.g"
                 this.setResult(
-                    //#line 551 GJavaParser.g
+                    //#line 547 GJavaParser.g
                     new AbstractMethodModifier0(this.getRhsIToken(1))
-                //#line 551 GJavaParser.g
+                //#line 547 GJavaParser.g
                 );
             break;
             }
@@ -2742,11 +2760,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 216:  AbstractMethodModifier ::= abstract
             //
             case 216: {
-               //#line 552 "GJavaParser.g"
+                //#line 548 "GJavaParser.g"
                 this.setResult(
-                    //#line 552 GJavaParser.g
+                    //#line 548 GJavaParser.g
                     new AbstractMethodModifier1(this.getRhsIToken(1))
-                //#line 552 GJavaParser.g
+                //#line 548 GJavaParser.g
                 );
             break;
             }
@@ -2754,21 +2772,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 217:  AnnotationTypeDeclaration ::= InterfaceModifiersopt @ interface identifier AnnotationTypeBody
             //
             case 217: {
-               //#line 554 "GJavaParser.g"
+                //#line 550 "GJavaParser.g"
                 this.setResult(
-                    //#line 554 GJavaParser.g
+                    //#line 550 GJavaParser.g
                     new AnnotationTypeDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 554 GJavaParser.g
+                                                  //#line 550 GJavaParser.g
                                                   <IInterfaceModifiersopt>this.getRhsSym(1),
-                                                  //#line 554 GJavaParser.g
+                                                  //#line 550 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(2)),
-                                                  //#line 554 GJavaParser.g
+                                                  //#line 550 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(3)),
-                                                  //#line 554 GJavaParser.g
+                                                  //#line 550 GJavaParser.g
                                                   <identifier>this.getRhsSym(4),
-                                                  //#line 554 GJavaParser.g
+                                                  //#line 550 GJavaParser.g
                                                   <AnnotationTypeBody>this.getRhsSym(5))
-                //#line 554 GJavaParser.g
+                //#line 550 GJavaParser.g
                 );
             break;
             }
@@ -2776,17 +2794,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 218:  AnnotationTypeBody ::= { AnnotationTypeElementDeclarationsopt }
             //
             case 218: {
-               //#line 556 "GJavaParser.g"
+                //#line 552 "GJavaParser.g"
                 this.setResult(
-                    //#line 556 GJavaParser.g
+                    //#line 552 GJavaParser.g
                     new AnnotationTypeBody(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 556 GJavaParser.g
+                                           //#line 552 GJavaParser.g
                                            new AstToken(this.getRhsIToken(1)),
-                                           //#line 556 GJavaParser.g
+                                           //#line 552 GJavaParser.g
                                            <IAnnotationTypeElementDeclarationsopt>this.getRhsSym(2),
-                                           //#line 556 GJavaParser.g
+                                           //#line 552 GJavaParser.g
                                            new AstToken(this.getRhsIToken(3)))
-                //#line 556 GJavaParser.g
+                //#line 552 GJavaParser.g
                 );
             break;
             }
@@ -2799,15 +2817,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 220:  AnnotationTypeElementDeclarations ::= AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
             //
             case 220: {
-               //#line 559 "GJavaParser.g"
+                //#line 555 "GJavaParser.g"
                 this.setResult(
-                    //#line 559 GJavaParser.g
+                    //#line 555 GJavaParser.g
                     new AnnotationTypeElementDeclarations(this.getLeftIToken(), this.getRightIToken(),
-                                                          //#line 559 GJavaParser.g
+                                                          //#line 555 GJavaParser.g
                                                           <IAnnotationTypeElementDeclarations>this.getRhsSym(1),
-                                                          //#line 559 GJavaParser.g
+                                                          //#line 555 GJavaParser.g
                                                           <IAnnotationTypeElementDeclaration>this.getRhsSym(2))
-                //#line 559 GJavaParser.g
+                //#line 555 GJavaParser.g
                 );
             break;
             }
@@ -2815,25 +2833,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 221:  AnnotationTypeElementDeclaration ::= AbstractMethodModifiersopt Type identifier ( ) DefaultValueopt ;
             //
             case 221: {
-               //#line 561 "GJavaParser.g"
+                //#line 557 "GJavaParser.g"
                 this.setResult(
-                    //#line 561 GJavaParser.g
+                    //#line 557 GJavaParser.g
                     new AnnotationTypeElementDeclaration0(this.getLeftIToken(), this.getRightIToken(),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           <IAbstractMethodModifiersopt>this.getRhsSym(1),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           <IType>this.getRhsSym(2),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           <identifier>this.getRhsSym(3),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           new AstToken(this.getRhsIToken(4)),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           new AstToken(this.getRhsIToken(5)),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           <DefaultValue>this.getRhsSym(6),
-                                                          //#line 561 GJavaParser.g
+                                                          //#line 557 GJavaParser.g
                                                           new AstToken(this.getRhsIToken(7)))
-                //#line 561 GJavaParser.g
+                //#line 557 GJavaParser.g
                 );
             break;
             }
@@ -2866,11 +2884,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 227:  AnnotationTypeElementDeclaration ::= ;
             //
             case 227: {
-               //#line 567 "GJavaParser.g"
+                //#line 563 "GJavaParser.g"
                 this.setResult(
-                    //#line 567 GJavaParser.g
+                    //#line 563 GJavaParser.g
                     new AnnotationTypeElementDeclaration1(this.getRhsIToken(1))
-                //#line 567 GJavaParser.g
+                //#line 563 GJavaParser.g
                 );
             break;
             }
@@ -2878,15 +2896,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 228:  DefaultValue ::= default ElementValue
             //
             case 228: {
-               //#line 569 "GJavaParser.g"
+                //#line 565 "GJavaParser.g"
                 this.setResult(
-                    //#line 569 GJavaParser.g
+                    //#line 565 GJavaParser.g
                     new DefaultValue(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 569 GJavaParser.g
+                                     //#line 565 GJavaParser.g
                                      new AstToken(this.getRhsIToken(1)),
-                                     //#line 569 GJavaParser.g
+                                     //#line 565 GJavaParser.g
                                      <IElementValue>this.getRhsSym(2))
-                //#line 569 GJavaParser.g
+                //#line 565 GJavaParser.g
                 );
             break;
             }
@@ -2899,15 +2917,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 230:  Annotations ::= Annotations Annotation
             //
             case 230: {
-               //#line 572 "GJavaParser.g"
+                //#line 568 "GJavaParser.g"
                 this.setResult(
-                    //#line 572 GJavaParser.g
+                    //#line 568 GJavaParser.g
                     new Annotations(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 572 GJavaParser.g
+                                    //#line 568 GJavaParser.g
                                     <IAnnotations>this.getRhsSym(1),
-                                    //#line 572 GJavaParser.g
+                                    //#line 568 GJavaParser.g
                                     <IAnnotation>this.getRhsSym(2))
-                //#line 572 GJavaParser.g
+                //#line 568 GJavaParser.g
                 );
             break;
             }
@@ -2930,21 +2948,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 234:  NormalAnnotation ::= @ TypeName ( ElementValuePairsopt )
             //
             case 234: {
-               //#line 578 "GJavaParser.g"
+                //#line 574 "GJavaParser.g"
                 this.setResult(
-                    //#line 578 GJavaParser.g
+                    //#line 574 GJavaParser.g
                     new NormalAnnotation(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 578 GJavaParser.g
+                                         //#line 574 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 578 GJavaParser.g
+                                         //#line 574 GJavaParser.g
                                          <ITypeName>this.getRhsSym(2),
-                                         //#line 578 GJavaParser.g
+                                         //#line 574 GJavaParser.g
                                          new AstToken(this.getRhsIToken(3)),
-                                         //#line 578 GJavaParser.g
+                                         //#line 574 GJavaParser.g
                                          <IElementValuePairsopt>this.getRhsSym(4),
-                                         //#line 578 GJavaParser.g
+                                         //#line 574 GJavaParser.g
                                          new AstToken(this.getRhsIToken(5)))
-                //#line 578 GJavaParser.g
+                //#line 574 GJavaParser.g
                 );
             break;
             }
@@ -2957,17 +2975,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 236:  ElementValuePairs ::= ElementValuePairs , ElementValuePair
             //
             case 236: {
-               //#line 581 "GJavaParser.g"
+                //#line 577 "GJavaParser.g"
                 this.setResult(
-                    //#line 581 GJavaParser.g
+                    //#line 577 GJavaParser.g
                     new ElementValuePairs(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 581 GJavaParser.g
+                                          //#line 577 GJavaParser.g
                                           <IElementValuePairs>this.getRhsSym(1),
-                                          //#line 581 GJavaParser.g
+                                          //#line 577 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 581 GJavaParser.g
+                                          //#line 577 GJavaParser.g
                                           <ElementValuePair>this.getRhsSym(3))
-                //#line 581 GJavaParser.g
+                //#line 577 GJavaParser.g
                 );
             break;
             }
@@ -2975,17 +2993,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 237:  ElementValuePair ::= SimpleName = ElementValue
             //
             case 237: {
-               //#line 583 "GJavaParser.g"
+                //#line 579 "GJavaParser.g"
                 this.setResult(
-                    //#line 583 GJavaParser.g
+                    //#line 579 GJavaParser.g
                     new ElementValuePair(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 583 GJavaParser.g
+                                         //#line 579 GJavaParser.g
                                          <identifier>this.getRhsSym(1),
-                                         //#line 583 GJavaParser.g
+                                         //#line 579 GJavaParser.g
                                          new AstToken(this.getRhsIToken(2)),
-                                         //#line 583 GJavaParser.g
+                                         //#line 579 GJavaParser.g
                                          <IElementValue>this.getRhsSym(3))
-                //#line 583 GJavaParser.g
+                //#line 579 GJavaParser.g
                 );
             break;
             }
@@ -3013,19 +3031,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 242:  ElementValueArrayInitializer ::= { ElementValuesopt ,opt }
             //
             case 242: {
-               //#line 591 "GJavaParser.g"
+                //#line 587 "GJavaParser.g"
                 this.setResult(
-                    //#line 591 GJavaParser.g
+                    //#line 587 GJavaParser.g
                     new ElementValueArrayInitializer(this.getLeftIToken(), this.getRightIToken(),
-                                                     //#line 591 GJavaParser.g
+                                                     //#line 587 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(1)),
-                                                     //#line 591 GJavaParser.g
+                                                     //#line 587 GJavaParser.g
                                                      <IElementValuesopt>this.getRhsSym(2),
-                                                     //#line 591 GJavaParser.g
+                                                     //#line 587 GJavaParser.g
                                                      <Commaopt>this.getRhsSym(3),
-                                                     //#line 591 GJavaParser.g
+                                                     //#line 587 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(4)))
-                //#line 591 GJavaParser.g
+                //#line 587 GJavaParser.g
                 );
             break;
             }
@@ -3038,17 +3056,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 244:  ElementValues ::= ElementValues , ElementValue
             //
             case 244: {
-               //#line 594 "GJavaParser.g"
+                //#line 590 "GJavaParser.g"
                 this.setResult(
-                    //#line 594 GJavaParser.g
+                    //#line 590 GJavaParser.g
                     new ElementValues(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 594 GJavaParser.g
+                                      //#line 590 GJavaParser.g
                                       <IElementValues>this.getRhsSym(1),
-                                      //#line 594 GJavaParser.g
+                                      //#line 590 GJavaParser.g
                                       new AstToken(this.getRhsIToken(2)),
-                                      //#line 594 GJavaParser.g
+                                      //#line 590 GJavaParser.g
                                       <IElementValue>this.getRhsSym(3))
-                //#line 594 GJavaParser.g
+                //#line 590 GJavaParser.g
                 );
             break;
             }
@@ -3056,15 +3074,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 245:  MarkerAnnotation ::= @ TypeName
             //
             case 245: {
-               //#line 596 "GJavaParser.g"
+                //#line 592 "GJavaParser.g"
                 this.setResult(
-                    //#line 596 GJavaParser.g
+                    //#line 592 GJavaParser.g
                     new MarkerAnnotation(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 596 GJavaParser.g
+                                         //#line 592 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 596 GJavaParser.g
+                                         //#line 592 GJavaParser.g
                                          <ITypeName>this.getRhsSym(2))
-                //#line 596 GJavaParser.g
+                //#line 592 GJavaParser.g
                 );
             break;
             }
@@ -3072,21 +3090,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 246:  SingleElementAnnotation ::= @ TypeName ( ElementValue )
             //
             case 246: {
-               //#line 598 "GJavaParser.g"
+                //#line 594 "GJavaParser.g"
                 this.setResult(
-                    //#line 598 GJavaParser.g
+                    //#line 594 GJavaParser.g
                     new SingleElementAnnotation(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 598 GJavaParser.g
+                                                //#line 594 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(1)),
-                                                //#line 598 GJavaParser.g
+                                                //#line 594 GJavaParser.g
                                                 <ITypeName>this.getRhsSym(2),
-                                                //#line 598 GJavaParser.g
+                                                //#line 594 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(3)),
-                                                //#line 598 GJavaParser.g
+                                                //#line 594 GJavaParser.g
                                                 <IElementValue>this.getRhsSym(4),
-                                                //#line 598 GJavaParser.g
+                                                //#line 594 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(5)))
-                //#line 598 GJavaParser.g
+                //#line 594 GJavaParser.g
                 );
             break;
             }
@@ -3094,19 +3112,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 247:  ArrayInitializer ::= { VariableInitializersopt ,opt }
             //
             case 247: {
-               //#line 602 "GJavaParser.g"
+                //#line 598 "GJavaParser.g"
                 this.setResult(
-                    //#line 602 GJavaParser.g
+                    //#line 598 GJavaParser.g
                     new ArrayInitializer(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 602 GJavaParser.g
+                                         //#line 598 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 602 GJavaParser.g
+                                         //#line 598 GJavaParser.g
                                          <IVariableInitializersopt>this.getRhsSym(2),
-                                         //#line 602 GJavaParser.g
+                                         //#line 598 GJavaParser.g
                                          <Commaopt>this.getRhsSym(3),
-                                         //#line 602 GJavaParser.g
+                                         //#line 598 GJavaParser.g
                                          new AstToken(this.getRhsIToken(4)))
-                //#line 602 GJavaParser.g
+                //#line 598 GJavaParser.g
                 );
             break;
             }
@@ -3119,17 +3137,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 249:  VariableInitializers ::= VariableInitializers , VariableInitializer
             //
             case 249: {
-               //#line 605 "GJavaParser.g"
+                //#line 601 "GJavaParser.g"
                 this.setResult(
-                    //#line 605 GJavaParser.g
+                    //#line 601 GJavaParser.g
                     new VariableInitializers(this.getLeftIToken(), this.getRightIToken(),
-                                             //#line 605 GJavaParser.g
+                                             //#line 601 GJavaParser.g
                                              <IVariableInitializers>this.getRhsSym(1),
-                                             //#line 605 GJavaParser.g
+                                             //#line 601 GJavaParser.g
                                              new AstToken(this.getRhsIToken(2)),
-                                             //#line 605 GJavaParser.g
+                                             //#line 601 GJavaParser.g
                                              <IVariableInitializer>this.getRhsSym(3))
-                //#line 605 GJavaParser.g
+                //#line 601 GJavaParser.g
                 );
             break;
             }
@@ -3137,17 +3155,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 250:  Block ::= { BlockStatementsopt }
             //
             case 250: {
-               //#line 621 "GJavaParser.g"
+                //#line 617 "GJavaParser.g"
                 this.setResult(
-                    //#line 621 GJavaParser.g
+                    //#line 617 GJavaParser.g
                     new Block(this.getLeftIToken(), this.getRightIToken(),
-                              //#line 621 GJavaParser.g
+                              //#line 617 GJavaParser.g
                               new AstToken(this.getRhsIToken(1)),
-                              //#line 621 GJavaParser.g
+                              //#line 617 GJavaParser.g
                               <IBlockStatementsopt>this.getRhsSym(2),
-                              //#line 621 GJavaParser.g
+                              //#line 617 GJavaParser.g
                               new AstToken(this.getRhsIToken(3)))
-                //#line 621 GJavaParser.g
+                //#line 617 GJavaParser.g
                 );
             break;
             }
@@ -3160,15 +3178,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 252:  BlockStatements ::= BlockStatements BlockStatement
             //
             case 252: {
-               //#line 624 "GJavaParser.g"
+                //#line 620 "GJavaParser.g"
                 this.setResult(
-                    //#line 624 GJavaParser.g
+                    //#line 620 GJavaParser.g
                     new BlockStatements(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 624 GJavaParser.g
+                                        //#line 620 GJavaParser.g
                                         <IBlockStatements>this.getRhsSym(1),
-                                        //#line 624 GJavaParser.g
+                                        //#line 620 GJavaParser.g
                                         <IBlockStatement>this.getRhsSym(2))
-                //#line 624 GJavaParser.g
+                //#line 620 GJavaParser.g
                 );
             break;
             }
@@ -3191,15 +3209,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 256:  LocalVariableDeclarationStatement ::= LocalVariableDeclaration ;
             //
             case 256: {
-               //#line 630 "GJavaParser.g"
+                //#line 626 "GJavaParser.g"
                 this.setResult(
-                    //#line 630 GJavaParser.g
+                    //#line 626 GJavaParser.g
                     new LocalVariableDeclarationStatement(this.getLeftIToken(), this.getRightIToken(),
-                                                          //#line 630 GJavaParser.g
+                                                          //#line 626 GJavaParser.g
                                                           <LocalVariableDeclaration>this.getRhsSym(1),
-                                                          //#line 630 GJavaParser.g
+                                                          //#line 626 GJavaParser.g
                                                           new AstToken(this.getRhsIToken(2)))
-                //#line 630 GJavaParser.g
+                //#line 626 GJavaParser.g
                 );
             break;
             }
@@ -3207,17 +3225,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 257:  LocalVariableDeclaration ::= VariableModifiersopt Type VariableDeclarators
             //
             case 257: {
-               //#line 632 "GJavaParser.g"
+                //#line 628 "GJavaParser.g"
                 this.setResult(
-                    //#line 632 GJavaParser.g
+                    //#line 628 GJavaParser.g
                     new LocalVariableDeclaration(this.getLeftIToken(), this.getRightIToken(),
-                                                 //#line 632 GJavaParser.g
+                                                 //#line 628 GJavaParser.g
                                                  <IVariableModifiersopt>this.getRhsSym(1),
-                                                 //#line 632 GJavaParser.g
+                                                 //#line 628 GJavaParser.g
                                                  <IType>this.getRhsSym(2),
-                                                 //#line 632 GJavaParser.g
+                                                 //#line 628 GJavaParser.g
                                                  <IVariableDeclarators>this.getRhsSym(3))
-                //#line 632 GJavaParser.g
+                //#line 628 GJavaParser.g
                 );
             break;
             }
@@ -3340,21 +3358,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 281:  IfThenStatement ::= if ( Expression ) Statement
             //
             case 281: {
-               //#line 675 "GJavaParser.g"
+                //#line 671 "GJavaParser.g"
                 this.setResult(
-                    //#line 675 GJavaParser.g
+                    //#line 671 GJavaParser.g
                     new IfThenStatement(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 675 GJavaParser.g
+                                        //#line 671 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 675 GJavaParser.g
+                                        //#line 671 GJavaParser.g
                                         new AstToken(this.getRhsIToken(2)),
-                                        //#line 675 GJavaParser.g
+                                        //#line 671 GJavaParser.g
                                         <IExpression>this.getRhsSym(3),
-                                        //#line 675 GJavaParser.g
+                                        //#line 671 GJavaParser.g
                                         new AstToken(this.getRhsIToken(4)),
-                                        //#line 675 GJavaParser.g
+                                        //#line 671 GJavaParser.g
                                         <IStatement>this.getRhsSym(5))
-                //#line 675 GJavaParser.g
+                //#line 671 GJavaParser.g
                 );
             break;
             }
@@ -3362,25 +3380,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 282:  IfThenElseStatement ::= if ( Expression ) StatementNoShortIf else Statement
             //
             case 282: {
-               //#line 677 "GJavaParser.g"
+                //#line 673 "GJavaParser.g"
                 this.setResult(
-                    //#line 677 GJavaParser.g
+                    //#line 673 GJavaParser.g
                     new IfThenElseStatement(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             new AstToken(this.getRhsIToken(1)),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             <IExpression>this.getRhsSym(3),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             new AstToken(this.getRhsIToken(4)),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             <IStatementNoShortIf>this.getRhsSym(5),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             new AstToken(this.getRhsIToken(6)),
-                                            //#line 677 GJavaParser.g
+                                            //#line 673 GJavaParser.g
                                             <IStatement>this.getRhsSym(7))
-                //#line 677 GJavaParser.g
+                //#line 673 GJavaParser.g
                 );
             break;
             }
@@ -3388,25 +3406,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 283:  IfThenElseStatementNoShortIf ::= if ( Expression ) StatementNoShortIf else StatementNoShortIf
             //
             case 283: {
-               //#line 679 "GJavaParser.g"
+                //#line 675 "GJavaParser.g"
                 this.setResult(
-                    //#line 679 GJavaParser.g
+                    //#line 675 GJavaParser.g
                     new IfThenElseStatementNoShortIf(this.getLeftIToken(), this.getRightIToken(),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(1)),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(2)),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      <IExpression>this.getRhsSym(3),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(4)),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      <IStatementNoShortIf>this.getRhsSym(5),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(6)),
-                                                     //#line 679 GJavaParser.g
+                                                     //#line 675 GJavaParser.g
                                                      <IStatementNoShortIf>this.getRhsSym(7))
-                //#line 679 GJavaParser.g
+                //#line 675 GJavaParser.g
                 );
             break;
             }
@@ -3414,11 +3432,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 284:  EmptyStatement ::= ;
             //
             case 284: {
-               //#line 681 "GJavaParser.g"
+                //#line 677 "GJavaParser.g"
                 this.setResult(
-                    //#line 681 GJavaParser.g
+                    //#line 677 GJavaParser.g
                     new EmptyStatement(this.getRhsIToken(1))
-                //#line 681 GJavaParser.g
+                //#line 677 GJavaParser.g
                 );
             break;
             }
@@ -3426,17 +3444,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 285:  LabeledStatement ::= identifier : Statement
             //
             case 285: {
-               //#line 683 "GJavaParser.g"
+                //#line 679 "GJavaParser.g"
                 this.setResult(
-                    //#line 683 GJavaParser.g
+                    //#line 679 GJavaParser.g
                     new LabeledStatement(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 683 GJavaParser.g
+                                         //#line 679 GJavaParser.g
                                          <identifier>this.getRhsSym(1),
-                                         //#line 683 GJavaParser.g
+                                         //#line 679 GJavaParser.g
                                          new AstToken(this.getRhsIToken(2)),
-                                         //#line 683 GJavaParser.g
+                                         //#line 679 GJavaParser.g
                                          <IStatement>this.getRhsSym(3))
-                //#line 683 GJavaParser.g
+                //#line 679 GJavaParser.g
                 );
             break;
             }
@@ -3444,17 +3462,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 286:  LabeledStatementNoShortIf ::= identifier : StatementNoShortIf
             //
             case 286: {
-               //#line 685 "GJavaParser.g"
+                //#line 681 "GJavaParser.g"
                 this.setResult(
-                    //#line 685 GJavaParser.g
+                    //#line 681 GJavaParser.g
                     new LabeledStatementNoShortIf(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 685 GJavaParser.g
+                                                  //#line 681 GJavaParser.g
                                                   <identifier>this.getRhsSym(1),
-                                                  //#line 685 GJavaParser.g
+                                                  //#line 681 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(2)),
-                                                  //#line 685 GJavaParser.g
+                                                  //#line 681 GJavaParser.g
                                                   <IStatementNoShortIf>this.getRhsSym(3))
-                //#line 685 GJavaParser.g
+                //#line 681 GJavaParser.g
                 );
             break;
             }
@@ -3462,15 +3480,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 287:  ExpressionStatement ::= StatementExpression ;
             //
             case 287: {
-               //#line 687 "GJavaParser.g"
+                //#line 683 "GJavaParser.g"
                 this.setResult(
-                    //#line 687 GJavaParser.g
+                    //#line 683 GJavaParser.g
                     new ExpressionStatement(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 687 GJavaParser.g
+                                            //#line 683 GJavaParser.g
                                             <IStatementExpression>this.getRhsSym(1),
-                                            //#line 687 GJavaParser.g
+                                            //#line 683 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)))
-                //#line 687 GJavaParser.g
+                //#line 683 GJavaParser.g
                 );
             break;
             }
@@ -3513,17 +3531,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 295:  AssertStatement ::= assert Expression ;
             //
             case 295: {
-               //#line 706 "GJavaParser.g"
+                //#line 702 "GJavaParser.g"
                 this.setResult(
-                    //#line 706 GJavaParser.g
+                    //#line 702 GJavaParser.g
                     new AssertStatement0(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 706 GJavaParser.g
+                                         //#line 702 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 706 GJavaParser.g
+                                         //#line 702 GJavaParser.g
                                          <IExpression>this.getRhsSym(2),
-                                         //#line 706 GJavaParser.g
+                                         //#line 702 GJavaParser.g
                                          new AstToken(this.getRhsIToken(3)))
-                //#line 706 GJavaParser.g
+                //#line 702 GJavaParser.g
                 );
             break;
             }
@@ -3531,21 +3549,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 296:  AssertStatement ::= assert Expression : Expression ;
             //
             case 296: {
-               //#line 707 "GJavaParser.g"
+                //#line 703 "GJavaParser.g"
                 this.setResult(
-                    //#line 707 GJavaParser.g
+                    //#line 703 GJavaParser.g
                     new AssertStatement1(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 707 GJavaParser.g
+                                         //#line 703 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 707 GJavaParser.g
+                                         //#line 703 GJavaParser.g
                                          <IExpression>this.getRhsSym(2),
-                                         //#line 707 GJavaParser.g
+                                         //#line 703 GJavaParser.g
                                          new AstToken(this.getRhsIToken(3)),
-                                         //#line 707 GJavaParser.g
+                                         //#line 703 GJavaParser.g
                                          <IExpression>this.getRhsSym(4),
-                                         //#line 707 GJavaParser.g
+                                         //#line 703 GJavaParser.g
                                          new AstToken(this.getRhsIToken(5)))
-                //#line 707 GJavaParser.g
+                //#line 703 GJavaParser.g
                 );
             break;
             }
@@ -3553,21 +3571,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 297:  SwitchStatement ::= switch ( Expression ) SwitchBlock
             //
             case 297: {
-               //#line 709 "GJavaParser.g"
+                //#line 705 "GJavaParser.g"
                 this.setResult(
-                    //#line 709 GJavaParser.g
+                    //#line 705 GJavaParser.g
                     new SwitchStatement(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 709 GJavaParser.g
+                                        //#line 705 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 709 GJavaParser.g
+                                        //#line 705 GJavaParser.g
                                         new AstToken(this.getRhsIToken(2)),
-                                        //#line 709 GJavaParser.g
+                                        //#line 705 GJavaParser.g
                                         <IExpression>this.getRhsSym(3),
-                                        //#line 709 GJavaParser.g
+                                        //#line 705 GJavaParser.g
                                         new AstToken(this.getRhsIToken(4)),
-                                        //#line 709 GJavaParser.g
+                                        //#line 705 GJavaParser.g
                                         <SwitchBlock>this.getRhsSym(5))
-                //#line 709 GJavaParser.g
+                //#line 705 GJavaParser.g
                 );
             break;
             }
@@ -3575,19 +3593,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 298:  SwitchBlock ::= { SwitchBlockStatementGroupsopt SwitchLabelsopt }
             //
             case 298: {
-               //#line 711 "GJavaParser.g"
+                //#line 707 "GJavaParser.g"
                 this.setResult(
-                    //#line 711 GJavaParser.g
+                    //#line 707 GJavaParser.g
                     new SwitchBlock(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 711 GJavaParser.g
+                                    //#line 707 GJavaParser.g
                                     new AstToken(this.getRhsIToken(1)),
-                                    //#line 711 GJavaParser.g
+                                    //#line 707 GJavaParser.g
                                     <ISwitchBlockStatementGroupsopt>this.getRhsSym(2),
-                                    //#line 711 GJavaParser.g
+                                    //#line 707 GJavaParser.g
                                     <ISwitchLabelsopt>this.getRhsSym(3),
-                                    //#line 711 GJavaParser.g
+                                    //#line 707 GJavaParser.g
                                     new AstToken(this.getRhsIToken(4)))
-                //#line 711 GJavaParser.g
+                //#line 707 GJavaParser.g
                 );
             break;
             }
@@ -3600,15 +3618,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 300:  SwitchBlockStatementGroups ::= SwitchBlockStatementGroups SwitchBlockStatementGroup
             //
             case 300: {
-               //#line 714 "GJavaParser.g"
+                //#line 710 "GJavaParser.g"
                 this.setResult(
-                    //#line 714 GJavaParser.g
+                    //#line 710 GJavaParser.g
                     new SwitchBlockStatementGroups(this.getLeftIToken(), this.getRightIToken(),
-                                                   //#line 714 GJavaParser.g
+                                                   //#line 710 GJavaParser.g
                                                    <ISwitchBlockStatementGroups>this.getRhsSym(1),
-                                                   //#line 714 GJavaParser.g
+                                                   //#line 710 GJavaParser.g
                                                    <SwitchBlockStatementGroup>this.getRhsSym(2))
-                //#line 714 GJavaParser.g
+                //#line 710 GJavaParser.g
                 );
             break;
             }
@@ -3616,15 +3634,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 301:  SwitchBlockStatementGroup ::= SwitchLabels BlockStatements
             //
             case 301: {
-               //#line 716 "GJavaParser.g"
+                //#line 712 "GJavaParser.g"
                 this.setResult(
-                    //#line 716 GJavaParser.g
+                    //#line 712 GJavaParser.g
                     new SwitchBlockStatementGroup(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 716 GJavaParser.g
+                                                  //#line 712 GJavaParser.g
                                                   <ISwitchLabels>this.getRhsSym(1),
-                                                  //#line 716 GJavaParser.g
+                                                  //#line 712 GJavaParser.g
                                                   <IBlockStatements>this.getRhsSym(2))
-                //#line 716 GJavaParser.g
+                //#line 712 GJavaParser.g
                 );
             break;
             }
@@ -3637,15 +3655,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 303:  SwitchLabels ::= SwitchLabels SwitchLabel
             //
             case 303: {
-               //#line 719 "GJavaParser.g"
+                //#line 715 "GJavaParser.g"
                 this.setResult(
-                    //#line 719 GJavaParser.g
+                    //#line 715 GJavaParser.g
                     new SwitchLabels(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 719 GJavaParser.g
+                                     //#line 715 GJavaParser.g
                                      <ISwitchLabels>this.getRhsSym(1),
-                                     //#line 719 GJavaParser.g
+                                     //#line 715 GJavaParser.g
                                      <ISwitchLabel>this.getRhsSym(2))
-                //#line 719 GJavaParser.g
+                //#line 715 GJavaParser.g
                 );
             break;
             }
@@ -3653,17 +3671,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 304:  SwitchLabel ::= case ConstantExpression :
             //
             case 304: {
-               //#line 721 "GJavaParser.g"
+                //#line 717 "GJavaParser.g"
                 this.setResult(
-                    //#line 721 GJavaParser.g
+                    //#line 717 GJavaParser.g
                     new SwitchLabel0(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 721 GJavaParser.g
+                                     //#line 717 GJavaParser.g
                                      new AstToken(this.getRhsIToken(1)),
-                                     //#line 721 GJavaParser.g
+                                     //#line 717 GJavaParser.g
                                      <IConstantExpression>this.getRhsSym(2),
-                                     //#line 721 GJavaParser.g
+                                     //#line 717 GJavaParser.g
                                      new AstToken(this.getRhsIToken(3)))
-                //#line 721 GJavaParser.g
+                //#line 717 GJavaParser.g
                 );
             break;
             }
@@ -3671,17 +3689,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 305:  SwitchLabel ::= case EnumConstant :
             //
             case 305: {
-               //#line 722 "GJavaParser.g"
+                //#line 718 "GJavaParser.g"
                 this.setResult(
-                    //#line 722 GJavaParser.g
+                    //#line 718 GJavaParser.g
                     new SwitchLabel1(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 722 GJavaParser.g
+                                     //#line 718 GJavaParser.g
                                      new AstToken(this.getRhsIToken(1)),
-                                     //#line 722 GJavaParser.g
+                                     //#line 718 GJavaParser.g
                                      <IEnumConstant>this.getRhsSym(2),
-                                     //#line 722 GJavaParser.g
+                                     //#line 718 GJavaParser.g
                                      new AstToken(this.getRhsIToken(3)))
-                //#line 722 GJavaParser.g
+                //#line 718 GJavaParser.g
                 );
             break;
             }
@@ -3689,15 +3707,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 306:  SwitchLabel ::= default :
             //
             case 306: {
-               //#line 723 "GJavaParser.g"
+                //#line 719 "GJavaParser.g"
                 this.setResult(
-                    //#line 723 GJavaParser.g
+                    //#line 719 GJavaParser.g
                     new SwitchLabel2(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 723 GJavaParser.g
+                                     //#line 719 GJavaParser.g
                                      new AstToken(this.getRhsIToken(1)),
-                                     //#line 723 GJavaParser.g
+                                     //#line 719 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)))
-                //#line 723 GJavaParser.g
+                //#line 719 GJavaParser.g
                 );
             break;
             }
@@ -3710,21 +3728,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 308:  WhileStatement ::= while ( Expression ) Statement
             //
             case 308: {
-               //#line 727 "GJavaParser.g"
+                //#line 723 "GJavaParser.g"
                 this.setResult(
-                    //#line 727 GJavaParser.g
+                    //#line 723 GJavaParser.g
                     new WhileStatement(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 727 GJavaParser.g
+                                       //#line 723 GJavaParser.g
                                        new AstToken(this.getRhsIToken(1)),
-                                       //#line 727 GJavaParser.g
+                                       //#line 723 GJavaParser.g
                                        new AstToken(this.getRhsIToken(2)),
-                                       //#line 727 GJavaParser.g
+                                       //#line 723 GJavaParser.g
                                        <IExpression>this.getRhsSym(3),
-                                       //#line 727 GJavaParser.g
+                                       //#line 723 GJavaParser.g
                                        new AstToken(this.getRhsIToken(4)),
-                                       //#line 727 GJavaParser.g
+                                       //#line 723 GJavaParser.g
                                        <IStatement>this.getRhsSym(5))
-                //#line 727 GJavaParser.g
+                //#line 723 GJavaParser.g
                 );
             break;
             }
@@ -3732,21 +3750,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 309:  WhileStatementNoShortIf ::= while ( Expression ) StatementNoShortIf
             //
             case 309: {
-               //#line 729 "GJavaParser.g"
+                //#line 725 "GJavaParser.g"
                 this.setResult(
-                    //#line 729 GJavaParser.g
+                    //#line 725 GJavaParser.g
                     new WhileStatementNoShortIf(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 729 GJavaParser.g
+                                                //#line 725 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(1)),
-                                                //#line 729 GJavaParser.g
+                                                //#line 725 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(2)),
-                                                //#line 729 GJavaParser.g
+                                                //#line 725 GJavaParser.g
                                                 <IExpression>this.getRhsSym(3),
-                                                //#line 729 GJavaParser.g
+                                                //#line 725 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(4)),
-                                                //#line 729 GJavaParser.g
+                                                //#line 725 GJavaParser.g
                                                 <IStatementNoShortIf>this.getRhsSym(5))
-                //#line 729 GJavaParser.g
+                //#line 725 GJavaParser.g
                 );
             break;
             }
@@ -3754,25 +3772,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 310:  DoStatement ::= do Statement while ( Expression ) ;
             //
             case 310: {
-               //#line 731 "GJavaParser.g"
+                //#line 727 "GJavaParser.g"
                 this.setResult(
-                    //#line 731 GJavaParser.g
+                    //#line 727 GJavaParser.g
                     new DoStatement(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     new AstToken(this.getRhsIToken(1)),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     <IStatement>this.getRhsSym(2),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     new AstToken(this.getRhsIToken(3)),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     new AstToken(this.getRhsIToken(4)),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     <IExpression>this.getRhsSym(5),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     new AstToken(this.getRhsIToken(6)),
-                                    //#line 731 GJavaParser.g
+                                    //#line 727 GJavaParser.g
                                     new AstToken(this.getRhsIToken(7)))
-                //#line 731 GJavaParser.g
+                //#line 727 GJavaParser.g
                 );
             break;
             }
@@ -3790,29 +3808,29 @@ export class JavaParser extends Object implements RuleAction
             // Rule 313:  BasicForStatement ::= for ( ForInitopt ; Expressionopt ; ForUpdateopt ) Statement
             //
             case 313: {
-               //#line 736 "GJavaParser.g"
+                //#line 732 "GJavaParser.g"
                 this.setResult(
-                    //#line 736 GJavaParser.g
+                    //#line 732 GJavaParser.g
                     new BasicForStatement(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           new AstToken(this.getRhsIToken(1)),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           <IForInitopt>this.getRhsSym(3),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           new AstToken(this.getRhsIToken(4)),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           <IExpressionopt>this.getRhsSym(5),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           new AstToken(this.getRhsIToken(6)),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           <IForUpdateopt>this.getRhsSym(7),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           new AstToken(this.getRhsIToken(8)),
-                                          //#line 736 GJavaParser.g
+                                          //#line 732 GJavaParser.g
                                           <IStatement>this.getRhsSym(9))
-                //#line 736 GJavaParser.g
+                //#line 732 GJavaParser.g
                 );
             break;
             }
@@ -3820,29 +3838,29 @@ export class JavaParser extends Object implements RuleAction
             // Rule 314:  ForStatementNoShortIf ::= for ( ForInitopt ; Expressionopt ; ForUpdateopt ) StatementNoShortIf
             //
             case 314: {
-               //#line 738 "GJavaParser.g"
+                //#line 734 "GJavaParser.g"
                 this.setResult(
-                    //#line 738 GJavaParser.g
+                    //#line 734 GJavaParser.g
                     new ForStatementNoShortIf(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               new AstToken(this.getRhsIToken(1)),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               <IForInitopt>this.getRhsSym(3),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               new AstToken(this.getRhsIToken(4)),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               <IExpressionopt>this.getRhsSym(5),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               new AstToken(this.getRhsIToken(6)),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               <IForUpdateopt>this.getRhsSym(7),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               new AstToken(this.getRhsIToken(8)),
-                                              //#line 738 GJavaParser.g
+                                              //#line 734 GJavaParser.g
                                               <IStatementNoShortIf>this.getRhsSym(9))
-                //#line 738 GJavaParser.g
+                //#line 734 GJavaParser.g
                 );
             break;
             }
@@ -3870,17 +3888,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 319:  StatementExpressionList ::= StatementExpressionList , StatementExpression
             //
             case 319: {
-               //#line 746 "GJavaParser.g"
+                //#line 742 "GJavaParser.g"
                 this.setResult(
-                    //#line 746 GJavaParser.g
+                    //#line 742 GJavaParser.g
                     new StatementExpressionList(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 746 GJavaParser.g
+                                                //#line 742 GJavaParser.g
                                                 <IStatementExpressionList>this.getRhsSym(1),
-                                                //#line 746 GJavaParser.g
+                                                //#line 742 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(2)),
-                                                //#line 746 GJavaParser.g
+                                                //#line 742 GJavaParser.g
                                                 <IStatementExpression>this.getRhsSym(3))
-                //#line 746 GJavaParser.g
+                //#line 742 GJavaParser.g
                 );
             break;
             }
@@ -3888,25 +3906,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 320:  EnhancedForStatement ::= for ( FormalParameter : Expression ) Statement
             //
             case 320: {
-               //#line 748 "GJavaParser.g"
+                //#line 744 "GJavaParser.g"
                 this.setResult(
-                    //#line 748 GJavaParser.g
+                    //#line 744 GJavaParser.g
                     new EnhancedForStatement(this.getLeftIToken(), this.getRightIToken(),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              new AstToken(this.getRhsIToken(1)),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              new AstToken(this.getRhsIToken(2)),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              <FormalParameter>this.getRhsSym(3),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              new AstToken(this.getRhsIToken(4)),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              <IExpression>this.getRhsSym(5),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              new AstToken(this.getRhsIToken(6)),
-                                             //#line 748 GJavaParser.g
+                                             //#line 744 GJavaParser.g
                                              <IStatement>this.getRhsSym(7))
-                //#line 748 GJavaParser.g
+                //#line 744 GJavaParser.g
                 );
             break;
             }
@@ -3914,17 +3932,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 321:  BreakStatement ::= break identifieropt ;
             //
             case 321: {
-               //#line 750 "GJavaParser.g"
+                //#line 746 "GJavaParser.g"
                 this.setResult(
-                    //#line 750 GJavaParser.g
+                    //#line 746 GJavaParser.g
                     new BreakStatement(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 750 GJavaParser.g
+                                       //#line 746 GJavaParser.g
                                        new AstToken(this.getRhsIToken(1)),
-                                       //#line 750 GJavaParser.g
+                                       //#line 746 GJavaParser.g
                                        <identifier>this.getRhsSym(2),
-                                       //#line 750 GJavaParser.g
+                                       //#line 746 GJavaParser.g
                                        new AstToken(this.getRhsIToken(3)))
-                //#line 750 GJavaParser.g
+                //#line 746 GJavaParser.g
                 );
             break;
             }
@@ -3932,17 +3950,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 322:  ContinueStatement ::= continue identifieropt ;
             //
             case 322: {
-               //#line 752 "GJavaParser.g"
+                //#line 748 "GJavaParser.g"
                 this.setResult(
-                    //#line 752 GJavaParser.g
+                    //#line 748 GJavaParser.g
                     new ContinueStatement(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 752 GJavaParser.g
+                                          //#line 748 GJavaParser.g
                                           new AstToken(this.getRhsIToken(1)),
-                                          //#line 752 GJavaParser.g
+                                          //#line 748 GJavaParser.g
                                           <identifier>this.getRhsSym(2),
-                                          //#line 752 GJavaParser.g
+                                          //#line 748 GJavaParser.g
                                           new AstToken(this.getRhsIToken(3)))
-                //#line 752 GJavaParser.g
+                //#line 748 GJavaParser.g
                 );
             break;
             }
@@ -3950,17 +3968,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 323:  ReturnStatement ::= return Expressionopt ;
             //
             case 323: {
-               //#line 754 "GJavaParser.g"
+                //#line 750 "GJavaParser.g"
                 this.setResult(
-                    //#line 754 GJavaParser.g
+                    //#line 750 GJavaParser.g
                     new ReturnStatement(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 754 GJavaParser.g
+                                        //#line 750 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 754 GJavaParser.g
+                                        //#line 750 GJavaParser.g
                                         <IExpressionopt>this.getRhsSym(2),
-                                        //#line 754 GJavaParser.g
+                                        //#line 750 GJavaParser.g
                                         new AstToken(this.getRhsIToken(3)))
-                //#line 754 GJavaParser.g
+                //#line 750 GJavaParser.g
                 );
             break;
             }
@@ -3968,17 +3986,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 324:  ThrowStatement ::= throw Expression ;
             //
             case 324: {
-               //#line 756 "GJavaParser.g"
+                //#line 752 "GJavaParser.g"
                 this.setResult(
-                    //#line 756 GJavaParser.g
+                    //#line 752 GJavaParser.g
                     new ThrowStatement(this.getLeftIToken(), this.getRightIToken(),
-                                       //#line 756 GJavaParser.g
+                                       //#line 752 GJavaParser.g
                                        new AstToken(this.getRhsIToken(1)),
-                                       //#line 756 GJavaParser.g
+                                       //#line 752 GJavaParser.g
                                        <IExpression>this.getRhsSym(2),
-                                       //#line 756 GJavaParser.g
+                                       //#line 752 GJavaParser.g
                                        new AstToken(this.getRhsIToken(3)))
-                //#line 756 GJavaParser.g
+                //#line 752 GJavaParser.g
                 );
             break;
             }
@@ -3986,21 +4004,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 325:  SynchronizedStatement ::= synchronized ( Expression ) Block
             //
             case 325: {
-               //#line 758 "GJavaParser.g"
+                //#line 754 "GJavaParser.g"
                 this.setResult(
-                    //#line 758 GJavaParser.g
+                    //#line 754 GJavaParser.g
                     new SynchronizedStatement(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 758 GJavaParser.g
+                                              //#line 754 GJavaParser.g
                                               new AstToken(this.getRhsIToken(1)),
-                                              //#line 758 GJavaParser.g
+                                              //#line 754 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 758 GJavaParser.g
+                                              //#line 754 GJavaParser.g
                                               <IExpression>this.getRhsSym(3),
-                                              //#line 758 GJavaParser.g
+                                              //#line 754 GJavaParser.g
                                               new AstToken(this.getRhsIToken(4)),
-                                              //#line 758 GJavaParser.g
+                                              //#line 754 GJavaParser.g
                                               <Block>this.getRhsSym(5))
-                //#line 758 GJavaParser.g
+                //#line 754 GJavaParser.g
                 );
             break;
             }
@@ -4008,17 +4026,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 326:  TryStatement ::= try Block Catches
             //
             case 326: {
-               //#line 760 "GJavaParser.g"
+                //#line 756 "GJavaParser.g"
                 this.setResult(
-                    //#line 760 GJavaParser.g
+                    //#line 756 GJavaParser.g
                     new TryStatement0(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 760 GJavaParser.g
+                                      //#line 756 GJavaParser.g
                                       new AstToken(this.getRhsIToken(1)),
-                                      //#line 760 GJavaParser.g
+                                      //#line 756 GJavaParser.g
                                       <Block>this.getRhsSym(2),
-                                      //#line 760 GJavaParser.g
+                                      //#line 756 GJavaParser.g
                                       <ICatches>this.getRhsSym(3))
-                //#line 760 GJavaParser.g
+                //#line 756 GJavaParser.g
                 );
             break;
             }
@@ -4026,19 +4044,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 327:  TryStatement ::= try Block Catchesopt Finally
             //
             case 327: {
-               //#line 761 "GJavaParser.g"
+                //#line 757 "GJavaParser.g"
                 this.setResult(
-                    //#line 761 GJavaParser.g
+                    //#line 757 GJavaParser.g
                     new TryStatement1(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 761 GJavaParser.g
+                                      //#line 757 GJavaParser.g
                                       new AstToken(this.getRhsIToken(1)),
-                                      //#line 761 GJavaParser.g
+                                      //#line 757 GJavaParser.g
                                       <Block>this.getRhsSym(2),
-                                      //#line 761 GJavaParser.g
+                                      //#line 757 GJavaParser.g
                                       <ICatchesopt>this.getRhsSym(3),
-                                      //#line 761 GJavaParser.g
+                                      //#line 757 GJavaParser.g
                                       <Finally>this.getRhsSym(4))
-                //#line 761 GJavaParser.g
+                //#line 757 GJavaParser.g
                 );
             break;
             }
@@ -4051,15 +4069,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 329:  Catches ::= Catches CatchClause
             //
             case 329: {
-               //#line 764 "GJavaParser.g"
+                //#line 760 "GJavaParser.g"
                 this.setResult(
-                    //#line 764 GJavaParser.g
+                    //#line 760 GJavaParser.g
                     new Catches(this.getLeftIToken(), this.getRightIToken(),
-                                //#line 764 GJavaParser.g
+                                //#line 760 GJavaParser.g
                                 <ICatches>this.getRhsSym(1),
-                                //#line 764 GJavaParser.g
+                                //#line 760 GJavaParser.g
                                 <CatchClause>this.getRhsSym(2))
-                //#line 764 GJavaParser.g
+                //#line 760 GJavaParser.g
                 );
             break;
             }
@@ -4067,21 +4085,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 330:  CatchClause ::= catch ( FormalParameter ) Block
             //
             case 330: {
-               //#line 766 "GJavaParser.g"
+                //#line 762 "GJavaParser.g"
                 this.setResult(
-                    //#line 766 GJavaParser.g
+                    //#line 762 GJavaParser.g
                     new CatchClause(this.getLeftIToken(), this.getRightIToken(),
-                                    //#line 766 GJavaParser.g
+                                    //#line 762 GJavaParser.g
                                     new AstToken(this.getRhsIToken(1)),
-                                    //#line 766 GJavaParser.g
+                                    //#line 762 GJavaParser.g
                                     new AstToken(this.getRhsIToken(2)),
-                                    //#line 766 GJavaParser.g
+                                    //#line 762 GJavaParser.g
                                     <FormalParameter>this.getRhsSym(3),
-                                    //#line 766 GJavaParser.g
+                                    //#line 762 GJavaParser.g
                                     new AstToken(this.getRhsIToken(4)),
-                                    //#line 766 GJavaParser.g
+                                    //#line 762 GJavaParser.g
                                     <Block>this.getRhsSym(5))
-                //#line 766 GJavaParser.g
+                //#line 762 GJavaParser.g
                 );
             break;
             }
@@ -4089,15 +4107,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 331:  Finally ::= finally Block
             //
             case 331: {
-               //#line 768 "GJavaParser.g"
+                //#line 764 "GJavaParser.g"
                 this.setResult(
-                    //#line 768 GJavaParser.g
+                    //#line 764 GJavaParser.g
                     new Finally(this.getLeftIToken(), this.getRightIToken(),
-                                //#line 768 GJavaParser.g
+                                //#line 764 GJavaParser.g
                                 new AstToken(this.getRhsIToken(1)),
-                                //#line 768 GJavaParser.g
+                                //#line 764 GJavaParser.g
                                 <Block>this.getRhsSym(2))
-                //#line 768 GJavaParser.g
+                //#line 764 GJavaParser.g
                 );
             break;
             }
@@ -4120,17 +4138,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 335:  PrimaryNoNewArray ::= Type . class
             //
             case 335: {
-               //#line 784 "GJavaParser.g"
+                //#line 780 "GJavaParser.g"
                 this.setResult(
-                    //#line 784 GJavaParser.g
+                    //#line 780 GJavaParser.g
                     new PrimaryNoNewArray0(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 784 GJavaParser.g
+                                           //#line 780 GJavaParser.g
                                            <IType>this.getRhsSym(1),
-                                           //#line 784 GJavaParser.g
+                                           //#line 780 GJavaParser.g
                                            new AstToken(this.getRhsIToken(2)),
-                                           //#line 784 GJavaParser.g
+                                           //#line 780 GJavaParser.g
                                            new AstToken(this.getRhsIToken(3)))
-                //#line 784 GJavaParser.g
+                //#line 780 GJavaParser.g
                 );
             break;
             }
@@ -4138,17 +4156,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 336:  PrimaryNoNewArray ::= void . class
             //
             case 336: {
-               //#line 785 "GJavaParser.g"
+                //#line 781 "GJavaParser.g"
                 this.setResult(
-                    //#line 785 GJavaParser.g
+                    //#line 781 GJavaParser.g
                     new PrimaryNoNewArray1(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 785 GJavaParser.g
+                                           //#line 781 GJavaParser.g
                                            new AstToken(this.getRhsIToken(1)),
-                                           //#line 785 GJavaParser.g
+                                           //#line 781 GJavaParser.g
                                            new AstToken(this.getRhsIToken(2)),
-                                           //#line 785 GJavaParser.g
+                                           //#line 781 GJavaParser.g
                                            new AstToken(this.getRhsIToken(3)))
-                //#line 785 GJavaParser.g
+                //#line 781 GJavaParser.g
                 );
             break;
             }
@@ -4156,11 +4174,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 337:  PrimaryNoNewArray ::= this
             //
             case 337: {
-               //#line 786 "GJavaParser.g"
+                //#line 782 "GJavaParser.g"
                 this.setResult(
-                    //#line 786 GJavaParser.g
+                    //#line 782 GJavaParser.g
                     new PrimaryNoNewArray2(this.getRhsIToken(1))
-                //#line 786 GJavaParser.g
+                //#line 782 GJavaParser.g
                 );
             break;
             }
@@ -4168,17 +4186,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 338:  PrimaryNoNewArray ::= ClassName . this
             //
             case 338: {
-               //#line 787 "GJavaParser.g"
+                //#line 783 "GJavaParser.g"
                 this.setResult(
-                    //#line 787 GJavaParser.g
+                    //#line 783 GJavaParser.g
                     new PrimaryNoNewArray3(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 787 GJavaParser.g
+                                           //#line 783 GJavaParser.g
                                            <IClassName>this.getRhsSym(1),
-                                           //#line 787 GJavaParser.g
+                                           //#line 783 GJavaParser.g
                                            new AstToken(this.getRhsIToken(2)),
-                                           //#line 787 GJavaParser.g
+                                           //#line 783 GJavaParser.g
                                            new AstToken(this.getRhsIToken(3)))
-                //#line 787 GJavaParser.g
+                //#line 783 GJavaParser.g
                 );
             break;
             }
@@ -4186,17 +4204,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 339:  PrimaryNoNewArray ::= ( Expression )
             //
             case 339: {
-               //#line 788 "GJavaParser.g"
+                //#line 784 "GJavaParser.g"
                 this.setResult(
-                    //#line 788 GJavaParser.g
+                    //#line 784 GJavaParser.g
                     new PrimaryNoNewArray4(this.getLeftIToken(), this.getRightIToken(),
-                                           //#line 788 GJavaParser.g
+                                           //#line 784 GJavaParser.g
                                            new AstToken(this.getRhsIToken(1)),
-                                           //#line 788 GJavaParser.g
+                                           //#line 784 GJavaParser.g
                                            <IExpression>this.getRhsSym(2),
-                                           //#line 788 GJavaParser.g
+                                           //#line 784 GJavaParser.g
                                            new AstToken(this.getRhsIToken(3)))
-                //#line 788 GJavaParser.g
+                //#line 784 GJavaParser.g
                 );
             break;
             }
@@ -4224,11 +4242,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 344:  Literal ::= IntegerLiteral
             //
             case 344: {
-               //#line 794 "GJavaParser.g"
+                //#line 790 "GJavaParser.g"
                 this.setResult(
-                    //#line 794 GJavaParser.g
+                    //#line 790 GJavaParser.g
                     new Literal0(this.getRhsIToken(1))
-                //#line 794 GJavaParser.g
+                //#line 790 GJavaParser.g
                 );
             break;
             }
@@ -4236,11 +4254,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 345:  Literal ::= LongLiteral
             //
             case 345: {
-               //#line 795 "GJavaParser.g"
+                //#line 791 "GJavaParser.g"
                 this.setResult(
-                    //#line 795 GJavaParser.g
+                    //#line 791 GJavaParser.g
                     new Literal1(this.getRhsIToken(1))
-                //#line 795 GJavaParser.g
+                //#line 791 GJavaParser.g
                 );
             break;
             }
@@ -4248,11 +4266,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 346:  Literal ::= FloatingPointLiteral
             //
             case 346: {
-               //#line 796 "GJavaParser.g"
+                //#line 792 "GJavaParser.g"
                 this.setResult(
-                    //#line 796 GJavaParser.g
+                    //#line 792 GJavaParser.g
                     new Literal2(this.getRhsIToken(1))
-                //#line 796 GJavaParser.g
+                //#line 792 GJavaParser.g
                 );
             break;
             }
@@ -4260,11 +4278,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 347:  Literal ::= DoubleLiteral
             //
             case 347: {
-               //#line 797 "GJavaParser.g"
+                //#line 793 "GJavaParser.g"
                 this.setResult(
-                    //#line 797 GJavaParser.g
+                    //#line 793 GJavaParser.g
                     new Literal3(this.getRhsIToken(1))
-                //#line 797 GJavaParser.g
+                //#line 793 GJavaParser.g
                 );
             break;
             }
@@ -4277,11 +4295,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 349:  Literal ::= CharacterLiteral
             //
             case 349: {
-               //#line 799 "GJavaParser.g"
+                //#line 795 "GJavaParser.g"
                 this.setResult(
-                    //#line 799 GJavaParser.g
+                    //#line 795 GJavaParser.g
                     new Literal4(this.getRhsIToken(1))
-                //#line 799 GJavaParser.g
+                //#line 795 GJavaParser.g
                 );
             break;
             }
@@ -4289,11 +4307,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 350:  Literal ::= StringLiteral
             //
             case 350: {
-               //#line 800 "GJavaParser.g"
+                //#line 796 "GJavaParser.g"
                 this.setResult(
-                    //#line 800 GJavaParser.g
+                    //#line 796 GJavaParser.g
                     new Literal5(this.getRhsIToken(1))
-                //#line 800 GJavaParser.g
+                //#line 796 GJavaParser.g
                 );
             break;
             }
@@ -4301,11 +4319,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 351:  Literal ::= null
             //
             case 351: {
-               //#line 801 "GJavaParser.g"
+                //#line 797 "GJavaParser.g"
                 this.setResult(
-                    //#line 801 GJavaParser.g
+                    //#line 797 GJavaParser.g
                     new Literal6(this.getRhsIToken(1))
-                //#line 801 GJavaParser.g
+                //#line 797 GJavaParser.g
                 );
             break;
             }
@@ -4313,11 +4331,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 352:  BooleanLiteral ::= true
             //
             case 352: {
-               //#line 803 "GJavaParser.g"
+                //#line 799 "GJavaParser.g"
                 this.setResult(
-                    //#line 803 GJavaParser.g
+                    //#line 799 GJavaParser.g
                     new BooleanLiteral0(this.getRhsIToken(1))
-                //#line 803 GJavaParser.g
+                //#line 799 GJavaParser.g
                 );
             break;
             }
@@ -4325,11 +4343,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 353:  BooleanLiteral ::= false
             //
             case 353: {
-               //#line 804 "GJavaParser.g"
+                //#line 800 "GJavaParser.g"
                 this.setResult(
-                    //#line 804 GJavaParser.g
+                    //#line 800 GJavaParser.g
                     new BooleanLiteral1(this.getRhsIToken(1))
-                //#line 804 GJavaParser.g
+                //#line 800 GJavaParser.g
                 );
             break;
             }
@@ -4337,27 +4355,27 @@ export class JavaParser extends Object implements RuleAction
             // Rule 354:  ClassInstanceCreationExpression ::= new TypeArgumentsopt ClassOrInterfaceType TypeArgumentsopt ( ArgumentListopt ) ClassBodyopt
             //
             case 354: {
-               //#line 811 "GJavaParser.g"
+                //#line 807 "GJavaParser.g"
                 this.setResult(
-                    //#line 811 GJavaParser.g
+                    //#line 807 GJavaParser.g
                     new ClassInstanceCreationExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(1)),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          <TypeArguments>this.getRhsSym(2),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          <ClassType>this.getRhsSym(3),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          <TypeArguments>this.getRhsSym(4),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(5)),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          <IArgumentListopt>this.getRhsSym(6),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(7)),
-                                                         //#line 811 GJavaParser.g
+                                                         //#line 807 GJavaParser.g
                                                          <ClassBody>this.getRhsSym(8))
-                //#line 811 GJavaParser.g
+                //#line 807 GJavaParser.g
                 );
             break;
             }
@@ -4365,31 +4383,31 @@ export class JavaParser extends Object implements RuleAction
             // Rule 355:  ClassInstanceCreationExpression ::= Primary . new TypeArgumentsopt identifier TypeArgumentsopt ( ArgumentListopt ) ClassBodyopt
             //
             case 355: {
-               //#line 812 "GJavaParser.g"
+                //#line 808 "GJavaParser.g"
                 this.setResult(
-                    //#line 812 GJavaParser.g
+                    //#line 808 GJavaParser.g
                     new ClassInstanceCreationExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          <IPrimary>this.getRhsSym(1),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(2)),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(3)),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          <TypeArguments>this.getRhsSym(4),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          <identifier>this.getRhsSym(5),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          <TypeArguments>this.getRhsSym(6),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(7)),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          <IArgumentListopt>this.getRhsSym(8),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          new AstToken(this.getRhsIToken(9)),
-                                                         //#line 812 GJavaParser.g
+                                                         //#line 808 GJavaParser.g
                                                          <ClassBody>this.getRhsSym(10))
-                //#line 812 GJavaParser.g
+                //#line 808 GJavaParser.g
                 );
             break;
             }
@@ -4402,17 +4420,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 357:  ArgumentList ::= ArgumentList , Expression
             //
             case 357: {
-               //#line 816 "GJavaParser.g"
+                //#line 812 "GJavaParser.g"
                 this.setResult(
-                    //#line 816 GJavaParser.g
+                    //#line 812 GJavaParser.g
                     new ArgumentList(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 816 GJavaParser.g
+                                     //#line 812 GJavaParser.g
                                      <IArgumentList>this.getRhsSym(1),
-                                     //#line 816 GJavaParser.g
+                                     //#line 812 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)),
-                                     //#line 816 GJavaParser.g
+                                     //#line 812 GJavaParser.g
                                      <IExpression>this.getRhsSym(3))
-                //#line 816 GJavaParser.g
+                //#line 812 GJavaParser.g
                 );
             break;
             }
@@ -4420,19 +4438,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 358:  ArrayCreationExpression ::= new PrimitiveType DimExprs Dimsopt
             //
             case 358: {
-               //#line 826 "GJavaParser.g"
+                //#line 822 "GJavaParser.g"
                 this.setResult(
-                    //#line 826 GJavaParser.g
+                    //#line 822 GJavaParser.g
                     new ArrayCreationExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                                 //#line 826 GJavaParser.g
+                                                 //#line 822 GJavaParser.g
                                                  new AstToken(this.getRhsIToken(1)),
-                                                 //#line 826 GJavaParser.g
+                                                 //#line 822 GJavaParser.g
                                                  <IPrimitiveType>this.getRhsSym(2),
-                                                 //#line 826 GJavaParser.g
+                                                 //#line 822 GJavaParser.g
                                                  <IDimExprs>this.getRhsSym(3),
-                                                 //#line 826 GJavaParser.g
+                                                 //#line 822 GJavaParser.g
                                                  <IDimsopt>this.getRhsSym(4))
-                //#line 826 GJavaParser.g
+                //#line 822 GJavaParser.g
                 );
             break;
             }
@@ -4440,19 +4458,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 359:  ArrayCreationExpression ::= new ClassOrInterfaceType DimExprs Dimsopt
             //
             case 359: {
-               //#line 827 "GJavaParser.g"
+                //#line 823 "GJavaParser.g"
                 this.setResult(
-                    //#line 827 GJavaParser.g
+                    //#line 823 GJavaParser.g
                     new ArrayCreationExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                                 //#line 827 GJavaParser.g
+                                                 //#line 823 GJavaParser.g
                                                  new AstToken(this.getRhsIToken(1)),
-                                                 //#line 827 GJavaParser.g
+                                                 //#line 823 GJavaParser.g
                                                  <ClassType>this.getRhsSym(2),
-                                                 //#line 827 GJavaParser.g
+                                                 //#line 823 GJavaParser.g
                                                  <IDimExprs>this.getRhsSym(3),
-                                                 //#line 827 GJavaParser.g
+                                                 //#line 823 GJavaParser.g
                                                  <IDimsopt>this.getRhsSym(4))
-                //#line 827 GJavaParser.g
+                //#line 823 GJavaParser.g
                 );
             break;
             }
@@ -4460,19 +4478,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 360:  ArrayCreationExpression ::= new PrimitiveType Dims ArrayInitializer
             //
             case 360: {
-               //#line 828 "GJavaParser.g"
+                //#line 824 "GJavaParser.g"
                 this.setResult(
-                    //#line 828 GJavaParser.g
+                    //#line 824 GJavaParser.g
                     new ArrayCreationExpression2(this.getLeftIToken(), this.getRightIToken(),
-                                                 //#line 828 GJavaParser.g
+                                                 //#line 824 GJavaParser.g
                                                  new AstToken(this.getRhsIToken(1)),
-                                                 //#line 828 GJavaParser.g
+                                                 //#line 824 GJavaParser.g
                                                  <IPrimitiveType>this.getRhsSym(2),
-                                                 //#line 828 GJavaParser.g
+                                                 //#line 824 GJavaParser.g
                                                  <IDims>this.getRhsSym(3),
-                                                 //#line 828 GJavaParser.g
+                                                 //#line 824 GJavaParser.g
                                                  <ArrayInitializer>this.getRhsSym(4))
-                //#line 828 GJavaParser.g
+                //#line 824 GJavaParser.g
                 );
             break;
             }
@@ -4480,19 +4498,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 361:  ArrayCreationExpression ::= new ClassOrInterfaceType Dims ArrayInitializer
             //
             case 361: {
-               //#line 829 "GJavaParser.g"
+                //#line 825 "GJavaParser.g"
                 this.setResult(
-                    //#line 829 GJavaParser.g
+                    //#line 825 GJavaParser.g
                     new ArrayCreationExpression3(this.getLeftIToken(), this.getRightIToken(),
-                                                 //#line 829 GJavaParser.g
+                                                 //#line 825 GJavaParser.g
                                                  new AstToken(this.getRhsIToken(1)),
-                                                 //#line 829 GJavaParser.g
+                                                 //#line 825 GJavaParser.g
                                                  <ClassType>this.getRhsSym(2),
-                                                 //#line 829 GJavaParser.g
+                                                 //#line 825 GJavaParser.g
                                                  <IDims>this.getRhsSym(3),
-                                                 //#line 829 GJavaParser.g
+                                                 //#line 825 GJavaParser.g
                                                  <ArrayInitializer>this.getRhsSym(4))
-                //#line 829 GJavaParser.g
+                //#line 825 GJavaParser.g
                 );
             break;
             }
@@ -4505,15 +4523,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 363:  DimExprs ::= DimExprs DimExpr
             //
             case 363: {
-               //#line 832 "GJavaParser.g"
+                //#line 828 "GJavaParser.g"
                 this.setResult(
-                    //#line 832 GJavaParser.g
+                    //#line 828 GJavaParser.g
                     new DimExprs(this.getLeftIToken(), this.getRightIToken(),
-                                 //#line 832 GJavaParser.g
+                                 //#line 828 GJavaParser.g
                                  <IDimExprs>this.getRhsSym(1),
-                                 //#line 832 GJavaParser.g
+                                 //#line 828 GJavaParser.g
                                  <DimExpr>this.getRhsSym(2))
-                //#line 832 GJavaParser.g
+                //#line 828 GJavaParser.g
                 );
             break;
             }
@@ -4521,17 +4539,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 364:  DimExpr ::= [ Expression ]
             //
             case 364: {
-               //#line 834 "GJavaParser.g"
+                //#line 830 "GJavaParser.g"
                 this.setResult(
-                    //#line 834 GJavaParser.g
+                    //#line 830 GJavaParser.g
                     new DimExpr(this.getLeftIToken(), this.getRightIToken(),
-                                //#line 834 GJavaParser.g
+                                //#line 830 GJavaParser.g
                                 new AstToken(this.getRhsIToken(1)),
-                                //#line 834 GJavaParser.g
+                                //#line 830 GJavaParser.g
                                 <IExpression>this.getRhsSym(2),
-                                //#line 834 GJavaParser.g
+                                //#line 830 GJavaParser.g
                                 new AstToken(this.getRhsIToken(3)))
-                //#line 834 GJavaParser.g
+                //#line 830 GJavaParser.g
                 );
             break;
             }
@@ -4539,15 +4557,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 365:  Dims ::= [ ]
             //
             case 365: {
-               //#line 836 "GJavaParser.g"
+                //#line 832 "GJavaParser.g"
                 this.setResult(
-                    //#line 836 GJavaParser.g
+                    //#line 832 GJavaParser.g
                     new Dims0(this.getLeftIToken(), this.getRightIToken(),
-                              //#line 836 GJavaParser.g
+                              //#line 832 GJavaParser.g
                               new AstToken(this.getRhsIToken(1)),
-                              //#line 836 GJavaParser.g
+                              //#line 832 GJavaParser.g
                               new AstToken(this.getRhsIToken(2)))
-                //#line 836 GJavaParser.g
+                //#line 832 GJavaParser.g
                 );
             break;
             }
@@ -4555,17 +4573,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 366:  Dims ::= Dims [ ]
             //
             case 366: {
-               //#line 837 "GJavaParser.g"
+                //#line 833 "GJavaParser.g"
                 this.setResult(
-                    //#line 837 GJavaParser.g
+                    //#line 833 GJavaParser.g
                     new Dims1(this.getLeftIToken(), this.getRightIToken(),
-                              //#line 837 GJavaParser.g
+                              //#line 833 GJavaParser.g
                               <IDims>this.getRhsSym(1),
-                              //#line 837 GJavaParser.g
+                              //#line 833 GJavaParser.g
                               new AstToken(this.getRhsIToken(2)),
-                              //#line 837 GJavaParser.g
+                              //#line 833 GJavaParser.g
                               new AstToken(this.getRhsIToken(3)))
-                //#line 837 GJavaParser.g
+                //#line 833 GJavaParser.g
                 );
             break;
             }
@@ -4573,17 +4591,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 367:  FieldAccess ::= Primary . identifier
             //
             case 367: {
-               //#line 839 "GJavaParser.g"
+                //#line 835 "GJavaParser.g"
                 this.setResult(
-                    //#line 839 GJavaParser.g
+                    //#line 835 GJavaParser.g
                     new FieldAccess0(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 839 GJavaParser.g
+                                     //#line 835 GJavaParser.g
                                      <IPrimary>this.getRhsSym(1),
-                                     //#line 839 GJavaParser.g
+                                     //#line 835 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)),
-                                     //#line 839 GJavaParser.g
+                                     //#line 835 GJavaParser.g
                                      <identifier>this.getRhsSym(3))
-                //#line 839 GJavaParser.g
+                //#line 835 GJavaParser.g
                 );
             break;
             }
@@ -4591,17 +4609,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 368:  FieldAccess ::= super . identifier
             //
             case 368: {
-               //#line 840 "GJavaParser.g"
+                //#line 836 "GJavaParser.g"
                 this.setResult(
-                    //#line 840 GJavaParser.g
+                    //#line 836 GJavaParser.g
                     new FieldAccess1(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 840 GJavaParser.g
+                                     //#line 836 GJavaParser.g
                                      new AstToken(this.getRhsIToken(1)),
-                                     //#line 840 GJavaParser.g
+                                     //#line 836 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)),
-                                     //#line 840 GJavaParser.g
+                                     //#line 836 GJavaParser.g
                                      <identifier>this.getRhsSym(3))
-                //#line 840 GJavaParser.g
+                //#line 836 GJavaParser.g
                 );
             break;
             }
@@ -4609,21 +4627,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 369:  FieldAccess ::= ClassName . super . identifier
             //
             case 369: {
-               //#line 841 "GJavaParser.g"
+                //#line 837 "GJavaParser.g"
                 this.setResult(
-                    //#line 841 GJavaParser.g
+                    //#line 837 GJavaParser.g
                     new FieldAccess2(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 841 GJavaParser.g
+                                     //#line 837 GJavaParser.g
                                      <IClassName>this.getRhsSym(1),
-                                     //#line 841 GJavaParser.g
+                                     //#line 837 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)),
-                                     //#line 841 GJavaParser.g
+                                     //#line 837 GJavaParser.g
                                      new AstToken(this.getRhsIToken(3)),
-                                     //#line 841 GJavaParser.g
+                                     //#line 837 GJavaParser.g
                                      new AstToken(this.getRhsIToken(4)),
-                                     //#line 841 GJavaParser.g
+                                     //#line 837 GJavaParser.g
                                      <identifier>this.getRhsSym(5))
-                //#line 841 GJavaParser.g
+                //#line 837 GJavaParser.g
                 );
             break;
             }
@@ -4631,19 +4649,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 370:  MethodInvocation ::= MethodName ( ArgumentListopt )
             //
             case 370: {
-               //#line 843 "GJavaParser.g"
+                //#line 839 "GJavaParser.g"
                 this.setResult(
-                    //#line 843 GJavaParser.g
+                    //#line 839 GJavaParser.g
                     new MethodInvocation0(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 843 GJavaParser.g
+                                          //#line 839 GJavaParser.g
                                           <IMethodName>this.getRhsSym(1),
-                                          //#line 843 GJavaParser.g
+                                          //#line 839 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 843 GJavaParser.g
+                                          //#line 839 GJavaParser.g
                                           <IArgumentListopt>this.getRhsSym(3),
-                                          //#line 843 GJavaParser.g
+                                          //#line 839 GJavaParser.g
                                           new AstToken(this.getRhsIToken(4)))
-                //#line 843 GJavaParser.g
+                //#line 839 GJavaParser.g
                 );
             break;
             }
@@ -4651,25 +4669,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 371:  MethodInvocation ::= Primary . TypeArgumentsopt identifier ( ArgumentListopt )
             //
             case 371: {
-               //#line 844 "GJavaParser.g"
+                //#line 840 "GJavaParser.g"
                 this.setResult(
-                    //#line 844 GJavaParser.g
+                    //#line 840 GJavaParser.g
                     new MethodInvocation1(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           <IPrimary>this.getRhsSym(1),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           <TypeArguments>this.getRhsSym(3),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           <identifier>this.getRhsSym(4),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           new AstToken(this.getRhsIToken(5)),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           <IArgumentListopt>this.getRhsSym(6),
-                                          //#line 844 GJavaParser.g
+                                          //#line 840 GJavaParser.g
                                           new AstToken(this.getRhsIToken(7)))
-                //#line 844 GJavaParser.g
+                //#line 840 GJavaParser.g
                 );
             break;
             }
@@ -4677,25 +4695,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 372:  MethodInvocation ::= super . TypeArgumentsopt identifier ( ArgumentListopt )
             //
             case 372: {
-               //#line 845 "GJavaParser.g"
+                //#line 841 "GJavaParser.g"
                 this.setResult(
-                    //#line 845 GJavaParser.g
+                    //#line 841 GJavaParser.g
                     new MethodInvocation2(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           new AstToken(this.getRhsIToken(1)),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           <TypeArguments>this.getRhsSym(3),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           <identifier>this.getRhsSym(4),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           new AstToken(this.getRhsIToken(5)),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           <IArgumentListopt>this.getRhsSym(6),
-                                          //#line 845 GJavaParser.g
+                                          //#line 841 GJavaParser.g
                                           new AstToken(this.getRhsIToken(7)))
-                //#line 845 GJavaParser.g
+                //#line 841 GJavaParser.g
                 );
             break;
             }
@@ -4703,29 +4721,29 @@ export class JavaParser extends Object implements RuleAction
             // Rule 373:  MethodInvocation ::= ClassName . super . TypeArgumentsopt identifier ( ArgumentListopt )
             //
             case 373: {
-               //#line 846 "GJavaParser.g"
+                //#line 842 "GJavaParser.g"
                 this.setResult(
-                    //#line 846 GJavaParser.g
+                    //#line 842 GJavaParser.g
                     new MethodInvocation3(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           <IClassName>this.getRhsSym(1),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           new AstToken(this.getRhsIToken(3)),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           new AstToken(this.getRhsIToken(4)),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           <TypeArguments>this.getRhsSym(5),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           <identifier>this.getRhsSym(6),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           new AstToken(this.getRhsIToken(7)),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           <IArgumentListopt>this.getRhsSym(8),
-                                          //#line 846 GJavaParser.g
+                                          //#line 842 GJavaParser.g
                                           new AstToken(this.getRhsIToken(9)))
-                //#line 846 GJavaParser.g
+                //#line 842 GJavaParser.g
                 );
             break;
             }
@@ -4733,25 +4751,25 @@ export class JavaParser extends Object implements RuleAction
             // Rule 374:  MethodInvocation ::= TypeName . TypeArguments identifier ( ArgumentListopt )
             //
             case 374: {
-               //#line 847 "GJavaParser.g"
+                //#line 843 "GJavaParser.g"
                 this.setResult(
-                    //#line 847 GJavaParser.g
+                    //#line 843 GJavaParser.g
                     new MethodInvocation4(this.getLeftIToken(), this.getRightIToken(),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           <ITypeName>this.getRhsSym(1),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           new AstToken(this.getRhsIToken(2)),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           <TypeArguments>this.getRhsSym(3),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           <identifier>this.getRhsSym(4),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           new AstToken(this.getRhsIToken(5)),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           <IArgumentListopt>this.getRhsSym(6),
-                                          //#line 847 GJavaParser.g
+                                          //#line 843 GJavaParser.g
                                           new AstToken(this.getRhsIToken(7)))
-                //#line 847 GJavaParser.g
+                //#line 843 GJavaParser.g
                 );
             break;
             }
@@ -4759,19 +4777,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 375:  ArrayAccess ::= ExpressionName [ Expression ]
             //
             case 375: {
-               //#line 855 "GJavaParser.g"
+                //#line 851 "GJavaParser.g"
                 this.setResult(
-                    //#line 855 GJavaParser.g
+                    //#line 851 GJavaParser.g
                     new ArrayAccess0(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 855 GJavaParser.g
+                                     //#line 851 GJavaParser.g
                                      <IExpressionName>this.getRhsSym(1),
-                                     //#line 855 GJavaParser.g
+                                     //#line 851 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)),
-                                     //#line 855 GJavaParser.g
+                                     //#line 851 GJavaParser.g
                                      <IExpression>this.getRhsSym(3),
-                                     //#line 855 GJavaParser.g
+                                     //#line 851 GJavaParser.g
                                      new AstToken(this.getRhsIToken(4)))
-                //#line 855 GJavaParser.g
+                //#line 851 GJavaParser.g
                 );
             break;
             }
@@ -4779,19 +4797,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 376:  ArrayAccess ::= PrimaryNoNewArray [ Expression ]
             //
             case 376: {
-               //#line 856 "GJavaParser.g"
+                //#line 852 "GJavaParser.g"
                 this.setResult(
-                    //#line 856 GJavaParser.g
+                    //#line 852 GJavaParser.g
                     new ArrayAccess1(this.getLeftIToken(), this.getRightIToken(),
-                                     //#line 856 GJavaParser.g
+                                     //#line 852 GJavaParser.g
                                      <IPrimaryNoNewArray>this.getRhsSym(1),
-                                     //#line 856 GJavaParser.g
+                                     //#line 852 GJavaParser.g
                                      new AstToken(this.getRhsIToken(2)),
-                                     //#line 856 GJavaParser.g
+                                     //#line 852 GJavaParser.g
                                      <IExpression>this.getRhsSym(3),
-                                     //#line 856 GJavaParser.g
+                                     //#line 852 GJavaParser.g
                                      new AstToken(this.getRhsIToken(4)))
-                //#line 856 GJavaParser.g
+                //#line 852 GJavaParser.g
                 );
             break;
             }
@@ -4819,15 +4837,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 381:  PostIncrementExpression ::= PostfixExpression ++
             //
             case 381: {
-               //#line 863 "GJavaParser.g"
+                //#line 859 "GJavaParser.g"
                 this.setResult(
-                    //#line 863 GJavaParser.g
+                    //#line 859 GJavaParser.g
                     new PostIncrementExpression(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 863 GJavaParser.g
+                                                //#line 859 GJavaParser.g
                                                 <IPostfixExpression>this.getRhsSym(1),
-                                                //#line 863 GJavaParser.g
+                                                //#line 859 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(2)))
-                //#line 863 GJavaParser.g
+                //#line 859 GJavaParser.g
                 );
             break;
             }
@@ -4835,15 +4853,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 382:  PostDecrementExpression ::= PostfixExpression --
             //
             case 382: {
-               //#line 865 "GJavaParser.g"
+                //#line 861 "GJavaParser.g"
                 this.setResult(
-                    //#line 865 GJavaParser.g
+                    //#line 861 GJavaParser.g
                     new PostDecrementExpression(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 865 GJavaParser.g
+                                                //#line 861 GJavaParser.g
                                                 <IPostfixExpression>this.getRhsSym(1),
-                                                //#line 865 GJavaParser.g
+                                                //#line 861 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(2)))
-                //#line 865 GJavaParser.g
+                //#line 861 GJavaParser.g
                 );
             break;
             }
@@ -4861,15 +4879,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 385:  UnaryExpression ::= + UnaryExpression
             //
             case 385: {
-               //#line 869 "GJavaParser.g"
+                //#line 865 "GJavaParser.g"
                 this.setResult(
-                    //#line 869 GJavaParser.g
+                    //#line 865 GJavaParser.g
                     new UnaryExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 869 GJavaParser.g
+                                         //#line 865 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 869 GJavaParser.g
+                                         //#line 865 GJavaParser.g
                                          <IUnaryExpression>this.getRhsSym(2))
-                //#line 869 GJavaParser.g
+                //#line 865 GJavaParser.g
                 );
             break;
             }
@@ -4877,15 +4895,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 386:  UnaryExpression ::= - UnaryExpression
             //
             case 386: {
-               //#line 870 "GJavaParser.g"
+                //#line 866 "GJavaParser.g"
                 this.setResult(
-                    //#line 870 GJavaParser.g
+                    //#line 866 GJavaParser.g
                     new UnaryExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 870 GJavaParser.g
+                                         //#line 866 GJavaParser.g
                                          new AstToken(this.getRhsIToken(1)),
-                                         //#line 870 GJavaParser.g
+                                         //#line 866 GJavaParser.g
                                          <IUnaryExpression>this.getRhsSym(2))
-                //#line 870 GJavaParser.g
+                //#line 866 GJavaParser.g
                 );
             break;
             }
@@ -4898,15 +4916,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 388:  PreIncrementExpression ::= ++ UnaryExpression
             //
             case 388: {
-               //#line 873 "GJavaParser.g"
+                //#line 869 "GJavaParser.g"
                 this.setResult(
-                    //#line 873 GJavaParser.g
+                    //#line 869 GJavaParser.g
                     new PreIncrementExpression(this.getLeftIToken(), this.getRightIToken(),
-                                               //#line 873 GJavaParser.g
+                                               //#line 869 GJavaParser.g
                                                new AstToken(this.getRhsIToken(1)),
-                                               //#line 873 GJavaParser.g
+                                               //#line 869 GJavaParser.g
                                                <IUnaryExpression>this.getRhsSym(2))
-                //#line 873 GJavaParser.g
+                //#line 869 GJavaParser.g
                 );
             break;
             }
@@ -4914,15 +4932,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 389:  PreDecrementExpression ::= -- UnaryExpression
             //
             case 389: {
-               //#line 875 "GJavaParser.g"
+                //#line 871 "GJavaParser.g"
                 this.setResult(
-                    //#line 875 GJavaParser.g
+                    //#line 871 GJavaParser.g
                     new PreDecrementExpression(this.getLeftIToken(), this.getRightIToken(),
-                                               //#line 875 GJavaParser.g
+                                               //#line 871 GJavaParser.g
                                                new AstToken(this.getRhsIToken(1)),
-                                               //#line 875 GJavaParser.g
+                                               //#line 871 GJavaParser.g
                                                <IUnaryExpression>this.getRhsSym(2))
-                //#line 875 GJavaParser.g
+                //#line 871 GJavaParser.g
                 );
             break;
             }
@@ -4935,15 +4953,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 391:  UnaryExpressionNotPlusMinus ::= ~ UnaryExpression
             //
             case 391: {
-               //#line 878 "GJavaParser.g"
+                //#line 874 "GJavaParser.g"
                 this.setResult(
-                    //#line 878 GJavaParser.g
+                    //#line 874 GJavaParser.g
                     new UnaryExpressionNotPlusMinus0(this.getLeftIToken(), this.getRightIToken(),
-                                                     //#line 878 GJavaParser.g
+                                                     //#line 874 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(1)),
-                                                     //#line 878 GJavaParser.g
+                                                     //#line 874 GJavaParser.g
                                                      <IUnaryExpression>this.getRhsSym(2))
-                //#line 878 GJavaParser.g
+                //#line 874 GJavaParser.g
                 );
             break;
             }
@@ -4951,15 +4969,15 @@ export class JavaParser extends Object implements RuleAction
             // Rule 392:  UnaryExpressionNotPlusMinus ::= ! UnaryExpression
             //
             case 392: {
-               //#line 879 "GJavaParser.g"
+                //#line 875 "GJavaParser.g"
                 this.setResult(
-                    //#line 879 GJavaParser.g
+                    //#line 875 GJavaParser.g
                     new UnaryExpressionNotPlusMinus1(this.getLeftIToken(), this.getRightIToken(),
-                                                     //#line 879 GJavaParser.g
+                                                     //#line 875 GJavaParser.g
                                                      new AstToken(this.getRhsIToken(1)),
-                                                     //#line 879 GJavaParser.g
+                                                     //#line 875 GJavaParser.g
                                                      <IUnaryExpression>this.getRhsSym(2))
-                //#line 879 GJavaParser.g
+                //#line 875 GJavaParser.g
                 );
             break;
             }
@@ -4972,21 +4990,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 394:  CastExpression ::= ( PrimitiveType Dimsopt ) UnaryExpression
             //
             case 394: {
-               //#line 882 "GJavaParser.g"
+                //#line 878 "GJavaParser.g"
                 this.setResult(
-                    //#line 882 GJavaParser.g
+                    //#line 878 GJavaParser.g
                     new CastExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 882 GJavaParser.g
+                                        //#line 878 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 882 GJavaParser.g
+                                        //#line 878 GJavaParser.g
                                         <IPrimitiveType>this.getRhsSym(2),
-                                        //#line 882 GJavaParser.g
+                                        //#line 878 GJavaParser.g
                                         <IDimsopt>this.getRhsSym(3),
-                                        //#line 882 GJavaParser.g
+                                        //#line 878 GJavaParser.g
                                         new AstToken(this.getRhsIToken(4)),
-                                        //#line 882 GJavaParser.g
+                                        //#line 878 GJavaParser.g
                                         <IUnaryExpression>this.getRhsSym(5))
-                //#line 882 GJavaParser.g
+                //#line 878 GJavaParser.g
                 );
             break;
             }
@@ -4994,19 +5012,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 395:  CastExpression ::= ( ReferenceType ) UnaryExpressionNotPlusMinus
             //
             case 395: {
-               //#line 883 "GJavaParser.g"
+                //#line 879 "GJavaParser.g"
                 this.setResult(
-                    //#line 883 GJavaParser.g
+                    //#line 879 GJavaParser.g
                     new CastExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                        //#line 883 GJavaParser.g
+                                        //#line 879 GJavaParser.g
                                         new AstToken(this.getRhsIToken(1)),
-                                        //#line 883 GJavaParser.g
+                                        //#line 879 GJavaParser.g
                                         <IReferenceType>this.getRhsSym(2),
-                                        //#line 883 GJavaParser.g
+                                        //#line 879 GJavaParser.g
                                         new AstToken(this.getRhsIToken(3)),
-                                        //#line 883 GJavaParser.g
+                                        //#line 879 GJavaParser.g
                                         <IUnaryExpressionNotPlusMinus>this.getRhsSym(4))
-                //#line 883 GJavaParser.g
+                //#line 879 GJavaParser.g
                 );
             break;
             }
@@ -5019,17 +5037,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 397:  MultiplicativeExpression ::= MultiplicativeExpression * UnaryExpression
             //
             case 397: {
-               //#line 886 "GJavaParser.g"
+                //#line 882 "GJavaParser.g"
                 this.setResult(
-                    //#line 886 GJavaParser.g
+                    //#line 882 GJavaParser.g
                     new MultiplicativeExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 886 GJavaParser.g
+                                                  //#line 882 GJavaParser.g
                                                   <IMultiplicativeExpression>this.getRhsSym(1),
-                                                  //#line 886 GJavaParser.g
+                                                  //#line 882 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(2)),
-                                                  //#line 886 GJavaParser.g
+                                                  //#line 882 GJavaParser.g
                                                   <IUnaryExpression>this.getRhsSym(3))
-                //#line 886 GJavaParser.g
+                //#line 882 GJavaParser.g
                 );
             break;
             }
@@ -5037,17 +5055,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 398:  MultiplicativeExpression ::= MultiplicativeExpression / UnaryExpression
             //
             case 398: {
-               //#line 887 "GJavaParser.g"
+                //#line 883 "GJavaParser.g"
                 this.setResult(
-                    //#line 887 GJavaParser.g
+                    //#line 883 GJavaParser.g
                     new MultiplicativeExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 887 GJavaParser.g
+                                                  //#line 883 GJavaParser.g
                                                   <IMultiplicativeExpression>this.getRhsSym(1),
-                                                  //#line 887 GJavaParser.g
+                                                  //#line 883 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(2)),
-                                                  //#line 887 GJavaParser.g
+                                                  //#line 883 GJavaParser.g
                                                   <IUnaryExpression>this.getRhsSym(3))
-                //#line 887 GJavaParser.g
+                //#line 883 GJavaParser.g
                 );
             break;
             }
@@ -5055,17 +5073,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 399:  MultiplicativeExpression ::= MultiplicativeExpression % UnaryExpression
             //
             case 399: {
-               //#line 888 "GJavaParser.g"
+                //#line 884 "GJavaParser.g"
                 this.setResult(
-                    //#line 888 GJavaParser.g
+                    //#line 884 GJavaParser.g
                     new MultiplicativeExpression2(this.getLeftIToken(), this.getRightIToken(),
-                                                  //#line 888 GJavaParser.g
+                                                  //#line 884 GJavaParser.g
                                                   <IMultiplicativeExpression>this.getRhsSym(1),
-                                                  //#line 888 GJavaParser.g
+                                                  //#line 884 GJavaParser.g
                                                   new AstToken(this.getRhsIToken(2)),
-                                                  //#line 888 GJavaParser.g
+                                                  //#line 884 GJavaParser.g
                                                   <IUnaryExpression>this.getRhsSym(3))
-                //#line 888 GJavaParser.g
+                //#line 884 GJavaParser.g
                 );
             break;
             }
@@ -5078,17 +5096,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 401:  AdditiveExpression ::= AdditiveExpression + MultiplicativeExpression
             //
             case 401: {
-               //#line 891 "GJavaParser.g"
+                //#line 887 "GJavaParser.g"
                 this.setResult(
-                    //#line 891 GJavaParser.g
+                    //#line 887 GJavaParser.g
                     new AdditiveExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 891 GJavaParser.g
+                                            //#line 887 GJavaParser.g
                                             <IAdditiveExpression>this.getRhsSym(1),
-                                            //#line 891 GJavaParser.g
+                                            //#line 887 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 891 GJavaParser.g
+                                            //#line 887 GJavaParser.g
                                             <IMultiplicativeExpression>this.getRhsSym(3))
-                //#line 891 GJavaParser.g
+                //#line 887 GJavaParser.g
                 );
             break;
             }
@@ -5096,17 +5114,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 402:  AdditiveExpression ::= AdditiveExpression - MultiplicativeExpression
             //
             case 402: {
-               //#line 892 "GJavaParser.g"
+                //#line 888 "GJavaParser.g"
                 this.setResult(
-                    //#line 892 GJavaParser.g
+                    //#line 888 GJavaParser.g
                     new AdditiveExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 892 GJavaParser.g
+                                            //#line 888 GJavaParser.g
                                             <IAdditiveExpression>this.getRhsSym(1),
-                                            //#line 892 GJavaParser.g
+                                            //#line 888 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 892 GJavaParser.g
+                                            //#line 888 GJavaParser.g
                                             <IMultiplicativeExpression>this.getRhsSym(3))
-                //#line 892 GJavaParser.g
+                //#line 888 GJavaParser.g
                 );
             break;
             }
@@ -5119,17 +5137,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 404:  ShiftExpression ::= ShiftExpression << AdditiveExpression
             //
             case 404: {
-               //#line 895 "GJavaParser.g"
+                //#line 891 "GJavaParser.g"
                 this.setResult(
-                    //#line 895 GJavaParser.g
+                    //#line 891 GJavaParser.g
                     new ShiftExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 895 GJavaParser.g
+                                         //#line 891 GJavaParser.g
                                          <IShiftExpression>this.getRhsSym(1),
-                                         //#line 895 GJavaParser.g
+                                         //#line 891 GJavaParser.g
                                          new AstToken(this.getRhsIToken(2)),
-                                         //#line 895 GJavaParser.g
+                                         //#line 891 GJavaParser.g
                                          <IAdditiveExpression>this.getRhsSym(3))
-                //#line 895 GJavaParser.g
+                //#line 891 GJavaParser.g
                 );
             break;
             }
@@ -5137,19 +5155,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 405:  ShiftExpression ::= ShiftExpression > > AdditiveExpression
             //
             case 405: {
-               //#line 896 "GJavaParser.g"
+                //#line 892 "GJavaParser.g"
                 this.setResult(
-                    //#line 896 GJavaParser.g
+                    //#line 892 GJavaParser.g
                     new ShiftExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 896 GJavaParser.g
+                                         //#line 892 GJavaParser.g
                                          <IShiftExpression>this.getRhsSym(1),
-                                         //#line 896 GJavaParser.g
+                                         //#line 892 GJavaParser.g
                                          new AstToken(this.getRhsIToken(2)),
-                                         //#line 896 GJavaParser.g
+                                         //#line 892 GJavaParser.g
                                          new AstToken(this.getRhsIToken(3)),
-                                         //#line 896 GJavaParser.g
+                                         //#line 892 GJavaParser.g
                                          <IAdditiveExpression>this.getRhsSym(4))
-                //#line 896 GJavaParser.g
+                //#line 892 GJavaParser.g
                 );
             break;
             }
@@ -5157,21 +5175,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 406:  ShiftExpression ::= ShiftExpression > > > AdditiveExpression
             //
             case 406: {
-               //#line 897 "GJavaParser.g"
+                //#line 893 "GJavaParser.g"
                 this.setResult(
-                    //#line 897 GJavaParser.g
+                    //#line 893 GJavaParser.g
                     new ShiftExpression2(this.getLeftIToken(), this.getRightIToken(),
-                                         //#line 897 GJavaParser.g
+                                         //#line 893 GJavaParser.g
                                          <IShiftExpression>this.getRhsSym(1),
-                                         //#line 897 GJavaParser.g
+                                         //#line 893 GJavaParser.g
                                          new AstToken(this.getRhsIToken(2)),
-                                         //#line 897 GJavaParser.g
+                                         //#line 893 GJavaParser.g
                                          new AstToken(this.getRhsIToken(3)),
-                                         //#line 897 GJavaParser.g
+                                         //#line 893 GJavaParser.g
                                          new AstToken(this.getRhsIToken(4)),
-                                         //#line 897 GJavaParser.g
+                                         //#line 893 GJavaParser.g
                                          <IAdditiveExpression>this.getRhsSym(5))
-                //#line 897 GJavaParser.g
+                //#line 893 GJavaParser.g
                 );
             break;
             }
@@ -5184,17 +5202,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 408:  RelationalExpression ::= RelationalExpression < ShiftExpression
             //
             case 408: {
-               //#line 900 "GJavaParser.g"
+                //#line 896 "GJavaParser.g"
                 this.setResult(
-                    //#line 900 GJavaParser.g
+                    //#line 896 GJavaParser.g
                     new RelationalExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 900 GJavaParser.g
+                                              //#line 896 GJavaParser.g
                                               <IRelationalExpression>this.getRhsSym(1),
-                                              //#line 900 GJavaParser.g
+                                              //#line 896 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 900 GJavaParser.g
+                                              //#line 896 GJavaParser.g
                                               <IShiftExpression>this.getRhsSym(3))
-                //#line 900 GJavaParser.g
+                //#line 896 GJavaParser.g
                 );
             break;
             }
@@ -5202,17 +5220,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 409:  RelationalExpression ::= RelationalExpression > ShiftExpression
             //
             case 409: {
-               //#line 901 "GJavaParser.g"
+                //#line 897 "GJavaParser.g"
                 this.setResult(
-                    //#line 901 GJavaParser.g
+                    //#line 897 GJavaParser.g
                     new RelationalExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 901 GJavaParser.g
+                                              //#line 897 GJavaParser.g
                                               <IRelationalExpression>this.getRhsSym(1),
-                                              //#line 901 GJavaParser.g
+                                              //#line 897 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 901 GJavaParser.g
+                                              //#line 897 GJavaParser.g
                                               <IShiftExpression>this.getRhsSym(3))
-                //#line 901 GJavaParser.g
+                //#line 897 GJavaParser.g
                 );
             break;
             }
@@ -5220,17 +5238,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 410:  RelationalExpression ::= RelationalExpression <= ShiftExpression
             //
             case 410: {
-               //#line 902 "GJavaParser.g"
+                //#line 898 "GJavaParser.g"
                 this.setResult(
-                    //#line 902 GJavaParser.g
+                    //#line 898 GJavaParser.g
                     new RelationalExpression2(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 902 GJavaParser.g
+                                              //#line 898 GJavaParser.g
                                               <IRelationalExpression>this.getRhsSym(1),
-                                              //#line 902 GJavaParser.g
+                                              //#line 898 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 902 GJavaParser.g
+                                              //#line 898 GJavaParser.g
                                               <IShiftExpression>this.getRhsSym(3))
-                //#line 902 GJavaParser.g
+                //#line 898 GJavaParser.g
                 );
             break;
             }
@@ -5238,19 +5256,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 411:  RelationalExpression ::= RelationalExpression > = ShiftExpression
             //
             case 411: {
-               //#line 903 "GJavaParser.g"
+                //#line 899 "GJavaParser.g"
                 this.setResult(
-                    //#line 903 GJavaParser.g
+                    //#line 899 GJavaParser.g
                     new RelationalExpression3(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 903 GJavaParser.g
+                                              //#line 899 GJavaParser.g
                                               <IRelationalExpression>this.getRhsSym(1),
-                                              //#line 903 GJavaParser.g
+                                              //#line 899 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 903 GJavaParser.g
+                                              //#line 899 GJavaParser.g
                                               new AstToken(this.getRhsIToken(3)),
-                                              //#line 903 GJavaParser.g
+                                              //#line 899 GJavaParser.g
                                               <IShiftExpression>this.getRhsSym(4))
-                //#line 903 GJavaParser.g
+                //#line 899 GJavaParser.g
                 );
             break;
             }
@@ -5258,17 +5276,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 412:  RelationalExpression ::= RelationalExpression instanceof ReferenceType
             //
             case 412: {
-               //#line 904 "GJavaParser.g"
+                //#line 900 "GJavaParser.g"
                 this.setResult(
-                    //#line 904 GJavaParser.g
+                    //#line 900 GJavaParser.g
                     new RelationalExpression4(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 904 GJavaParser.g
+                                              //#line 900 GJavaParser.g
                                               <IRelationalExpression>this.getRhsSym(1),
-                                              //#line 904 GJavaParser.g
+                                              //#line 900 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 904 GJavaParser.g
+                                              //#line 900 GJavaParser.g
                                               <IReferenceType>this.getRhsSym(3))
-                //#line 904 GJavaParser.g
+                //#line 900 GJavaParser.g
                 );
             break;
             }
@@ -5281,17 +5299,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 414:  EqualityExpression ::= EqualityExpression == RelationalExpression
             //
             case 414: {
-               //#line 907 "GJavaParser.g"
+                //#line 903 "GJavaParser.g"
                 this.setResult(
-                    //#line 907 GJavaParser.g
+                    //#line 903 GJavaParser.g
                     new EqualityExpression0(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 907 GJavaParser.g
+                                            //#line 903 GJavaParser.g
                                             <IEqualityExpression>this.getRhsSym(1),
-                                            //#line 907 GJavaParser.g
+                                            //#line 903 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 907 GJavaParser.g
+                                            //#line 903 GJavaParser.g
                                             <IRelationalExpression>this.getRhsSym(3))
-                //#line 907 GJavaParser.g
+                //#line 903 GJavaParser.g
                 );
             break;
             }
@@ -5299,17 +5317,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 415:  EqualityExpression ::= EqualityExpression != RelationalExpression
             //
             case 415: {
-               //#line 908 "GJavaParser.g"
+                //#line 904 "GJavaParser.g"
                 this.setResult(
-                    //#line 908 GJavaParser.g
+                    //#line 904 GJavaParser.g
                     new EqualityExpression1(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 908 GJavaParser.g
+                                            //#line 904 GJavaParser.g
                                             <IEqualityExpression>this.getRhsSym(1),
-                                            //#line 908 GJavaParser.g
+                                            //#line 904 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 908 GJavaParser.g
+                                            //#line 904 GJavaParser.g
                                             <IRelationalExpression>this.getRhsSym(3))
-                //#line 908 GJavaParser.g
+                //#line 904 GJavaParser.g
                 );
             break;
             }
@@ -5322,17 +5340,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 417:  AndExpression ::= AndExpression & EqualityExpression
             //
             case 417: {
-               //#line 911 "GJavaParser.g"
+                //#line 907 "GJavaParser.g"
                 this.setResult(
-                    //#line 911 GJavaParser.g
+                    //#line 907 GJavaParser.g
                     new AndExpression(this.getLeftIToken(), this.getRightIToken(),
-                                      //#line 911 GJavaParser.g
+                                      //#line 907 GJavaParser.g
                                       <IAndExpression>this.getRhsSym(1),
-                                      //#line 911 GJavaParser.g
+                                      //#line 907 GJavaParser.g
                                       new AstToken(this.getRhsIToken(2)),
-                                      //#line 911 GJavaParser.g
+                                      //#line 907 GJavaParser.g
                                       <IEqualityExpression>this.getRhsSym(3))
-                //#line 911 GJavaParser.g
+                //#line 907 GJavaParser.g
                 );
             break;
             }
@@ -5345,17 +5363,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 419:  ExclusiveOrExpression ::= ExclusiveOrExpression ^ AndExpression
             //
             case 419: {
-               //#line 914 "GJavaParser.g"
+                //#line 910 "GJavaParser.g"
                 this.setResult(
-                    //#line 914 GJavaParser.g
+                    //#line 910 GJavaParser.g
                     new ExclusiveOrExpression(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 914 GJavaParser.g
+                                              //#line 910 GJavaParser.g
                                               <IExclusiveOrExpression>this.getRhsSym(1),
-                                              //#line 914 GJavaParser.g
+                                              //#line 910 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 914 GJavaParser.g
+                                              //#line 910 GJavaParser.g
                                               <IAndExpression>this.getRhsSym(3))
-                //#line 914 GJavaParser.g
+                //#line 910 GJavaParser.g
                 );
             break;
             }
@@ -5368,17 +5386,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 421:  InclusiveOrExpression ::= InclusiveOrExpression | ExclusiveOrExpression
             //
             case 421: {
-               //#line 917 "GJavaParser.g"
+                //#line 913 "GJavaParser.g"
                 this.setResult(
-                    //#line 917 GJavaParser.g
+                    //#line 913 GJavaParser.g
                     new InclusiveOrExpression(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 917 GJavaParser.g
+                                              //#line 913 GJavaParser.g
                                               <IInclusiveOrExpression>this.getRhsSym(1),
-                                              //#line 917 GJavaParser.g
+                                              //#line 913 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 917 GJavaParser.g
+                                              //#line 913 GJavaParser.g
                                               <IExclusiveOrExpression>this.getRhsSym(3))
-                //#line 917 GJavaParser.g
+                //#line 913 GJavaParser.g
                 );
             break;
             }
@@ -5391,17 +5409,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 423:  ConditionalAndExpression ::= ConditionalAndExpression && InclusiveOrExpression
             //
             case 423: {
-               //#line 920 "GJavaParser.g"
+                //#line 916 "GJavaParser.g"
                 this.setResult(
-                    //#line 920 GJavaParser.g
+                    //#line 916 GJavaParser.g
                     new ConditionalAndExpression(this.getLeftIToken(), this.getRightIToken(),
-                                                 //#line 920 GJavaParser.g
+                                                 //#line 916 GJavaParser.g
                                                  <IConditionalAndExpression>this.getRhsSym(1),
-                                                 //#line 920 GJavaParser.g
+                                                 //#line 916 GJavaParser.g
                                                  new AstToken(this.getRhsIToken(2)),
-                                                 //#line 920 GJavaParser.g
+                                                 //#line 916 GJavaParser.g
                                                  <IInclusiveOrExpression>this.getRhsSym(3))
-                //#line 920 GJavaParser.g
+                //#line 916 GJavaParser.g
                 );
             break;
             }
@@ -5414,17 +5432,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 425:  ConditionalOrExpression ::= ConditionalOrExpression || ConditionalAndExpression
             //
             case 425: {
-               //#line 923 "GJavaParser.g"
+                //#line 919 "GJavaParser.g"
                 this.setResult(
-                    //#line 923 GJavaParser.g
+                    //#line 919 GJavaParser.g
                     new ConditionalOrExpression(this.getLeftIToken(), this.getRightIToken(),
-                                                //#line 923 GJavaParser.g
+                                                //#line 919 GJavaParser.g
                                                 <IConditionalOrExpression>this.getRhsSym(1),
-                                                //#line 923 GJavaParser.g
+                                                //#line 919 GJavaParser.g
                                                 new AstToken(this.getRhsIToken(2)),
-                                                //#line 923 GJavaParser.g
+                                                //#line 919 GJavaParser.g
                                                 <IConditionalAndExpression>this.getRhsSym(3))
-                //#line 923 GJavaParser.g
+                //#line 919 GJavaParser.g
                 );
             break;
             }
@@ -5437,21 +5455,21 @@ export class JavaParser extends Object implements RuleAction
             // Rule 427:  ConditionalExpression ::= ConditionalOrExpression ? Expression : ConditionalExpression
             //
             case 427: {
-               //#line 926 "GJavaParser.g"
+                //#line 922 "GJavaParser.g"
                 this.setResult(
-                    //#line 926 GJavaParser.g
+                    //#line 922 GJavaParser.g
                     new ConditionalExpression(this.getLeftIToken(), this.getRightIToken(),
-                                              //#line 926 GJavaParser.g
+                                              //#line 922 GJavaParser.g
                                               <IConditionalOrExpression>this.getRhsSym(1),
-                                              //#line 926 GJavaParser.g
+                                              //#line 922 GJavaParser.g
                                               new AstToken(this.getRhsIToken(2)),
-                                              //#line 926 GJavaParser.g
+                                              //#line 922 GJavaParser.g
                                               <IExpression>this.getRhsSym(3),
-                                              //#line 926 GJavaParser.g
+                                              //#line 922 GJavaParser.g
                                               new AstToken(this.getRhsIToken(4)),
-                                              //#line 926 GJavaParser.g
+                                              //#line 922 GJavaParser.g
                                               <IConditionalExpression>this.getRhsSym(5))
-                //#line 926 GJavaParser.g
+                //#line 922 GJavaParser.g
                 );
             break;
             }
@@ -5469,17 +5487,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 430:  Assignment ::= LeftHandSide AssignmentOperator AssignmentExpression
             //
             case 430: {
-               //#line 931 "GJavaParser.g"
+                //#line 927 "GJavaParser.g"
                 this.setResult(
-                    //#line 931 GJavaParser.g
+                    //#line 927 GJavaParser.g
                     new Assignment(this.getLeftIToken(), this.getRightIToken(),
-                                   //#line 931 GJavaParser.g
+                                   //#line 927 GJavaParser.g
                                    <ILeftHandSide>this.getRhsSym(1),
-                                   //#line 931 GJavaParser.g
+                                   //#line 927 GJavaParser.g
                                    <IAssignmentOperator>this.getRhsSym(2),
-                                   //#line 931 GJavaParser.g
+                                   //#line 927 GJavaParser.g
                                    <IAssignmentExpression>this.getRhsSym(3))
-                //#line 931 GJavaParser.g
+                //#line 927 GJavaParser.g
                 );
             break;
             }
@@ -5502,11 +5520,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 434:  AssignmentOperator ::= =
             //
             case 434: {
-               //#line 937 "GJavaParser.g"
+                //#line 933 "GJavaParser.g"
                 this.setResult(
-                    //#line 937 GJavaParser.g
+                    //#line 933 GJavaParser.g
                     new AssignmentOperator0(this.getRhsIToken(1))
-                //#line 937 GJavaParser.g
+                //#line 933 GJavaParser.g
                 );
             break;
             }
@@ -5514,11 +5532,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 435:  AssignmentOperator ::= *=
             //
             case 435: {
-               //#line 938 "GJavaParser.g"
+                //#line 934 "GJavaParser.g"
                 this.setResult(
-                    //#line 938 GJavaParser.g
+                    //#line 934 GJavaParser.g
                     new AssignmentOperator1(this.getRhsIToken(1))
-                //#line 938 GJavaParser.g
+                //#line 934 GJavaParser.g
                 );
             break;
             }
@@ -5526,11 +5544,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 436:  AssignmentOperator ::= /=
             //
             case 436: {
-               //#line 939 "GJavaParser.g"
+                //#line 935 "GJavaParser.g"
                 this.setResult(
-                    //#line 939 GJavaParser.g
+                    //#line 935 GJavaParser.g
                     new AssignmentOperator2(this.getRhsIToken(1))
-                //#line 939 GJavaParser.g
+                //#line 935 GJavaParser.g
                 );
             break;
             }
@@ -5538,11 +5556,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 437:  AssignmentOperator ::= %=
             //
             case 437: {
-               //#line 940 "GJavaParser.g"
+                //#line 936 "GJavaParser.g"
                 this.setResult(
-                    //#line 940 GJavaParser.g
+                    //#line 936 GJavaParser.g
                     new AssignmentOperator3(this.getRhsIToken(1))
-                //#line 940 GJavaParser.g
+                //#line 936 GJavaParser.g
                 );
             break;
             }
@@ -5550,11 +5568,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 438:  AssignmentOperator ::= +=
             //
             case 438: {
-               //#line 941 "GJavaParser.g"
+                //#line 937 "GJavaParser.g"
                 this.setResult(
-                    //#line 941 GJavaParser.g
+                    //#line 937 GJavaParser.g
                     new AssignmentOperator4(this.getRhsIToken(1))
-                //#line 941 GJavaParser.g
+                //#line 937 GJavaParser.g
                 );
             break;
             }
@@ -5562,11 +5580,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 439:  AssignmentOperator ::= -=
             //
             case 439: {
-               //#line 942 "GJavaParser.g"
+                //#line 938 "GJavaParser.g"
                 this.setResult(
-                    //#line 942 GJavaParser.g
+                    //#line 938 GJavaParser.g
                     new AssignmentOperator5(this.getRhsIToken(1))
-                //#line 942 GJavaParser.g
+                //#line 938 GJavaParser.g
                 );
             break;
             }
@@ -5574,11 +5592,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 440:  AssignmentOperator ::= <<=
             //
             case 440: {
-               //#line 943 "GJavaParser.g"
+                //#line 939 "GJavaParser.g"
                 this.setResult(
-                    //#line 943 GJavaParser.g
+                    //#line 939 GJavaParser.g
                     new AssignmentOperator6(this.getRhsIToken(1))
-                //#line 943 GJavaParser.g
+                //#line 939 GJavaParser.g
                 );
             break;
             }
@@ -5586,17 +5604,17 @@ export class JavaParser extends Object implements RuleAction
             // Rule 441:  AssignmentOperator ::= > > =
             //
             case 441: {
-               //#line 944 "GJavaParser.g"
+                //#line 940 "GJavaParser.g"
                 this.setResult(
-                    //#line 944 GJavaParser.g
+                    //#line 940 GJavaParser.g
                     new AssignmentOperator7(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 944 GJavaParser.g
+                                            //#line 940 GJavaParser.g
                                             new AstToken(this.getRhsIToken(1)),
-                                            //#line 944 GJavaParser.g
+                                            //#line 940 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 944 GJavaParser.g
+                                            //#line 940 GJavaParser.g
                                             new AstToken(this.getRhsIToken(3)))
-                //#line 944 GJavaParser.g
+                //#line 940 GJavaParser.g
                 );
             break;
             }
@@ -5604,19 +5622,19 @@ export class JavaParser extends Object implements RuleAction
             // Rule 442:  AssignmentOperator ::= > > > =
             //
             case 442: {
-               //#line 945 "GJavaParser.g"
+                //#line 941 "GJavaParser.g"
                 this.setResult(
-                    //#line 945 GJavaParser.g
+                    //#line 941 GJavaParser.g
                     new AssignmentOperator8(this.getLeftIToken(), this.getRightIToken(),
-                                            //#line 945 GJavaParser.g
+                                            //#line 941 GJavaParser.g
                                             new AstToken(this.getRhsIToken(1)),
-                                            //#line 945 GJavaParser.g
+                                            //#line 941 GJavaParser.g
                                             new AstToken(this.getRhsIToken(2)),
-                                            //#line 945 GJavaParser.g
+                                            //#line 941 GJavaParser.g
                                             new AstToken(this.getRhsIToken(3)),
-                                            //#line 945 GJavaParser.g
+                                            //#line 941 GJavaParser.g
                                             new AstToken(this.getRhsIToken(4)))
-                //#line 945 GJavaParser.g
+                //#line 941 GJavaParser.g
                 );
             break;
             }
@@ -5624,11 +5642,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 443:  AssignmentOperator ::= &=
             //
             case 443: {
-               //#line 946 "GJavaParser.g"
+                //#line 942 "GJavaParser.g"
                 this.setResult(
-                    //#line 946 GJavaParser.g
+                    //#line 942 GJavaParser.g
                     new AssignmentOperator9(this.getRhsIToken(1))
-                //#line 946 GJavaParser.g
+                //#line 942 GJavaParser.g
                 );
             break;
             }
@@ -5636,11 +5654,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 444:  AssignmentOperator ::= ^=
             //
             case 444: {
-               //#line 947 "GJavaParser.g"
+                //#line 943 "GJavaParser.g"
                 this.setResult(
-                    //#line 947 GJavaParser.g
+                    //#line 943 GJavaParser.g
                     new AssignmentOperator10(this.getRhsIToken(1))
-                //#line 947 GJavaParser.g
+                //#line 943 GJavaParser.g
                 );
             break;
             }
@@ -5648,11 +5666,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 445:  AssignmentOperator ::= |=
             //
             case 445: {
-               //#line 948 "GJavaParser.g"
+                //#line 944 "GJavaParser.g"
                 this.setResult(
-                    //#line 948 GJavaParser.g
+                    //#line 944 GJavaParser.g
                     new AssignmentOperator11(this.getRhsIToken(1))
-                //#line 948 GJavaParser.g
+                //#line 944 GJavaParser.g
                 );
             break;
             }
@@ -5670,7 +5688,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 448:  Dimsopt ::= %Empty
             //
             case 448: {
-               //#line 957 "GJavaParser.g"
+                //#line 953 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5683,7 +5701,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 450:  Catchesopt ::= %Empty
             //
             case 450: {
-               //#line 960 "GJavaParser.g"
+                //#line 956 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5696,7 +5714,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 452:  identifieropt ::= %Empty
             //
             case 452: {
-               //#line 963 "GJavaParser.g"
+                //#line 959 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5709,7 +5727,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 454:  ForUpdateopt ::= %Empty
             //
             case 454: {
-               //#line 966 "GJavaParser.g"
+                //#line 962 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5722,7 +5740,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 456:  Expressionopt ::= %Empty
             //
             case 456: {
-               //#line 969 "GJavaParser.g"
+                //#line 965 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5735,7 +5753,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 458:  ForInitopt ::= %Empty
             //
             case 458: {
-               //#line 972 "GJavaParser.g"
+                //#line 968 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5748,7 +5766,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 460:  SwitchLabelsopt ::= %Empty
             //
             case 460: {
-               //#line 975 "GJavaParser.g"
+                //#line 971 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5761,7 +5779,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 462:  SwitchBlockStatementGroupsopt ::= %Empty
             //
             case 462: {
-               //#line 978 "GJavaParser.g"
+                //#line 974 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5774,7 +5792,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 464:  VariableModifiersopt ::= %Empty
             //
             case 464: {
-               //#line 981 "GJavaParser.g"
+                //#line 977 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5787,7 +5805,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 466:  VariableInitializersopt ::= %Empty
             //
             case 466: {
-               //#line 984 "GJavaParser.g"
+                //#line 980 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5800,7 +5818,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 468:  ElementValuesopt ::= %Empty
             //
             case 468: {
-               //#line 987 "GJavaParser.g"
+                //#line 983 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5813,7 +5831,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 470:  ElementValuePairsopt ::= %Empty
             //
             case 470: {
-               //#line 990 "GJavaParser.g"
+                //#line 986 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5826,7 +5844,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 472:  DefaultValueopt ::= %Empty
             //
             case 472: {
-               //#line 993 "GJavaParser.g"
+                //#line 989 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5839,7 +5857,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 474:  AnnotationTypeElementDeclarationsopt ::= %Empty
             //
             case 474: {
-               //#line 996 "GJavaParser.g"
+                //#line 992 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5852,7 +5870,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 476:  AbstractMethodModifiersopt ::= %Empty
             //
             case 476: {
-               //#line 999 "GJavaParser.g"
+                //#line 995 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5865,7 +5883,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 478:  ConstantModifiersopt ::= %Empty
             //
             case 478: {
-               //#line 1002 "GJavaParser.g"
+                //#line 998 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5878,7 +5896,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 480:  InterfaceMemberDeclarationsopt ::= %Empty
             //
             case 480: {
-               //#line 1005 "GJavaParser.g"
+                //#line 1001 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5891,7 +5909,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 482:  ExtendsInterfacesopt ::= %Empty
             //
             case 482: {
-               //#line 1008 "GJavaParser.g"
+                //#line 1004 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5904,7 +5922,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 484:  InterfaceModifiersopt ::= %Empty
             //
             case 484: {
-               //#line 1011 "GJavaParser.g"
+                //#line 1007 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5917,7 +5935,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 486:  ClassBodyopt ::= %Empty
             //
             case 486: {
-               //#line 1014 "GJavaParser.g"
+                //#line 1010 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5930,7 +5948,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 488:  Argumentsopt ::= %Empty
             //
             case 488: {
-               //#line 1017 "GJavaParser.g"
+                //#line 1013 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5943,7 +5961,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 490:  EnumBodyDeclarationsopt ::= %Empty
             //
             case 490: {
-               //#line 1020 "GJavaParser.g"
+                //#line 1016 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5956,7 +5974,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 492:  ,opt ::= %Empty
             //
             case 492: {
-               //#line 1023 "GJavaParser.g"
+                //#line 1019 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5964,11 +5982,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 493:  ,opt ::= ,
             //
             case 493: {
-               //#line 1024 "GJavaParser.g"
+                //#line 1020 "GJavaParser.g"
                 this.setResult(
-                    //#line 1024 GJavaParser.g
+                    //#line 1020 GJavaParser.g
                     new Commaopt(this.getRhsIToken(1))
-                //#line 1024 GJavaParser.g
+                //#line 1020 GJavaParser.g
                 );
             break;
             }
@@ -5976,7 +5994,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 494:  EnumConstantsopt ::= %Empty
             //
             case 494: {
-               //#line 1026 "GJavaParser.g"
+                //#line 1022 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -5989,7 +6007,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 496:  ArgumentListopt ::= %Empty
             //
             case 496: {
-               //#line 1029 "GJavaParser.g"
+                //#line 1025 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6002,7 +6020,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 498:  BlockStatementsopt ::= %Empty
             //
             case 498: {
-               //#line 1032 "GJavaParser.g"
+                //#line 1028 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6015,7 +6033,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 500:  ExplicitConstructorInvocationopt ::= %Empty
             //
             case 500: {
-               //#line 1035 "GJavaParser.g"
+                //#line 1031 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6028,7 +6046,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 502:  ConstructorModifiersopt ::= %Empty
             //
             case 502: {
-               //#line 1038 "GJavaParser.g"
+                //#line 1034 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6041,7 +6059,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 504:  ...opt ::= %Empty
             //
             case 504: {
-               //#line 1041 "GJavaParser.g"
+                //#line 1037 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6049,11 +6067,11 @@ export class JavaParser extends Object implements RuleAction
             // Rule 505:  ...opt ::= ...
             //
             case 505: {
-               //#line 1042 "GJavaParser.g"
+                //#line 1038 "GJavaParser.g"
                 this.setResult(
-                    //#line 1042 GJavaParser.g
+                    //#line 1038 GJavaParser.g
                     new Ellipsisopt(this.getRhsIToken(1))
-                //#line 1042 GJavaParser.g
+                //#line 1038 GJavaParser.g
                 );
             break;
             }
@@ -6061,7 +6079,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 506:  FormalParameterListopt ::= %Empty
             //
             case 506: {
-               //#line 1044 "GJavaParser.g"
+                //#line 1040 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6074,7 +6092,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 508:  Throwsopt ::= %Empty
             //
             case 508: {
-               //#line 1047 "GJavaParser.g"
+                //#line 1043 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6087,7 +6105,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 510:  MethodModifiersopt ::= %Empty
             //
             case 510: {
-               //#line 1050 "GJavaParser.g"
+                //#line 1046 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6100,7 +6118,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 512:  FieldModifiersopt ::= %Empty
             //
             case 512: {
-               //#line 1053 "GJavaParser.g"
+                //#line 1049 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6113,7 +6131,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 514:  ClassBodyDeclarationsopt ::= %Empty
             //
             case 514: {
-               //#line 1056 "GJavaParser.g"
+                //#line 1052 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6126,7 +6144,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 516:  Interfacesopt ::= %Empty
             //
             case 516: {
-               //#line 1059 "GJavaParser.g"
+                //#line 1055 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6139,7 +6157,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 518:  Superopt ::= %Empty
             //
             case 518: {
-               //#line 1062 "GJavaParser.g"
+                //#line 1058 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6152,7 +6170,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 520:  TypeParametersopt ::= %Empty
             //
             case 520: {
-               //#line 1065 "GJavaParser.g"
+                //#line 1061 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6165,7 +6183,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 522:  ClassModifiersopt ::= %Empty
             //
             case 522: {
-               //#line 1068 "GJavaParser.g"
+                //#line 1064 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6178,7 +6196,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 524:  Annotationsopt ::= %Empty
             //
             case 524: {
-               //#line 1071 "GJavaParser.g"
+                //#line 1067 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6191,7 +6209,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 526:  TypeDeclarationsopt ::= %Empty
             //
             case 526: {
-               //#line 1074 "GJavaParser.g"
+                //#line 1070 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6204,7 +6222,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 528:  ImportDeclarationsopt ::= %Empty
             //
             case 528: {
-               //#line 1077 "GJavaParser.g"
+                //#line 1073 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6217,7 +6235,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 530:  PackageDeclarationopt ::= %Empty
             //
             case 530: {
-               //#line 1080 "GJavaParser.g"
+                //#line 1076 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6230,7 +6248,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 532:  WildcardBoundsOpt ::= %Empty
             //
             case 532: {
-               //#line 1083 "GJavaParser.g"
+                //#line 1079 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6243,7 +6261,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 534:  AdditionalBoundListopt ::= %Empty
             //
             case 534: {
-               //#line 1086 "GJavaParser.g"
+                //#line 1082 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6256,7 +6274,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 536:  TypeBoundopt ::= %Empty
             //
             case 536: {
-               //#line 1089 "GJavaParser.g"
+                //#line 1085 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6269,7 +6287,7 @@ export class JavaParser extends Object implements RuleAction
             // Rule 538:  TypeArgumentsopt ::= %Empty
             //
             case 538: {
-               //#line 1092 "GJavaParser.g"
+                //#line 1088 "GJavaParser.g"
                 this.setResult(null);
             break;
             }
@@ -6278,7 +6296,7 @@ export class JavaParser extends Object implements RuleAction
             //
             case 539:
                 break;
-    //#line 322 "btParserTemplateF.gi
+    //#line 331 "dtParserTemplateF.gi
 
     
             default:

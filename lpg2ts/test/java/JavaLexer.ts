@@ -14,13 +14,16 @@
 
     //#line 123 "LexerTemplateF.gi
 
-import { RuleAction, ParseTable, LexParser, ILexStream, IPrsStream, Monitor, LpgLexStream } from "..\/..\/src";
-import { JavaKWLexer } from "./JavaKWLexer";
-import { JavaLexerprs } from "./JavaLexerprs";
-import { JavaLexersym } from "./JavaLexersym";
-import { JavaParsersym } from "./JavaParsersym";
+import { RuleAction, ParseTable, LexParser, ILexStream, IPrsStream, Monitor,LpgLexStream} from "../../src";
+import { JavaLexerprs } from ".\/JavaLexerprs";
+import { JavaLexersym } from ".\/JavaLexersym";
+import { JavaKWLexer } from ".\/JavaKWLexer";
 
-    //#line 129 "LexerTemplateF.gi
+    //#line 2 "LexerBasicMapF.gi
+
+import { JavaParsersym } from ".\/JavaParsersym";
+
+    //#line 132 "LexerTemplateF.gi
 
 export class JavaLexer extends Object implements RuleAction
 {
@@ -131,7 +134,7 @@ export class JavaLexer extends Object implements RuleAction
         }        
     }
 
-    //#line 163 "LexerBasicMapF.gi
+    //#line 168 "LexerBasicMapF.gi
 
 
     //
@@ -236,7 +239,7 @@ export class JavaLexer extends Object implements RuleAction
 
   
 
-    //#line 242 "LexerTemplateF.gi
+    //#line 245 "LexerTemplateF.gi
 
     public  ruleAction(ruleNumber : number ) : void
     {
@@ -659,7 +662,7 @@ export class JavaLexer extends Object implements RuleAction
                   break;
             }
     
-    //#line 246 "LexerTemplateF.gi
+    //#line 249 "LexerTemplateF.gi
 
     
             default:
@@ -669,7 +672,7 @@ export class JavaLexer extends Object implements RuleAction
     }
 }
 
-    //#line 2 "LexerBasicMapF.gi
+    //#line 7 "LexerBasicMapF.gi
  
   export  class  JavaLexerLpgLexStream  extends LpgLexStream
     {

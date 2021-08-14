@@ -18,9 +18,9 @@ Options in effect for e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:
     INCLUDE-DIRECTORY="E:/LPG2/lpg-generator-templates-2.1.00/include/typescript;E:/LPG2/lpg-generator-templates-2.1.00/templates/typescript"
     LALR=1  LEGACY  NOLIST  MARGIN=4  MAX-CASES=1024  NAMES=OPTIMIZED  
     NONT-CHECK  OR_MARKER='|'  
-    OUT-DIRECTORY="E:\LPG-typescript-runtime\lpg2ts\test\java"  PACKAGE=""  
-    NOPARENT-SAVE  PARSETABLE-INTERFACES="ParseTable"  PREFIX="Char_"  PRIORITY
-    PROGRAMMING_LANGUAGE=TYPESCRIPT  
+    OUT-DIRECTORY="E:\LPG-typescript-runtime\lpg2ts\test\java"  
+    PACKAGE="LpgJava"  NOPARENT-SAVE  PARSETABLE-INTERFACES="ParseTable"  
+    PREFIX="Char_"  PRIORITY  PROGRAMMING_LANGUAGE=TYPESCRIPT  
     PRS-FILE="E:\LPG-typescript-runtime\lpg2ts\test\java/JavaKWLexerprs.ts"  
     NOQUIET  READ-REDUCE  REMAP-TERMINALS  RULE_CLASSNAMES=SEQUENTIAL  NOSCOPES
     NOSERIALIZE  NOSHIFT-DEFAULT  SINGLE-PRODUCTIONS  NOSOFT-KEYWORDS  STATES  
@@ -48,7 +48,7 @@ E:/LPG2/lpg-generator-templates-2.1.00/include/typescript/KWLexerMapF.gi:6:53:6:
 E:/LPG2/lpg-generator-templates-2.1.00/include/typescript/KWLexerMapF.gi:6:55:6:55:176:176: Informative: The terminal Z is useless.
 
 
-e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:82:5:82:11:1005:1011: Informative: Grammar is  LALR(1).
+e:/LPG2-grammars-example/java-ts-version/GJavaKWLexer.gi:82:5:82:11:1006:1012: Informative: Grammar is  LALR(1).
 
 Number of Terminals: 56
 Number of Nonterminals: 15

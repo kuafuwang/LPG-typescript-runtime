@@ -113,7 +113,9 @@ export namespace Lpg {
 
   
         export class AbstractList<E> implements List<E> {
-         
+            needInterger() : void{
+                throw Error(" AbstractList  need interger index")
+            }
             public   content: E[] = [];
 
             public clone() : AbstractList<E> {
@@ -168,6 +170,9 @@ export namespace Lpg {
 
             add(index: any, elem?: E) {
                 if (typeof elem !== 'undefined') {
+                    if(!Number.isInteger(index)){
+                        this.needInterger();
+                    }
                     this.content.splice(index, 0, elem);
                 } else {
                     this.content.push(index);
@@ -175,6 +180,9 @@ export namespace Lpg {
             }
 
             get(index: number): E {
+                if(!Number.isInteger(index)){
+                    this.needInterger();
+                }
                 return this.content[index];
             }
 
@@ -191,6 +199,9 @@ export namespace Lpg {
             }
 
             set(index: number, element: E): E {
+                if(!Number.isInteger(index)){
+                    this.needInterger();
+                }
                 this.content[index] = element;
                 return element;
             }

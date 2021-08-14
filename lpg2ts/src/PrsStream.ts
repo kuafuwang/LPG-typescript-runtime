@@ -241,7 +241,7 @@ export class PrsStream implements IPrsStream {
     public getTokenIndexAtCharacter(offset: number): number {
         let low: number = 0, high: number = this.tokens.size();
         while (high > low) {
-            let mid: number = (high + low) / 2;
+            let mid: number = Math.floor((high + low) / 2);
             let mid_element: IToken = <IToken>this.tokens.get(mid);
             if (offset >= mid_element.getStartOffset() && offset <= mid_element.getEndOffset()) {
                 return mid;

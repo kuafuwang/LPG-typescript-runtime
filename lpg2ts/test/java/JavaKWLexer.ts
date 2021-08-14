@@ -9,17 +9,16 @@
 //Contributors:
 //    Philippe Charles (pcharles@us.ibm.com) - initial API and implementation
 
-import { JavaKWLexerprs } from "./JavaKWLexerprs";
-import { JavaKWLexersym } from "./JavaKWLexersym";
-import { JavaParsersym } from "./JavaParsersym";
-
 ////////////////////////////////////////////////////////////////////////////////
 
 
-    //#line 58 "KeywordTemplateF.gi
+    //#line 24 "KeywordTemplateF.gi
 
+import { JavaKWLexerprs } from ".\/JavaKWLexerprs";
+import { JavaKWLexersym } from ".\/JavaKWLexersym";
+import { JavaParsersym } from ".\/JavaParsersym";
 
-    //#line 63 "KeywordTemplateF.gi
+    //#line 69 "KeywordTemplateF.gi
 
 export class JavaKWLexer extends JavaKWLexerprs
 {
@@ -129,7 +128,7 @@ export class JavaKWLexer extends JavaKWLexerprs
         return (((c & 0xFFFFFF80) == 0) /* 0 <= c < 128? */ ? JavaKWLexer.tokenKind[c] : 0);
     }
 
-    //#line 101 "KeywordTemplateF.gi
+    //#line 107 "KeywordTemplateF.gi
 
 
     constructor( inputChars : string,  identifierKind : number)
@@ -558,7 +557,7 @@ export class JavaKWLexer extends JavaKWLexerprs
         this.keywordKind[60] = (JavaParsersym.TK_BadAction);
       
     
-    //#line 112 "KeywordTemplateF.gi
+    //#line 118 "KeywordTemplateF.gi
 
         for (let i : number = 0; i < this.keywordKind.length; i++)
         {

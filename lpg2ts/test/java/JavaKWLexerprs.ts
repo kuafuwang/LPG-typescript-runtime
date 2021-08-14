@@ -11,8 +11,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-import { ParseTable } from "../../src";
 import { JavaKWLexersym } from "./JavaKWLexersym";
+import { ParseTable } from "../../src";
 export class JavaKWLexerprs implements ParseTable {
     public   readonly ERROR_SYMBOL : number = 0;
     public   getErrorSymbol() : number { return this.ERROR_SYMBOL; }

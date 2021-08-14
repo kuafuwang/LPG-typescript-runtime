@@ -1,0 +1,12 @@
+{
+  "name": "lpgtest",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
+  },
+  "author": "",
+  "license": "ISC"
+}
