@@ -1,5 +1,7 @@
 [![](https://vsmarketplacebadge.apphb.com/version-short/kuafuwang.lpg-vscode.svg)](https://marketplace.visualstudio.com/items?itemName=kuafuwang.lpg-vscode)
 
+# this project had moved to https://github.com/The-LALR-parser-generator-LPG/LPG-typescript-runtime
+
 # LPG-typescript-runtime
 
 TypeScript  runtime libraries for LPG2
